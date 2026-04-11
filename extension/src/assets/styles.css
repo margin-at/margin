@@ -66,6 +66,13 @@ html.popup body {
   width: 400px;
   height: 540px;
   min-height: 540px;
+  overflow: hidden;
+}
+
+html.popup #root {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 * {
@@ -224,4 +231,26 @@ button:focus-visible {
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
   border-radius: 6px;
+}
+
+/* Utility classes for text truncation */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-4 {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }

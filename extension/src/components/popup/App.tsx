@@ -23,10 +23,17 @@ import {
   Eye,
   Send,
   MessageSquare,
+  Type,
+  Palette,
+  Tag,
+  MoreHorizontal,
+  ArrowRight,
+  PanelLeft,
 } from 'lucide-react';
 
 type Tab = 'page' | 'bookmarks' | 'highlights' | 'collections';
 type PageFilter = 'all' | 'annotations' | 'highlights';
+type QuickAction = 'highlight' | 'annotate' | 'bookmark' | null;
 
 export function App() {
   const [session, setSession] = useState<MarginSession | null>(null);
@@ -59,13 +66,54 @@ export function App() {
   const [bookmarkTags, setBookmarkTags] = useState<string[]>([]);
   const [showBookmarkTags, setShowBookmarkTags] = useState(false);
   const [tagSuggestions, setTagSuggestions] = useState<string[]>([]);
+  const [selectedText, setSelectedText] = useState('');
+  const [quickAction, setQuickAction] = useState<QuickAction>(null);
+  const [highlightColor, setHighlightColor] = useState('#fbbf24');
+  const [actionSuccess, setActionSuccess] = useState<string | null>(null);
+  const [showQuickActions, setShowQuickActions] = useState(true);
+  const [contentScriptReady, setContentScriptReady] = useState(true);
+  const [fullSelectedText, setFullSelectedText] = useState('');
 
   useEffect(() => {
     checkSession();
     loadCurrentTab();
     loadTheme();
     loadSettings();
+    // Delay selection check slightly to ensure content script is ready
+    setTimeout(() => checkForSelectedText(), 50);
   }, []);
+
+  async function checkForSelectedText(retryCount = 0) {
+    try {
+      const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
+      if (!tab?.id) return;
+
+      // Skip restricted URLs
+      if (tab.url?.startsWith('chrome://') || tab.url?.startsWith('chrome-extension://') ||
+          tab.url?.startsWith('about:') || tab.url?.startsWith('moz-extension://')) {
+        setContentScriptReady(false);
+        return;
+      }
+
+      const result = await browser.tabs.sendMessage(tab.id, { type: 'GET_SELECTION' }) as { text?: string } | undefined;
+      console.log('Selection check result:', result);
+      setContentScriptReady(true);
+      if (result?.text) {
+        setFullSelectedText(result.text); // Store full text for actions
+        // Show first 250 chars in display (will be line-clamped in UI)
+        setSelectedText(result.text.slice(0, 250) + (result.text.length > 250 ? '...' : ''));
+      }
+    } catch (err) {
+      console.log('Selection check error (retry', retryCount, '):', err);
+      // Content script might not be loaded yet, retry a couple times
+      if (retryCount < 3) {
+        setTimeout(() => checkForSelectedText(retryCount + 1), 200);
+      } else {
+        // Content script not responding
+        setContentScriptReady(false);
+      }
+    }
+  }
 
   useEffect(() => {
     if (session?.authenticated && session.did) {
@@ -328,6 +376,8 @@ export function App() {
       if (result.success) {
         setText('');
         setTags([]);
+        setActionSuccess('Annotation posted!');
+        setTimeout(() => setActionSuccess(null), 2000);
         loadAnnotations();
       } else {
         alert('Failed to post annotation');
@@ -337,6 +387,78 @@ export function App() {
       alert('Error posting annotation');
     } finally {
       setPosting(false);
+    }
+  }
+
+  async function handleQuickHighlight() {
+    if (!fullSelectedText) return;
+    setQuickAction('highlight');
+    try {
+      const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
+      if (!tab?.id || !tab?.url) return;
+
+      const result = await sendMessage('createHighlight', {
+        url: currentUrl,
+        title: currentTitle,
+        selector: {
+          type: 'TextQuoteSelector',
+          exact: fullSelectedText,
+        },
+        color: highlightColor,
+      });
+
+      if (result.success) {
+        setActionSuccess('Highlighted!');
+        setTimeout(() => {
+          setActionSuccess(null);
+          setQuickAction(null);
+          window.close();
+        }, 1000);
+        try {
+          await browser.tabs.sendMessage(tab.id, { type: 'REFRESH_ANNOTATIONS' });
+        } catch {
+          // Ignore
+        }
+      } else {
+        alert('Failed to highlight');
+        setQuickAction(null);
+      }
+    } catch (error) {
+      console.error('Highlight error:', error);
+      setQuickAction(null);
+    }
+  }
+
+  async function handleQuickAnnotate() {
+    setQuickAction('annotate');
+    setShowQuickActions(false);
+    setText(fullSelectedText);
+    setActiveTab('page');
+    // Reset quick action state after navigation
+    setTimeout(() => setQuickAction(null), 100);
+  }
+
+  async function handleQuickBookmark() {
+    setQuickAction('bookmark');
+    try {
+      const result = await sendMessage('createBookmark', {
+        url: currentUrl,
+        title: currentTitle,
+      });
+      if (result.success) {
+        setBookmarked(true);
+        setActionSuccess('Bookmarked!');
+        setTimeout(() => {
+          setActionSuccess(null);
+          setQuickAction(null);
+        }, 1500);
+      } else {
+        alert('Failed to bookmark');
+        setQuickAction(null);
+      }
+    } catch (error) {
+      console.error('Bookmark error:', error);
+      setQuickAction(null);
     }
   }
 
@@ -590,6 +712,167 @@ export function App() {
         </div>
       </header>
 
+      {/* Quick Actions Panel - Always show for authenticated users */}
+      {session?.authenticated && showQuickActions && (
+        <div className="bg-gradient-to-r from-[var(--accent-subtle)]/30 to-[var(--bg-primary)] border-b border-[var(--border)] p-3">
+          {/* Content Script Not Ready Warning */}
+          {!contentScriptReady && (
+            <div className="mb-3 p-2 bg-amber-400/10 border border-amber-400/20 rounded-lg">
+              <p className="text-[10px] text-amber-600 dark:text-amber-400 text-center">
+                Refresh the page to enable highlighting
+              </p>
+            </div>
+          )}
+          {actionSuccess ? (
+            <div className="flex items-center justify-center gap-2 py-2 text-emerald-500 animate-fadeIn">
+              <Check size={16} />
+              <span className="text-sm font-medium">{actionSuccess}</span>
+            </div>
+          ) : fullSelectedText ? (
+            /* TEXT SELECTED - Show Highlight + Annotate + Bookmark */
+            <div className="space-y-3">
+              {/* Selected Text Preview */}
+              <div className="flex items-start gap-2 px-1">
+                <div className="w-1 self-stretch rounded-full bg-[var(--accent)] flex-shrink-0" />
+                <p className="text-xs text-[var(--text-secondary)] line-clamp-3 italic">
+                  "{selectedText}"
+                </p>
+              </div>
+              
+              {/* Quick Action Buttons */}
+              <div className="grid grid-cols-3 gap-2">
+                {/* Highlight Button with Color Picker */}
+                <div className="col-span-1">
+                  <button
+                    onClick={handleQuickHighlight}
+                    disabled={quickAction === 'highlight' || !contentScriptReady || !fullSelectedText}
+                    className={`w-full flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg text-xs font-medium transition-all border ${
+                      contentScriptReady
+                        ? 'bg-amber-400/20 hover:bg-amber-400/30 text-amber-600 dark:text-amber-400 border-amber-400/30'
+                        : 'bg-[var(--bg-hover)] text-[var(--text-tertiary)] border-[var(--border)] cursor-not-allowed opacity-50'
+                    }`}
+                  >
+                    {quickAction === 'highlight' ? (
+                      <div className="w-3.5 h-3.5 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <Highlighter size={14} />
+                    )}
+                    <span>Highlight</span>
+                  </button>
+                  {/* Color Options */}
+                  <div className="flex items-center justify-center gap-1 mt-1.5">
+                    {[
+                      { color: '#fbbf24', label: 'Yellow' },
+                      { color: '#60a5fa', label: 'Blue' },
+                      { color: '#a78bfa', label: 'Purple' },
+                      { color: '#f87171', label: 'Red' },
+                      { color: '#34d399', label: 'Green' },
+                    ].map(({ color, label }) => (
+                      <button
+                        key={color}
+                        onClick={() => setHighlightColor(color)}
+                        title={label}
+                        className={`w-3.5 h-3.5 rounded-full transition-all ${
+                          highlightColor === color
+                            ? 'ring-2 ring-offset-1 ring-[var(--text-primary)] scale-110'
+                            : 'hover:scale-110 opacity-70 hover:opacity-100'
+                        }`}
+                        style={{ backgroundColor: color }}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Annotate Button */}
+                <button
+                  onClick={handleQuickAnnotate}
+                  disabled={quickAction === 'annotate'}
+                  className="col-span-1 flex items-center justify-center gap-1.5 px-2 py-2 bg-[var(--accent)]/15 hover:bg-[var(--accent)]/25 text-[var(--accent)] rounded-lg text-xs font-medium transition-all border border-[var(--accent)]/30"
+                >
+                  <Type size={14} />
+                  <span>Annotate</span>
+                </button>
+
+                {/* Bookmark Button */}
+                <button
+                  onClick={handleQuickBookmark}
+                  disabled={quickAction === 'bookmark' || bookmarked}
+                  className={`col-span-1 flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg text-xs font-medium transition-all border ${
+                    bookmarked
+                      ? 'bg-emerald-400/20 text-emerald-500 border-emerald-400/30'
+                      : 'bg-[var(--bg-card)] hover:bg-[var(--bg-hover)] text-[var(--text-secondary)] border-[var(--border)] hover:border-[var(--accent)]/30'
+                  }`}
+                >
+                  {bookmarked ? <Check size={14} /> : <BookmarkIcon size={14} />}
+                  <span>{bookmarked ? 'Saved' : 'Save'}</span>
+                </button>
+              </div>
+            </div>
+          ) : (
+            /* No Selection - Show Page Actions */
+            <div className="space-y-2">
+              <div className="grid grid-cols-3 gap-2">
+                <button
+                  onClick={handleQuickBookmark}
+                  disabled={bookmarked}
+                  className={`flex items-center justify-center gap-1.5 px-2 py-2.5 rounded-lg text-xs font-medium transition-all border ${
+                    bookmarked
+                      ? 'bg-emerald-400/20 text-emerald-500 border-emerald-400/30'
+                      : 'bg-[var(--bg-card)] hover:bg-[var(--bg-hover)] text-[var(--text-secondary)] border-[var(--border)] hover:border-[var(--accent)]/30'
+                  }`}
+                >
+                  {bookmarked ? <Check size={14} /> : <BookmarkIcon size={14} />}
+                  <span>{bookmarked ? 'Saved' : 'Bookmark'}</span>
+                </button>
+                <button
+                  onClick={() => {
+                    setShowQuickActions(false);
+                    setActiveTab('page');
+                  }}
+                  className="flex items-center justify-center gap-1.5 px-2 py-2.5 bg-[var(--accent)]/15 hover:bg-[var(--accent)]/25 text-[var(--accent)] rounded-lg text-xs font-medium transition-all border border-[var(--accent)]/30"
+                >
+                  <PenTool size={14} />
+                  <span>Annotate</span>
+                </button>
+                <button
+                  onClick={async () => {
+                    const browserAny = browser as any;
+                    const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
+                    if (browserAny.sidePanel && tab?.windowId) {
+                      browserAny.sidePanel.open({ windowId: tab.windowId });
+                    }
+                    window.close();
+                  }}
+                  className="flex items-center justify-center gap-1.5 px-2 py-2.5 bg-[var(--bg-card)] hover:bg-[var(--bg-hover)] text-[var(--text-secondary)] border border-[var(--border)] hover:border-[var(--accent)]/30 rounded-lg text-xs font-medium transition-all"
+                >
+                  <PanelLeft size={14} />
+                  <span>Sidebar</span>
+                </button>
+              </div>
+              {/* Hint for highlight feature with refresh */}
+              <button 
+                onClick={() => checkForSelectedText()}
+                className="flex items-center justify-center gap-1.5 px-2 py-1.5 text-[10px] text-[var(--text-tertiary)] hover:text-[var(--accent)] hover:bg-[var(--bg-hover)] rounded-md transition-all w-full"
+              >
+                <Highlighter size={11} />
+                <span>Select text on page, then click here to refresh</span>
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Toggle Quick Actions */}
+      {session?.authenticated && !showQuickActions && (
+        <button
+          onClick={() => setShowQuickActions(true)}
+          className="flex items-center justify-center gap-1.5 w-full py-1.5 text-[10px] text-[var(--text-tertiary)] hover:text-[var(--accent)] bg-[var(--bg-hover)]/50 hover:bg-[var(--accent-subtle)]/30 border-b border-[var(--border)] transition-all"
+        >
+          <MoreHorizontal size={12} />
+          Show Quick Actions
+        </button>
+      )}
+
       <div className="flex border-b border-[var(--border)] px-2 gap-0.5">
         {(['page', 'bookmarks', 'highlights', 'collections'] as Tab[]).map((tab) => {
           const icons: Record<Tab, JSX.Element> = {
@@ -704,6 +987,32 @@ export function App() {
             </div>
 
             <div className="p-4 border-b border-[var(--border)]">
+              {/* Back to Quick Actions button when coming from quick annotate */}
+              {!showQuickActions && selectedText && (
+                <button
+                  onClick={() => {
+                    setShowQuickActions(true);
+                    setText('');
+                  }}
+                  className="flex items-center gap-1.5 text-[10px] text-[var(--text-tertiary)] hover:text-[var(--accent)] mb-2 transition-colors"
+                >
+                  <ArrowRight size={12} className="rotate-180" />
+                  Back to quick actions
+                </button>
+              )}
+              
+              {/* Show selected text context if annotating from selection */}
+              {text && fullSelectedText && text.includes(fullSelectedText.slice(0, 50)) && (
+                <div className="mb-3 p-2.5 bg-amber-400/10 border border-amber-400/20 rounded-lg">
+                  <div className="flex items-start gap-2">
+                    <Highlighter size={12} className="text-amber-500 mt-0.5 flex-shrink-0" />
+                    <p className="text-[11px] text-[var(--text-secondary)] line-clamp-3 italic">
+                      "{selectedText}"
+                    </p>
+                  </div>
+                </div>
+              )}
+              
               <textarea
                 value={text}
                 onChange={(e) => setText(e.target.value)}
