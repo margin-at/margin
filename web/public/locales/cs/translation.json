@@ -72,12 +72,20 @@
             "title": "Začněte psát pod čarou"
         },
         "protocol": {
-            "descriptionPre": "Margin je vystavěn na"
+            "descriptionPre": "Margin je vystavěn na",
+            "badge": "Decentralizováno",
+            "title": "Vaše data, vaše identita",
+            "point0": "Nevytvářejte si nový účet, přihlašte se přes Protokol AT",
+            "point1": "Všechna data jsou uložena ve Vámi zvoleném prostoru PDS",
+            "descriptionPost": ", otevřeném protokolu, na kterém stojí aplikace jako Bluesky. Vaše poznámky, výňatky a oblíbené položky (záložky) jsou bezpečně uloženy ve Vašem vlastním prostoru PDS, ne u jednoho poskytovatele."
         },
         "extension": {
             "features": {
                 "keyboard": {
                     "title": "Klávesové zkratky"
+                },
+                "sidePanel": {
+                    "title": "Boční panel"
                 }
             },
             "title": "Vaše sada anotačních nástrojů",
