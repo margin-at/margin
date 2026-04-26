@@ -56,13 +56,14 @@
         "editTitle": "Upravit složku",
         "newTitle": "Nová složka",
         "create": "Vytvořit složku",
-        "noneMessage": "Vytvořte si novou složku k organizaci Vašich vpisků a úryvků."
+        "noneMessage": "Vytvořte si novou složku k organizaci Vašich vpisků a úryvků.",
+        "deleteConfirm": "Smazat tuto složku?"
     },
     "about": {
         "footer": {
             "contact": "Kontakt",
-            "terms": "Smluvní podmínky",
-            "privacy": "Ochrana soukromí"
+            "terms": "Podmínky",
+            "privacy": "Soukromí"
         },
         "cta": {
             "viewGitHub": "GitHub",
@@ -78,6 +79,40 @@
                 "keyboard": {
                     "title": "Klávesové zkratky"
                 }
+            },
+            "title": "Vaše sada anotačních nástrojů",
+            "titleLine2": "přímo v prohlížeči",
+            "iosShortcut": "Zkratka iOS"
+        },
+        "nav": {
+            "getExtension": "Stáhnout rozšíření",
+            "install": "Nainstalovat"
+        },
+        "hero": {
+            "openSource": "Kompletně open source",
+            "headline": "Pište poznámky na okraj",
+            "headlineAccent": "celého internetu.",
+            "descriptionPre": "Margin je otevřená poznámková vrstva internetu. Podtrhávejte si, pište poznámky pro sebe nebo ostatní a ukládejte si stránky do oblíbených. Všechno decentralizovaně uložené na síti",
+            "atProtocol": "Protokolu AT",
+            "descriptionPost": ". Ne u jednoho poskytovatele.",
+            "getStarted": "Pustit se do toho",
+            "installFor": "Rozšíření pro {{browser}}"
+        },
+        "features": {
+            "annotations": {
+                "title": "Poznámky"
+            },
+            "highlights": {
+                "title": "Výňatky"
+            },
+            "bookmarks": {
+                "title": "Oblíbené"
+            },
+            "collections": {
+                "title": "Složky"
+            },
+            "tagsSearch": {
+                "title": "Štítky & Vyhledávání"
             }
         }
     },
@@ -154,7 +189,10 @@
     "login": {
         "termsLink": "Smluvní podmínky",
         "termsAnd": "a",
-        "privacyLink": "Zásady ochrany osobních údajů"
+        "privacyLink": "Zásady ochrany osobních údajů",
+        "signInWith": "Přihlašte se Vaším",
+        "createAccount": "Vytvořit nový účet",
+        "termsPrefix": "Přihlášením souhlasíte s"
     },
     "signUp": {
         "atProtocol": "Protokol AT",
@@ -225,5 +263,8 @@
         "report": "Nahlásit",
         "muteUser": "Ztišit @{{handle}}",
         "blockUser": "Zablokovat @{{handle}}"
+    },
+    "collectionDetail": {
+        "viewInSemble": "Zobrazit na Semble"
     }
 }
