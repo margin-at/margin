@@ -95,6 +95,7 @@ func NewIngester(database *db.DB, syncService *internal_sync.Service) *Ingester 
 	i.RegisterHandler(CollectionDocument, i.handleDocument)
 	i.RegisterHandler(xrpc.CollectionNote, i.handleNote)
 	i.RegisterHandler(xrpc.CollectionCommunityBookmark, i.handleCommunityBookmark)
+	i.RegisterHandler(xrpc.CollectionLichenBookmark, i.handleLichenBookmark)
 
 	return i
 }
@@ -331,6 +332,8 @@ func (i *Ingester) handleDelete(collection, uri string) {
 		i.db.DeleteNote(uri)
 	case xrpc.CollectionCommunityBookmark:
 		i.db.DeleteNote(uri)
+	case xrpc.CollectionLichenBookmark:
+		i.db.DeleteBookmark(uri)
 	}
 }
 
@@ -1301,4 +1304,36 @@ func (i *Ingester) handleDocument(event *FirehoseEvent) {
 			}
 		}
 	})
+}
+
+func (i *Ingester) handleLichenBookmark(event *FirehoseEvent) {
+	var record xrpc.LichenBookmark
+	if err := json.Unmarshal(event.Record, &record); err != nil {
+		return
+	}
+
+	source := xrpc.LichenWikiURLFromRef(record.WikiRef)
+	if source == "" {
+		return
+	}
+
+	uri := fmt.Sprintf("at://%s/%s/%s", event.Repo, event.Collection, event.Rkey)
+	createdAt, err := time.Parse(time.RFC3339, record.CreatedAt)
+	if err != nil {
+		createdAt = time.Now()
+	}
+
+	bookmark := &db.Bookmark{
+		URI:        uri,
+		AuthorDID:  event.Repo,
+		Source:     source,
+		SourceHash: db.HashURL(source),
+		CreatedAt:  createdAt,
+		IndexedAt:  time.Now(),
+	}
+	if err := i.db.CreateBookmark(bookmark); err != nil {
+		logger.Error("Failed to index Lichen bookmark: %v", err)
+	} else {
+		logger.Info("Indexed Lichen bookmark from %s: %s", event.Repo, source)
+	}
 }

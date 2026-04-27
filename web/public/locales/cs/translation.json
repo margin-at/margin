@@ -1,229 +1,230 @@
 {
-    "nav": {
-        "discover": "Objevuj",
-        "activity": "Notifikace",
-        "bookmarks": "Záložky",
-        "annotations": "Vpisky",
-        "highlights": "Úryvky",
-        "collections": "Složky",
-        "signIn": "Přihlásit se",
-        "logOut": "Odhlásit se",
-        "feed": "Feed",
-        "settings": "Nastavení",
-        "new": "Anotovat",
-        "themeLight": "Světlo",
-        "themeDark": "Tma",
-        "themeSystem": "Režim podle OS"
+  "nav": {
+    "discover": "Objevuj",
+    "activity": "Notifikace",
+    "bookmarks": "Záložky",
+    "annotations": "Vpisky",
+    "highlights": "Úryvky",
+    "collections": "Složky",
+    "signIn": "Přihlásit se",
+    "logOut": "Odhlásit se",
+    "feed": "Feed",
+    "settings": "Nastavení",
+    "new": "Anotovat",
+    "themeLight": "Světlo",
+    "themeDark": "Tma",
+    "themeSystem": "Režim podle OS"
+  },
+  "appTitle": "Margin",
+  "feed": {
+    "mine": "Pouze já",
+    "everyone": "Všichni",
+    "filters": {
+      "bookmarks": "Záložky",
+      "highlights": "Úryvky"
     },
-    "appTitle": "Margin",
-    "feed": {
-        "mine": "Pouze já",
-        "everyone": "Všichni",
-        "filters": {
-            "bookmarks": "Záložky",
-            "highlights": "Úryvky"
-        },
-        "itemsWithTag": "Položky se štítkem:",
-        "tabs": {
-            "recent": "Nedávné",
-            "popular": "Populární",
-            "shelved": "Málo diskutované"
-        },
-        "welcome": "Vítejte na Marginu",
-        "getStarted": "Pustit se do toho",
-        "clearFilter": "Odepnout filtr",
-        "loading": "Načítání…",
-        "nothingHereYet": "Prozatím tady nic není"
+    "itemsWithTag": "Položky se štítkem:",
+    "tabs": {
+      "recent": "Nedávné",
+      "popular": "Populární",
+      "shelved": "Málo diskutované"
     },
-    "collections": {
-        "title": "Složky",
-        "namePlaceholderEdit": "Název složky",
-        "nameLabel": "Název",
-        "iconLabel": "Ikona",
-        "iconsTab": "Ikony",
-        "emojisTab": "Emotikony",
-        "selectedIcon": "Vybráno:",
-        "descriptionLabel": "Popisek (volitelně)",
-        "descriptionPlaceholder": "K čemu by měla tato složka sloužit?",
-        "descriptionPlaceholderEdit": "O čem by měla být tato složka?",
-        "cancel": "Zrušit",
-        "creating": "Vytvářím…",
-        "save": "Uložit změny",
-        "saving": "Ukládám…",
-        "subtitle": "Uspořádejte si vpisky a úryvky",
-        "namePlaceholder": "Moje složka",
-        "createButton": "Vytvořit složku",
-        "editTitle": "Upravit složku",
-        "newTitle": "Nová složka",
-        "create": "Vytvořit složku",
-        "noneMessage": "Vytvořte si novou složku k organizaci Vašich vpisků a úryvků."
+    "welcome": "Vítejte na Marginu",
+    "getStarted": "Pustit se do toho",
+    "clearFilter": "Odepnout filtr",
+    "loading": "Načítání…",
+    "nothingHereYet": "Prozatím tady nic není"
+  },
+  "collections": {
+    "title": "Složky",
+    "namePlaceholderEdit": "Název složky",
+    "nameLabel": "Název",
+    "iconLabel": "Ikona",
+    "iconsTab": "Ikony",
+    "emojisTab": "Emotikony",
+    "selectedIcon": "Vybráno:",
+    "descriptionLabel": "Popisek (volitelně)",
+    "descriptionPlaceholder": "K čemu by měla tato složka sloužit?",
+    "descriptionPlaceholderEdit": "O čem by měla být tato složka?",
+    "cancel": "Zrušit",
+    "creating": "Vytvářím…",
+    "save": "Uložit změny",
+    "saving": "Ukládám…",
+    "subtitle": "Uspořádejte si vpisky a úryvky",
+    "namePlaceholder": "Moje složka",
+    "createButton": "Vytvořit složku",
+    "editTitle": "Upravit složku",
+    "newTitle": "Nová složka",
+    "create": "Vytvořit složku",
+    "noneMessage": "Vytvořte si novou složku k organizaci Vašich vpisků a úryvků."
+  },
+  "about": {
+    "footer": {
+      "contact": "Kontakt",
+      "terms": "Smluvní podmínky",
+      "privacy": "Ochrana soukromí"
     },
-    "about": {
-        "footer": {
-            "contact": "Kontakt",
-            "terms": "Smluvní podmínky",
-            "privacy": "Ochrana soukromí"
-        },
-        "cta": {
-            "viewGitHub": "GitHub",
-            "viewTangled": "Tangled",
-            "signIn": "Přihlásit se",
-            "title": "Začněte psát pod čarou"
-        },
-        "protocol": {
-            "descriptionPre": "Margin je vystavěn na"
-        },
-        "extension": {
-            "features": {
-                "keyboard": {
-                    "title": "Klávesové zkratky"
-                }
-            }
+    "cta": {
+      "viewGitHub": "GitHub",
+      "viewTangled": "Tangled",
+      "signIn": "Přihlásit se",
+      "title": "Začněte psát pod čarou"
+    },
+    "protocol": {
+      "descriptionPre": "Margin je vystavěn na"
+    },
+    "extension": {
+      "features": {
+        "keyboard": {
+          "title": "Klávesové zkratky"
         }
-    },
-    "profile": {
-        "unblock_action": "Zablokovat",
-        "unmute_action": "Ztišit",
-        "emptyCollectionsOwn": "Prozatím jste si nevytvořili žádné složky.",
-        "emptyCollectionsOther": "Žádné složky",
-        "show": "Zobrazit",
-        "hide": "Skrýt"
-    },
-    "pageTitles": {
-        "discover": "Objevuj — Margin",
-        "home": "Úvod — Margin",
-        "bookmarks": "Záložky — Margin",
-        "settings": "Nastavení — Margin",
-        "collections": "Složky — Margin",
-        "admin": "Administrace — Margin",
-        "search": "Vyhledávání — Margin",
-        "notifications": "Notifikace — Margin",
-        "new": "Nový vpisek — Margin",
-        "highlights": "Úryvky — Margin",
-        "annotations": "Vpisky — Margin"
-    },
-    "sidebar": {
-        "downloadForFirefox": "Stáhnout pro Firefox",
-        "downloadForEdge": "Stáhnout pro Edge",
-        "downloadForChrome": "Stáhnout pro Chrome",
-        "trending": "Populární",
-        "searchPlaceholder": "Vyhledávejte napříč uživateli, tagy, URL…",
-        "getExtension": "Stáhnout rozšíření",
-        "nothingTrending": "Aktuálně není nic moc v kurzu."
-    },
-    "mobileNav": {
-        "iosShortcut": "Zkratka iOS"
-    },
-    "discover": {
-        "tabs": {
-            "new": "Nové",
-            "popular": "Populární",
-            "forYou": "Výběr"
-        },
-        "comingSoon": "Již brzy",
-        "forYouNotAvailable": "Personalizovaná doporučení nejsou na tomto serveru prozatím k dispozici.",
-        "loadMore": "Načíst další",
-        "noDocumentsYet": "Prozatím tady nejsou žádné dokumenty. Zkuste to znova později."
-    },
-    "search": {
-        "noResults": "Nic nenalezeno",
-        "emptyTitle": "Vyhledávejte ve Vaší knihovně",
-        "filters": {
-            "all": "Všechno"
-        },
-        "loadMore": "Načíst další"
-    },
-    "notifications": {
-        "inReplyTo": "v odpovědi na",
-        "aReply": "odpověď",
-        "anAnnotation": "vpisek",
-        "likedAnnotation": "se líbí Váš vpisek",
-        "likedHighlight": "se líbí Váš úryvek",
-        "likedBookmark": "se líbí Vaše záložka",
-        "likedReply": "se líbí Vaše odpověď",
-        "likedPost": "se líbí Váš příspěvek",
-        "repliedToReply": "reagoval*a na Vaši odpověď",
-        "repliedToAnnotation": "odpověděl*a na Váš vpisek",
-        "mentionedInAnnotation": "Vás zmínil*a ve vpisku",
-        "followedYou": "Vás začal*a sledovat",
-        "title": "Události",
-        "noActivity": "Prozatím tady nic není",
-        "highlightedPage": "si vytáhnul*a úryvek z Vaší stránky",
-        "noActivityMessage": "Reakce na Váš obsah se objeví tady."
-    },
-    "login": {
-        "termsLink": "Smluvní podmínky",
-        "termsAnd": "a",
-        "privacyLink": "Zásady ochrany osobních údajů"
-    },
-    "signUp": {
-        "atProtocol": "Protokol AT",
-        "pdsAddressLabel": "Adresa PDS",
-        "pdsAddressPlaceholder": "pds.vasedomena.cz",
-        "connecting": "Připojuji…",
-        "back": "Zpátky",
-        "continue": "Pokračovat",
-        "invite": "Pozvat",
-        "providerError": "K tomuto poskytovateli se teď nelze připojit. Zkuste to znova.",
-        "customPdsError": "K tomuto PDS se teď nelze připojit. Zkontrolujte, zda zadáváte správnou adresu.",
-        "providers": {
-            "margin": {
-                "name": "Margin"
-            },
-            "customPds": {
-                "description": "PDS už máte? Pokud ano, zadejte jeho adresu.",
-                "name": "Použít vlastní PDS"
-            },
-            "bluesky": {
-                "name": "Bluesky",
-                "description": "Největší a nejrozšířenější komunita"
-            },
-            "blacksky": {
-                "name": "Blacksky"
-            },
-            "northsky": {
-                "description": "Kanadské družstvo vlastněné a provozované zaměstnanci",
-                "name": "Northsky"
-            },
-            "eurosky": {
-                "description": "Eurosky je Vaším kouskem Evropy v Atmosféře"
-            },
-            "selfhostedSocial": {
-                "name": "selfhosted.social",
-                "description": "Prostor pro všechny umělce, kutily a objevitele"
-            },
-            "tophhie": {
-                "name": "Tophhie",
-                "description": "Komunita plná přátelské atmosféry"
-            }
-        }
-    },
-    "composer": {
-        "newHighlight": "Nový úryvek",
-        "newAnnotation": "Nový vpisek",
-        "newNote": "Nová poznámka",
-        "saveHighlight": "Uložit úryvek",
-        "postAnnotation": "Vložit vpisek",
-        "postNote": "Vložit poznámku",
-        "removeQuote": "Odebrat citaci",
-        "labels": {
-            "sexual": "Sexualita",
-            "nudity": "Nahota",
-            "violence": "Násilí",
-            "gore": "Gore",
-            "spam": "Spam",
-            "misleading": "Manipulace"
-        },
-        "contentWarning": "Upozornění na obsah",
-        "cancel": "Zrušit"
-    },
-    "card": {
-        "communityBookmark": "Komunitní záložka",
-        "untitledBookmark": "Nepojmenovaná záložka",
-        "editTitle": "Upravit",
-        "deleteTitle": "Smazat",
-        "report": "Nahlásit",
-        "muteUser": "Ztišit @{{handle}}",
-        "blockUser": "Zablokovat @{{handle}}"
+      }
     }
+  },
+  "profile": {
+    "unblock_action": "Zablokovat",
+    "unmute_action": "Ztišit",
+    "emptyCollectionsOwn": "Prozatím jste si nevytvořili žádné složky.",
+    "emptyCollectionsOther": "Žádné složky",
+    "show": "Zobrazit",
+    "hide": "Skrýt"
+  },
+  "pageTitles": {
+    "discover": "Objevuj — Margin",
+    "home": "Úvod — Margin",
+    "bookmarks": "Záložky — Margin",
+    "settings": "Nastavení — Margin",
+    "collections": "Složky — Margin",
+    "admin": "Administrace — Margin",
+    "search": "Vyhledávání — Margin",
+    "notifications": "Notifikace — Margin",
+    "new": "Nový vpisek — Margin",
+    "highlights": "Úryvky — Margin",
+    "annotations": "Vpisky — Margin"
+  },
+  "sidebar": {
+    "downloadForFirefox": "Stáhnout pro Firefox",
+    "downloadForEdge": "Stáhnout pro Edge",
+    "downloadForChrome": "Stáhnout pro Chrome",
+    "trending": "Populární",
+    "searchPlaceholder": "Vyhledávejte napříč uživateli, tagy, URL…",
+    "getExtension": "Stáhnout rozšíření",
+    "nothingTrending": "Aktuálně není nic moc v kurzu."
+  },
+  "mobileNav": {
+    "iosShortcut": "Zkratka iOS"
+  },
+  "discover": {
+    "tabs": {
+      "new": "Nové",
+      "popular": "Populární",
+      "forYou": "Výběr"
+    },
+    "comingSoon": "Již brzy",
+    "forYouNotAvailable": "Personalizovaná doporučení nejsou na tomto serveru prozatím k dispozici.",
+    "loadMore": "Načíst další",
+    "noDocumentsYet": "Prozatím tady nejsou žádné dokumenty. Zkuste to znova později."
+  },
+  "search": {
+    "noResults": "Nic nenalezeno",
+    "emptyTitle": "Vyhledávejte ve Vaší knihovně",
+    "filters": {
+      "all": "Všechno"
+    },
+    "loadMore": "Načíst další"
+  },
+  "notifications": {
+    "inReplyTo": "v odpovědi na",
+    "aReply": "odpověď",
+    "anAnnotation": "vpisek",
+    "likedAnnotation": "se líbí Váš vpisek",
+    "likedHighlight": "se líbí Váš úryvek",
+    "likedBookmark": "se líbí Vaše záložka",
+    "likedReply": "se líbí Vaše odpověď",
+    "likedPost": "se líbí Váš příspěvek",
+    "repliedToReply": "reagoval*a na Vaši odpověď",
+    "repliedToAnnotation": "odpověděl*a na Váš vpisek",
+    "mentionedInAnnotation": "Vás zmínil*a ve vpisku",
+    "followedYou": "Vás začal*a sledovat",
+    "title": "Události",
+    "noActivity": "Prozatím tady nic není",
+    "highlightedPage": "si vytáhnul*a úryvek z Vaší stránky",
+    "noActivityMessage": "Reakce na Váš obsah se objeví tady."
+  },
+  "login": {
+    "termsLink": "Smluvní podmínky",
+    "termsAnd": "a",
+    "privacyLink": "Zásady ochrany osobních údajů"
+  },
+  "signUp": {
+    "atProtocol": "Protokol AT",
+    "pdsAddressLabel": "Adresa PDS",
+    "pdsAddressPlaceholder": "pds.vasedomena.cz",
+    "connecting": "Připojuji…",
+    "back": "Zpátky",
+    "continue": "Pokračovat",
+    "invite": "Pozvat",
+    "providerError": "K tomuto poskytovateli se teď nelze připojit. Zkuste to znova.",
+    "customPdsError": "K tomuto PDS se teď nelze připojit. Zkontrolujte, zda zadáváte správnou adresu.",
+    "providers": {
+      "margin": {
+        "name": "Margin"
+      },
+      "customPds": {
+        "description": "PDS už máte? Pokud ano, zadejte jeho adresu.",
+        "name": "Použít vlastní PDS"
+      },
+      "bluesky": {
+        "name": "Bluesky",
+        "description": "Největší a nejrozšířenější komunita"
+      },
+      "blacksky": {
+        "name": "Blacksky"
+      },
+      "northsky": {
+        "description": "Kanadské družstvo vlastněné a provozované zaměstnanci",
+        "name": "Northsky"
+      },
+      "eurosky": {
+        "description": "Eurosky je Vaším kouskem Evropy v Atmosféře"
+      },
+      "selfhostedSocial": {
+        "name": "selfhosted.social",
+        "description": "Prostor pro všechny umělce, kutily a objevitele"
+      },
+      "tophhie": {
+        "name": "Tophhie",
+        "description": "Komunita plná přátelské atmosféry"
+      }
+    }
+  },
+  "composer": {
+    "newHighlight": "Nový úryvek",
+    "newAnnotation": "Nový vpisek",
+    "newNote": "Nová poznámka",
+    "saveHighlight": "Uložit úryvek",
+    "postAnnotation": "Vložit vpisek",
+    "postNote": "Vložit poznámku",
+    "removeQuote": "Odebrat citaci",
+    "labels": {
+      "sexual": "Sexualita",
+      "nudity": "Nahota",
+      "violence": "Násilí",
+      "gore": "Gore",
+      "spam": "Spam",
+      "misleading": "Manipulace"
+    },
+    "contentWarning": "Upozornění na obsah",
+    "cancel": "Zrušit"
+  },
+  "card": {
+    "communityBookmark": "Komunitní záložka",
+    "lichenBookmark": "Záložka Lichen",
+    "untitledBookmark": "Nepojmenovaná záložka",
+    "editTitle": "Upravit",
+    "deleteTitle": "Smazat",
+    "report": "Nahlásit",
+    "muteUser": "Ztišit @{{handle}}",
+    "blockUser": "Zablokovat @{{handle}}"
+  }
 }

@@ -178,6 +178,8 @@ export default function Card({
   const isSemble =
     item.uri?.includes("network.cosmik") || item.uri?.includes("semble");
 
+  const isLichen = item.uri?.includes("wiki.lichen.bookmark");
+
   const isCommunityBookmark = item.uri?.includes(
     "community.lexicon.bookmarks.bookmark",
   );
@@ -504,6 +506,21 @@ export default function Card({
                   </span>
                 );
               })()}
+
+            {isLichen && (
+              <span className="relative inline-flex items-center">
+                <span className="text-surface-300 dark:text-surface-600">
+                  ·
+                </span>
+                <span className="group/lichen relative inline-flex items-center ml-1">
+                  <img src="/lichen-logo.svg" alt="Lichen" className="h-3.5" />
+                  <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1 rounded-lg bg-surface-800 dark:bg-surface-700 text-white text-[11px] font-medium whitespace-nowrap opacity-0 group-hover/lichen:opacity-100 transition-opacity shadow-lg">
+                    {t("card.lichenBookmark")}
+                    <span className="absolute top-full left-1/2 -translate-x-1/2 -mt-px border-4 border-transparent border-t-surface-800 dark:border-t-surface-700" />
+                  </span>
+                </span>
+              </span>
+            )}
 
             {isCommunityBookmark && (
               <span className="relative inline-flex items-center">

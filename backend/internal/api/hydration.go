@@ -822,7 +822,8 @@ func hydrateCollectionItemsWithData(database *db.DB, items []db.CollectionItem, 
 			annotationURIs = append(annotationURIs, uri)
 		case strings.Contains(uri, "at.margin.highlight"):
 			highlightURIs = append(highlightURIs, uri)
-		case strings.Contains(uri, "at.margin.bookmark"):
+		case strings.Contains(uri, "at.margin.bookmark"),
+			strings.Contains(uri, "wiki.lichen.bookmark"):
 			bookmarkURIs = append(bookmarkURIs, uri)
 		case strings.Contains(uri, "network.cosmik.card"):
 			annotationURIs = append(annotationURIs, uri)

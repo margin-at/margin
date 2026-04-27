@@ -41,6 +41,7 @@ func (s *Service) PerformSync(ctx context.Context, did string, getClient func(co
 		xrpc.CollectionSembleCard,
 		xrpc.CollectionSembleCollection,
 		xrpc.CollectionSembleCollectionLink,
+		xrpc.CollectionLichenBookmark,
 		xrpc.CollectionDocument,
 	}
 
@@ -208,6 +209,9 @@ func (s *Service) PerformSync(ctx context.Context, did string, getClient func(co
 				} else {
 					err = e
 				}
+			case xrpc.CollectionLichenBookmark:
+				localURIs, err = s.db.GetBookmarkURIs(did)
+				localURIs = filterURIsByCollection(localURIs, xrpc.CollectionLichenBookmark)
 			}
 
 			if err == nil {
@@ -239,6 +243,8 @@ func (s *Service) PerformSync(ctx context.Context, did string, getClient func(co
 							_ = s.db.DeleteAPIKeyByURI(uri)
 						case xrpc.CollectionPreferences:
 							_ = s.db.DeletePreferences(uri)
+						case xrpc.CollectionLichenBookmark:
+							_ = s.db.DeleteBookmark(uri)
 						}
 						deletedCount++
 					}
@@ -627,6 +633,27 @@ func (s *Service) upsertRecord(did, collection, uri, cid string, value json.RawM
 			Position:      0,
 			CreatedAt:     createdAt,
 			IndexedAt:     time.Now(),
+		})
+
+	case xrpc.CollectionLichenBookmark:
+		var record xrpc.LichenBookmark
+		if err := json.Unmarshal(value, &record); err != nil {
+			return err
+		}
+		source := xrpc.LichenWikiURLFromRef(record.WikiRef)
+		if source == "" {
+			return nil
+		}
+		createdAt, _ := time.Parse(time.RFC3339, record.CreatedAt)
+
+		return s.db.CreateBookmark(&db.Bookmark{
+			URI:        uri,
+			AuthorDID:  did,
+			Source:     source,
+			SourceHash: db.HashURL(source),
+			CreatedAt:  createdAt,
+			IndexedAt:  time.Now(),
+			CID:        cidPtr,
 		})
 
 	case xrpc.CollectionAPIKey:
