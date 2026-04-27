@@ -310,7 +310,10 @@ export function App() {
         setTags([]);
         loadAnnotations();
       } else {
-        alert('Failed to post annotation');
+        const errorMessage = result.error
+          ? `Failed to post annotation: ${result.error}`
+          : 'Failed to post annotation';
+        alert(errorMessage);
       }
     } catch (error) {
       console.error('Post error:', error);
@@ -333,7 +336,10 @@ export function App() {
         setBookmarkTags([]);
         setShowBookmarkTags(false);
       } else {
-        alert('Failed to bookmark page');
+        const errorMessage = result.error
+          ? `Failed to bookmark page: ${result.error}`
+          : 'Failed to bookmark page';
+        alert(errorMessage);
       }
     } catch (error) {
       console.error('Bookmark error:', error);
