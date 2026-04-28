@@ -1,10 +1,11 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import {
   Copy,
   ExternalLink,
   Check,
   Share2,
   MoreHorizontal,
+  X,
 } from "lucide-react";
 import {
   AturiIcon,
@@ -43,13 +44,50 @@ export default function ShareMenu({
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [copied, setCopied] = useState<string | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const sheetRef = useRef<HTMLDivElement>(null);
+  const dragStartY = useRef(0);
+  const dragCurrentY = useRef(0);
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    dragStartY.current = e.touches[0].clientY;
+    if (sheetRef.current) sheetRef.current.style.transition = "none";
+  }, []);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    const delta = e.touches[0].clientY - dragStartY.current;
+    dragCurrentY.current = delta;
+    if (delta > 0 && sheetRef.current) {
+      sheetRef.current.style.transform = `translateY(${delta}px)`;
+    }
+  }, []);
+
+  const handleTouchEnd = useCallback(() => {
+    if (sheetRef.current) {
+      sheetRef.current.style.transition = "transform 0.3s ease";
+      if (dragCurrentY.current > 100) {
+        sheetRef.current.style.transform = "translateY(100%)";
+        setTimeout(() => setIsOpen(false), 300);
+      } else {
+        sheetRef.current.style.transform = "translateY(0)";
+      }
+    }
+    dragCurrentY.current = 0;
+  }, []);
   const [menuPosition, setMenuPosition] = useState({
     top: 0,
     left: 0,
     alignRight: false,
   });
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 640);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   const getShareUrl = () => {
     if (customUrl) return customUrl;
@@ -138,7 +176,7 @@ export default function ShareMenu({
         setIsOpen(false);
       }
     };
-    if (isOpen) {
+    if (isOpen && !isMobile) {
       document.addEventListener("mousedown", handleClickOutside);
       window.addEventListener("scroll", () => setIsOpen(false), true);
       window.addEventListener("resize", () => setIsOpen(false));
@@ -148,21 +186,27 @@ export default function ShareMenu({
       window.removeEventListener("scroll", () => setIsOpen(false), true);
       window.removeEventListener("resize", () => setIsOpen(false));
     };
-  }, [isOpen]);
+  }, [isOpen, isMobile]);
 
   const calculatePosition = () => {
     if (!buttonRef.current) return;
     const rect = buttonRef.current.getBoundingClientRect();
-    const menuWidth = 240;
+    const menuWidth = 260;
+    const padding = 8;
 
     let top = rect.bottom + 8;
     let left = rect.left;
     let alignRight = false;
 
-    if (left + menuWidth > window.innerWidth - 16) {
+    if (left + menuWidth > window.innerWidth - padding) {
       left = rect.right - menuWidth;
       alignRight = true;
     }
+
+    left = Math.max(
+      padding,
+      Math.min(left, window.innerWidth - menuWidth - padding),
+    );
 
     if (top + 300 > window.innerHeight) {
       top = rect.top - 8;
@@ -172,7 +216,7 @@ export default function ShareMenu({
   };
 
   const toggleMenu = () => {
-    if (!isOpen) calculatePosition();
+    if (!isOpen && !isMobile) calculatePosition();
     setIsOpen(!isOpen);
   };
 
@@ -227,6 +271,79 @@ export default function ShareMenu({
     { name: "Deer", domain: "deer.social", icon: <DeerIcon size={18} /> },
   ];
 
+  const menuContent = (
+    <div className="flex flex-col gap-0.5">
+      {isSemble ? (
+        <>
+          <div className="px-3 py-2 text-[11px] font-bold text-surface-400 dark:text-surface-500 uppercase tracking-wider flex items-center gap-1.5 select-none">
+            <SembleLogo />
+            {t("shareMenu.sembleIntegration")}
+          </div>
+          {renderMenuItem(
+            t("shareMenu.openOnSemble"),
+            <ExternalLink size={16} />,
+            () => window.open(sembleUrl, "_blank"),
+            false,
+            true,
+          )}
+          {renderMenuItem(
+            t("shareMenu.copySembleLink"),
+            <Copy size={16} />,
+            () => handleCopy(sembleUrl, "semble"),
+            copied === "semble",
+          )}
+          <div className="h-px bg-surface-100 dark:bg-surface-800 my-1 mx-2" />
+        </>
+      ) : null}
+
+      {renderMenuItem(
+        t("shareMenu.copyLink"),
+        <Copy size={16} />,
+        () => handleCopy(shareUrl, "link"),
+        copied === "link",
+      )}
+
+      <div className="px-3 pt-3 pb-1 text-[11px] font-bold text-surface-400 dark:text-surface-500 uppercase tracking-wider select-none">
+        {t("shareMenu.shareViaApp")}
+      </div>
+
+      <div className="grid grid-cols-5 gap-1 px-1 mb-1">
+        {shareForks.map((fork) => (
+          <button
+            key={fork.domain}
+            onClick={() => handleShareToFork(fork.domain)}
+            className="flex items-center justify-center p-2 rounded-lg hover:bg-surface-50 dark:hover:bg-surface-800 hover:scale-105 transition-all text-surface-400 dark:text-surface-500 hover:text-surface-900 dark:hover:text-white"
+            title={`Share to ${fork.name}`}
+          >
+            {fork.icon}
+          </button>
+        ))}
+      </div>
+
+      <div className="h-px bg-surface-100 dark:bg-surface-800 my-1 mx-2" />
+
+      {renderMenuItem(
+        t("shareMenu.copyUniversalLink"),
+        <AturiIcon size={16} />,
+        () => handleCopy(uri.replace("at://", "https://aturi.to/"), "aturi"),
+        copied === "aturi",
+      )}
+
+      {typeof navigator !== "undefined" &&
+        navigator.share &&
+        renderMenuItem(
+          t("shareMenu.moreOptions"),
+          <MoreHorizontal size={16} />,
+          () => {
+            navigator
+              .share({ title: "Margin", text, url: shareUrl })
+              .catch(() => {});
+            setIsOpen(false);
+          },
+        )}
+    </div>
+  );
+
   return (
     <div className="relative inline-block">
       <button
@@ -238,87 +355,53 @@ export default function ShareMenu({
         <Share2 size={16} />
       </button>
 
-      {isOpen && (
+      {isOpen && isMobile && (
+        <>
+          <div
+            className="fixed inset-0 bg-black/40 z-[999]"
+            onClick={() => setIsOpen(false)}
+          />
+          <div className="fixed bottom-0 left-0 right-0 z-[1000] animate-slide-up">
+            <div
+              ref={sheetRef}
+              className="mx-2 mb-2 bg-white dark:bg-surface-900 rounded-2xl shadow-xl border border-surface-200 dark:border-surface-700 overflow-hidden"
+              style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+            >
+              <div
+                className="flex justify-center pt-3 pb-1 cursor-grab active:cursor-grabbing touch-none"
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+              >
+                <div className="w-8 h-1 bg-surface-200 dark:bg-surface-700 rounded-full" />
+              </div>
+              <div className="flex items-center justify-between px-4 pt-1 pb-2">
+                <span className="text-sm font-semibold text-surface-900 dark:text-white">
+                  {t("shareMenu.share", { defaultValue: "Share" })}
+                </span>
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="p-1 rounded-lg text-surface-400 hover:text-surface-600 dark:hover:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+              <div className="px-2 pb-2">{menuContent}</div>
+            </div>
+          </div>
+        </>
+      )}
+      {isOpen && !isMobile && (
         <div
           ref={menuRef}
-          className="fixed z-[1000] w-[260px] bg-white dark:bg-surface-900 rounded-xl shadow-xl ring-1 ring-black/5 dark:ring-white/5 p-1.5 animate-in fade-in zoom-in-95 duration-150 origin-top-left"
+          className="fixed z-[1000] w-[260px] bg-white dark:bg-surface-900 rounded-xl shadow-xl ring-1 ring-black/5 dark:ring-white/5 p-1.5 animate-in fade-in zoom-in-95 duration-150"
           style={{
             top: menuPosition.top,
             left: menuPosition.left,
             transformOrigin: menuPosition.alignRight ? "top right" : "top left",
           }}
         >
-          <div className="flex flex-col gap-0.5">
-            {isSemble ? (
-              <>
-                <div className="px-3 py-2 text-[11px] font-bold text-surface-400 dark:text-surface-500 uppercase tracking-wider flex items-center gap-1.5 select-none">
-                  <SembleLogo />
-                  {t("shareMenu.sembleIntegration")}
-                </div>
-                {renderMenuItem(
-                  t("shareMenu.openOnSemble"),
-                  <ExternalLink size={16} />,
-                  () => window.open(sembleUrl, "_blank"),
-                  false,
-                  true,
-                )}
-                {renderMenuItem(
-                  t("shareMenu.copySembleLink"),
-                  <Copy size={16} />,
-                  () => handleCopy(sembleUrl, "semble"),
-                  copied === "semble",
-                )}
-                <div className="h-px bg-surface-100 dark:bg-surface-800 my-1 mx-2" />
-              </>
-            ) : null}
-
-            {renderMenuItem(
-              t("shareMenu.copyLink"),
-              <Copy size={16} />,
-              () => handleCopy(shareUrl, "link"),
-              copied === "link",
-            )}
-
-            <div className="px-3 pt-3 pb-1 text-[11px] font-bold text-surface-400 dark:text-surface-500 uppercase tracking-wider select-none">
-              {t("shareMenu.shareViaApp")}
-            </div>
-
-            <div className="grid grid-cols-5 gap-1 px-1 mb-1">
-              {shareForks.map((fork) => (
-                <button
-                  key={fork.domain}
-                  onClick={() => handleShareToFork(fork.domain)}
-                  className="flex items-center justify-center p-2 rounded-lg hover:bg-surface-50 dark:hover:bg-surface-800 hover:scale-105 transition-all text-surface-400 dark:text-surface-500 hover:text-surface-900 dark:hover:text-white"
-                  title={`Share to ${fork.name}`}
-                >
-                  {fork.icon}
-                </button>
-              ))}
-            </div>
-
-            <div className="h-px bg-surface-100 dark:bg-surface-800 my-1 mx-2" />
-
-            {renderMenuItem(
-              t("shareMenu.copyUniversalLink"),
-              <AturiIcon size={16} />,
-              () =>
-                handleCopy(uri.replace("at://", "https://aturi.to/"), "aturi"),
-              copied === "aturi",
-            )}
-
-            {typeof navigator !== "undefined" &&
-              navigator.share &&
-              renderMenuItem(
-                t("shareMenu.moreOptions"),
-                <MoreHorizontal size={16} />,
-                () => {
-                  navigator
-                    .share({ title: "Margin", text, url: shareUrl })
-                    .catch(() => {});
-                  setIsOpen(false);
-                },
-              )}
-          </div>
+          {menuContent}
         </div>
       )}
     </div>

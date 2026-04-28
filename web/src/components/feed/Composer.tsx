@@ -175,8 +175,8 @@ export default function Composer({
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <h3 className="flex items-center gap-2 text-lg font-bold text-surface-900 dark:text-white">
+      <div className="flex items-start justify-between gap-2">
+        <h3 className="flex items-center gap-2 text-lg font-bold text-surface-900 dark:text-white shrink-0">
           <ModeIcon
             size={18}
             className={
@@ -188,8 +188,14 @@ export default function Composer({
           {modeCopy.title}
         </h3>
         {url && (
-          <div className="text-xs text-surface-400 dark:text-surface-500 max-w-[200px] truncate">
-            {url}
+          <div className="text-xs text-surface-400 dark:text-surface-500 truncate min-w-0 pt-1 text-right">
+            {(() => {
+              try {
+                return new URL(url).hostname.replace(/^www\./, "");
+              } catch {
+                return url;
+              }
+            })()}
           </div>
         )}
       </div>
@@ -309,7 +315,7 @@ export default function Composer({
         )}
       </div>
 
-      <div className="flex items-center justify-between pt-2">
+      <div className="flex items-center justify-between pt-2 gap-2">
         <span
           className={
             text.length > 2900
@@ -319,7 +325,7 @@ export default function Composer({
         >
           {text.length}/3000
         </span>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           {onCancel && (
             <button
               type="button"

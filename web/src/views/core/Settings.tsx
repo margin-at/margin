@@ -225,8 +225,8 @@ export default function Settings() {
             ))}
           </div>
 
-          <div className="mt-6 flex items-center justify-between">
-            <div>
+          <div className="mt-6 flex items-center justify-between gap-4">
+            <div className="min-w-0 flex-1">
               <h3 className="text-sm font-medium text-surface-900 dark:text-white">
                 {t("settings.appearance.disableExternalLinkWarning")}
               </h3>
@@ -237,11 +237,12 @@ export default function Settings() {
             <Switch
               checked={preferences.disableExternalLinkWarning}
               onCheckedChange={setDisableExternalLinkWarning}
+              className="shrink-0"
             />
           </div>
 
-          <div className="mt-6 flex items-center justify-between">
-            <div>
+          <div className="mt-6 flex items-center justify-between gap-4">
+            <div className="min-w-0 flex-1">
               <h3 className="text-sm font-medium text-surface-900 dark:text-white">
                 {t("settings.appearance.communityBookmarks")}
               </h3>
@@ -252,6 +253,7 @@ export default function Settings() {
             <Switch
               checked={preferences.enableCommunityBookmarks}
               onCheckedChange={setEnableCommunityBookmarks}
+              className="shrink-0"
             />
           </div>
         </section>
@@ -685,9 +687,9 @@ export default function Settings() {
                             return (
                               <div
                                 key={label}
-                                className="flex items-center justify-between py-1.5"
+                                className="flex items-center justify-between gap-2 py-1.5"
                               >
-                                <span className="text-sm text-surface-600 dark:text-surface-400">
+                                <span className="text-sm text-surface-600 dark:text-surface-400 min-w-0 flex-1">
                                   {t(`card.labelDescriptions.${label}`)}
                                 </span>
                                 <div className="flex gap-1">

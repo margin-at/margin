@@ -149,57 +149,57 @@ export default function Feed({
           </div>
         )}
         {showTabs && (
-          <div className="flex items-center gap-1.5 flex-wrap">
-            {filters.map((f) => {
-              const isActive =
-                f.id === "all" ? !activeFilter : activeFilter === f.id;
-              return (
-                <button
-                  key={f.id}
-                  onClick={() => handleFilterChange(f.id)}
-                  className={clsx(
-                    "inline-flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-full border transition-all",
-                    isActive
-                      ? "bg-primary-600 dark:bg-primary-500 text-white border-transparent shadow-sm"
-                      : "bg-white dark:bg-surface-900 text-surface-500 dark:text-surface-400 border-surface-200 dark:border-surface-700 hover:border-primary-300 dark:hover:border-primary-700 hover:text-primary-600 dark:hover:text-primary-400",
-                  )}
-                >
-                  {f.icon && <f.icon size={12} />}
-                  {f.label}
-                </button>
-              );
-            })}
-            <div className="ml-auto">
-              <LayoutToggle className="hidden sm:inline-flex" />
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar flex-1 pb-0.5">
+              {filters.map((f) => {
+                const isActive =
+                  f.id === "all" ? !activeFilter : activeFilter === f.id;
+                return (
+                  <button
+                    key={f.id}
+                    onClick={() => handleFilterChange(f.id)}
+                    className={clsx(
+                      "inline-flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-full border transition-all shrink-0",
+                      isActive
+                        ? "bg-primary-600 dark:bg-primary-500 text-white border-transparent shadow-sm"
+                        : "bg-white dark:bg-surface-900 text-surface-500 dark:text-surface-400 border-surface-200 dark:border-surface-700 hover:border-primary-300 dark:hover:border-primary-700 hover:text-primary-600 dark:hover:text-primary-400",
+                    )}
+                  >
+                    {f.icon && <f.icon size={12} />}
+                    {f.label}
+                  </button>
+                );
+              })}
             </div>
+            <LayoutToggle className="hidden sm:inline-flex shrink-0" />
           </div>
         )}
         {!showTabs && user && (
-          <div className="flex items-center gap-1.5">
-            {[
-              { id: "everyone", label: t("feed.everyone"), icon: Users },
-              { id: "mine", label: t("feed.mine"), icon: User },
-            ].map((f) => {
-              const isActive = f.id === "mine" ? mineOnly : !mineOnly;
-              return (
-                <button
-                  key={f.id}
-                  onClick={() => setMineOnly(f.id === "mine")}
-                  className={clsx(
-                    "inline-flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-full border transition-all",
-                    isActive
-                      ? "bg-primary-600 dark:bg-primary-500 text-white border-transparent shadow-sm"
-                      : "bg-white dark:bg-surface-900 text-surface-500 dark:text-surface-400 border-surface-200 dark:border-surface-700 hover:border-primary-300 dark:hover:border-primary-700 hover:text-primary-600 dark:hover:text-primary-400",
-                  )}
-                >
-                  <f.icon size={12} />
-                  {f.label}
-                </button>
-              );
-            })}
-            <div className="ml-auto">
-              <LayoutToggle className="hidden sm:inline-flex" />
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar flex-1 pb-0.5">
+              {[
+                { id: "everyone", label: t("feed.everyone"), icon: Users },
+                { id: "mine", label: t("feed.mine"), icon: User },
+              ].map((f) => {
+                const isActive = f.id === "mine" ? mineOnly : !mineOnly;
+                return (
+                  <button
+                    key={f.id}
+                    onClick={() => setMineOnly(f.id === "mine")}
+                    className={clsx(
+                      "inline-flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-full border transition-all shrink-0",
+                      isActive
+                        ? "bg-primary-600 dark:bg-primary-500 text-white border-transparent shadow-sm"
+                        : "bg-white dark:bg-surface-900 text-surface-500 dark:text-surface-400 border-surface-200 dark:border-surface-700 hover:border-primary-300 dark:hover:border-primary-700 hover:text-primary-600 dark:hover:text-primary-400",
+                    )}
+                  >
+                    <f.icon size={12} />
+                    {f.label}
+                  </button>
+                );
+              })}
             </div>
+            <LayoutToggle className="hidden sm:inline-flex shrink-0" />
           </div>
         )}
       </div>

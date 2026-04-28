@@ -7,14 +7,13 @@ import {
   Home,
   LogOut,
   MessageSquareText,
-  MoreHorizontal,
   PenSquare,
   Search,
   Settings,
   User,
   X,
 } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getUnreadNotificationCount } from "../../api/client";
 import { $user, logout } from "../../store/auth";
 import { AppleIcon } from "../common/Icons";
@@ -56,185 +55,222 @@ export default function MobileNav({
     <>
       {isMenuOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          className="fixed inset-0 bg-black/40 z-40 md:hidden"
           onClick={closeMenu}
         />
       )}
 
       {isMenuOpen && (
-        <div className="fixed bottom-16 left-0 right-0 bg-white dark:bg-surface-900 rounded-t-2xl shadow-2xl z-50 md:hidden animate-slide-up">
-          <div className="p-4 space-y-1">
-            {isAuthenticated && user ? (
-              <>
-                <a
-                  href={`/profile/${user.did}`}
-                  className="flex items-center gap-3 p-3 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
-                  onClick={(e) => {
-                    if (onNavigate) {
-                      e.preventDefault();
-                      onNavigate(`/profile/${user.did}`);
-                    }
-                    closeMenu();
-                  }}
-                >
-                  {user.avatar ? (
-                    <img
-                      src={user.avatar}
-                      alt=""
-                      className="w-10 h-10 rounded-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-10 h-10 rounded-full bg-surface-200 dark:bg-surface-700 flex items-center justify-center">
-                      <User size={18} className="text-surface-500" />
+        <div
+          className="fixed left-0 right-0 z-50 md:hidden animate-slide-up"
+          style={{ bottom: "calc(3.5rem + env(safe-area-inset-bottom))" }}
+        >
+          <div className="mx-2 mb-2 bg-white dark:bg-surface-900 rounded-2xl shadow-xl border border-surface-200 dark:border-surface-700 overflow-hidden">
+            <div className="flex justify-center pt-3 pb-1">
+              <div className="w-8 h-1 bg-surface-200 dark:bg-surface-600 rounded-full" />
+            </div>
+
+            <div className="p-2">
+              {isAuthenticated && user ? (
+                <>
+                  <a
+                    href={`/profile/${user.did}`}
+                    className="flex items-center gap-3 p-3 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors"
+                    onClick={(e) => {
+                      if (onNavigate) {
+                        e.preventDefault();
+                        onNavigate(`/profile/${user.did}`);
+                      }
+                      closeMenu();
+                    }}
+                  >
+                    {user.avatar ? (
+                      <img
+                        src={user.avatar}
+                        alt=""
+                        className="w-9 h-9 rounded-full object-cover shrink-0"
+                      />
+                    ) : (
+                      <div className="w-9 h-9 rounded-full bg-surface-100 dark:bg-surface-700 flex items-center justify-center shrink-0">
+                        <User size={16} className="text-surface-500" />
+                      </div>
+                    )}
+                    <div className="flex flex-col min-w-0">
+                      <span className="font-semibold text-surface-900 dark:text-white text-sm truncate">
+                        {user.displayName || user.handle}
+                      </span>
+                      <span className="text-xs text-surface-400 dark:text-surface-500 truncate">
+                        @{user.handle}
+                      </span>
                     </div>
-                  )}
-                  <div className="flex flex-col">
-                    <span className="font-semibold text-surface-900 dark:text-white">
-                      {user.displayName || user.handle}
-                    </span>
-                    <span className="text-sm text-surface-500">
-                      @{user.handle}
-                    </span>
+                  </a>
+
+                  <div className="h-px bg-surface-100 dark:bg-surface-700 my-1 mx-3" />
+
+                  <div className="grid grid-cols-2 gap-1">
+                    {[
+                      {
+                        href: "/annotations",
+                        icon: MessageSquareText,
+                        label: t("nav.annotations"),
+                      },
+                      {
+                        href: "/highlights",
+                        icon: Highlighter,
+                        label: t("nav.highlights"),
+                      },
+                      {
+                        href: "/bookmarks",
+                        icon: Bookmark,
+                        label: t("nav.bookmarks"),
+                      },
+                      {
+                        href: "/collections",
+                        icon: Folder,
+                        label: t("nav.collections"),
+                      },
+                    ].map(({ href, icon: Icon, label }) => (
+                      <a
+                        key={href}
+                        href={href}
+                        className="flex items-center gap-2.5 p-3 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors text-surface-700 dark:text-surface-200"
+                        onClick={(e) => {
+                          if (onNavigate) {
+                            e.preventDefault();
+                            onNavigate(href);
+                          }
+                          closeMenu();
+                        }}
+                      >
+                        <Icon size={16} className="shrink-0" />
+                        <span className="text-sm font-medium truncate">
+                          {label}
+                        </span>
+                      </a>
+                    ))}
                   </div>
-                </a>
 
-                <div className="h-px bg-surface-200 dark:bg-surface-700 my-2" />
+                  <div className="h-px bg-surface-100 dark:bg-surface-700 my-1 mx-3" />
 
-                {[
-                  {
-                    href: "/annotations",
-                    icon: MessageSquareText,
-                    label: t("nav.annotations"),
-                  },
-                  {
-                    href: "/highlights",
-                    icon: Highlighter,
-                    label: t("nav.highlights"),
-                  },
-                  {
-                    href: "/bookmarks",
-                    icon: Bookmark,
-                    label: t("nav.bookmarks"),
-                  },
-                  {
-                    href: "/collections",
-                    icon: Folder,
-                    label: t("nav.collections"),
-                  },
-                  {
-                    href: "/settings",
-                    icon: Settings,
-                    label: t("nav.settings"),
-                  },
-                ].map(({ href, icon: Icon, label }) => (
-                  <a
-                    key={href}
-                    href={href}
-                    className="flex items-center gap-3 p-3 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors text-surface-700 dark:text-surface-200"
-                    onClick={(e) => {
-                      if (onNavigate) {
-                        e.preventDefault();
-                        onNavigate(href);
-                      }
+                  <div className="flex gap-1">
+                    <a
+                      href="/settings"
+                      className="flex-1 flex items-center gap-2.5 p-3 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors text-surface-700 dark:text-surface-200"
+                      onClick={(e) => {
+                        if (onNavigate) {
+                          e.preventDefault();
+                          onNavigate("/settings");
+                        }
+                        closeMenu();
+                      }}
+                    >
+                      <Settings size={16} className="shrink-0" />
+                      <span className="text-sm font-medium">
+                        {t("nav.settings")}
+                      </span>
+                    </a>
+
+                    <a
+                      href="https://www.icloud.com/shortcuts/1e33ebf52f55431fae1e187cfe9738c3"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 flex items-center gap-2.5 p-3 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors text-surface-700 dark:text-surface-200"
+                      onClick={closeMenu}
+                    >
+                      <AppleIcon size={16} />
+                      <span className="text-sm font-medium">
+                        {t("mobileNav.iosShortcut")}
+                      </span>
+                    </a>
+                  </div>
+
+                  <div className="h-px bg-surface-100 dark:bg-surface-700 my-1 mx-3" />
+
+                  <button
+                    className="w-full flex items-center gap-2.5 p-3 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors text-red-500 dark:text-red-400"
+                    onClick={() => {
+                      logout();
                       closeMenu();
                     }}
                   >
-                    <Icon size={20} />
-                    <span>{label}</span>
-                  </a>
-                ))}
-
-                <div className="h-px bg-surface-200 dark:bg-surface-700 my-2" />
-
-                <a
-                  href="https://www.icloud.com/shortcuts/1e33ebf52f55431fae1e187cfe9738c3"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 p-3 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors text-surface-700 dark:text-surface-200"
-                  onClick={closeMenu}
-                >
-                  <AppleIcon size={20} />
-                  <span>{t("mobileNav.iosShortcut")}</span>
-                </a>
-
-                <div className="h-px bg-surface-200 dark:bg-surface-700 my-2" />
-
-                <button
-                  className="flex items-center gap-3 p-3 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-red-600 w-full"
-                  onClick={() => {
-                    logout();
-                    closeMenu();
-                  }}
-                >
-                  <LogOut size={20} />
-                  <span>{t("nav.logOut")}</span>
-                </button>
-              </>
-            ) : (
-              <>
-                <a
-                  href="/login"
-                  className="flex items-center gap-3 p-3 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors text-surface-700 dark:text-surface-200"
-                  onClick={closeMenu}
-                >
-                  <User size={20} />
-                  <span>{t("nav.signIn")}</span>
-                </a>
-                {[
-                  {
-                    href: "/collections",
-                    icon: Folder,
-                    label: t("nav.collections"),
-                  },
-                  {
-                    href: "/settings",
-                    icon: Settings,
-                    label: t("nav.settings"),
-                  },
-                ].map(({ href, icon: Icon, label }) => (
+                    <LogOut size={16} className="shrink-0" />
+                    <span className="text-sm font-medium">
+                      {t("nav.logOut")}
+                    </span>
+                  </button>
+                </>
+              ) : (
+                <>
                   <a
-                    key={href}
-                    href={href}
-                    className="flex items-center gap-3 p-3 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors text-surface-700 dark:text-surface-200"
-                    onClick={(e) => {
-                      if (onNavigate) {
-                        e.preventDefault();
-                        onNavigate(href);
-                      }
-                      closeMenu();
-                    }}
+                    href="/login"
+                    className="flex items-center gap-2.5 p-3 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors text-surface-700 dark:text-surface-200"
+                    onClick={closeMenu}
                   >
-                    <Icon size={20} />
-                    <span>{label}</span>
+                    <User size={16} className="shrink-0" />
+                    <span className="text-sm font-medium">
+                      {t("nav.signIn")}
+                    </span>
                   </a>
-                ))}
+                  {[
+                    {
+                      href: "/collections",
+                      icon: Folder,
+                      label: t("nav.collections"),
+                    },
+                    {
+                      href: "/settings",
+                      icon: Settings,
+                      label: t("nav.settings"),
+                    },
+                  ].map(({ href, icon: Icon, label }) => (
+                    <a
+                      key={href}
+                      href={href}
+                      className="flex items-center gap-2.5 p-3 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors text-surface-700 dark:text-surface-200"
+                      onClick={(e) => {
+                        if (onNavigate) {
+                          e.preventDefault();
+                          onNavigate(href);
+                        }
+                        closeMenu();
+                      }}
+                    >
+                      <Icon size={16} className="shrink-0" />
+                      <span className="text-sm font-medium">{label}</span>
+                    </a>
+                  ))}
 
-                <div className="h-px bg-surface-200 dark:bg-surface-700 my-2" />
+                  <div className="h-px bg-surface-100 dark:bg-surface-700 my-1 mx-3" />
 
-                <a
-                  href="https://www.icloud.com/shortcuts/1e33ebf52f55431fae1e187cfe9738c3"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 p-3 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors text-surface-700 dark:text-surface-200"
-                  onClick={closeMenu}
-                >
-                  <AppleIcon size={20} />
-                  <span>{t("mobileNav.iosShortcut")}</span>
-                </a>
-              </>
-            )}
+                  <a
+                    href="https://www.icloud.com/shortcuts/1e33ebf52f55431fae1e187cfe9738c3"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2.5 p-3 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors text-surface-700 dark:text-surface-200"
+                    onClick={closeMenu}
+                  >
+                    <AppleIcon size={16} />
+                    <span className="text-sm font-medium">
+                      {t("mobileNav.iosShortcut")}
+                    </span>
+                  </a>
+                </>
+              )}
+            </div>
           </div>
         </div>
       )}
 
-      <nav className="fixed bottom-0 left-0 right-0 h-14 bg-white/90 dark:bg-surface-900/90 backdrop-blur-md border-t border-surface-200 dark:border-surface-700 flex items-center justify-around px-2 z-50 md:hidden safe-area-bottom">
+      <nav
+        className="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-surface-900/95 backdrop-blur-md border-t border-surface-200 dark:border-surface-800 flex items-center justify-around z-50 md:hidden"
+        style={{
+          height: "calc(3.5rem + env(safe-area-inset-bottom))",
+          paddingBottom: "env(safe-area-inset-bottom)",
+        }}
+      >
         <a
           href="/home"
-          className={`flex flex-col items-center justify-center w-14 h-14 rounded-xl transition-colors ${
-            isActive("/home")
-              ? "text-primary-600"
-              : "text-surface-500 hover:text-surface-700"
-          }`}
+          className="flex flex-col items-center justify-center w-14 h-14 gap-0.5 transition-colors"
           onClick={(e) => {
             if (onNavigate) {
               e.preventDefault();
@@ -244,16 +280,20 @@ export default function MobileNav({
             closeMenu();
           }}
         >
-          <Home size={24} strokeWidth={1.5} />
+          <div
+            className={`p-2 rounded-xl transition-colors ${
+              isActive("/home")
+                ? "bg-primary-50 dark:bg-primary-950/50 text-primary-600 dark:text-primary-400"
+                : "text-surface-400 dark:text-surface-500"
+            }`}
+          >
+            <Home size={22} strokeWidth={isActive("/home") ? 2 : 1.5} />
+          </div>
         </a>
 
         <a
           href="/search"
-          className={`flex flex-col items-center justify-center w-14 h-14 rounded-xl transition-colors ${
-            isActive("/search")
-              ? "text-primary-600"
-              : "text-surface-500 hover:text-surface-700"
-          }`}
+          className="flex flex-col items-center justify-center w-14 h-14 gap-0.5 transition-colors"
           onClick={(e) => {
             if (onNavigate) {
               e.preventDefault();
@@ -263,71 +303,102 @@ export default function MobileNav({
             closeMenu();
           }}
         >
-          <Search size={24} strokeWidth={1.5} />
+          <div
+            className={`p-2 rounded-xl transition-colors ${
+              isActive("/search")
+                ? "bg-primary-50 dark:bg-primary-950/50 text-primary-600 dark:text-primary-400"
+                : "text-surface-400 dark:text-surface-500"
+            }`}
+          >
+            <Search size={22} strokeWidth={isActive("/search") ? 2 : 1.5} />
+          </div>
         </a>
 
         {isAuthenticated ? (
-          <>
-            <a
-              href="/new"
-              className="flex items-center justify-center w-12 h-12 rounded-full bg-primary-600 text-white shadow-lg hover:bg-primary-500 transition-colors -mt-4"
-              onClick={(e) => {
-                if (onNavigate) {
-                  e.preventDefault();
-                  onNavigate("/new");
-                }
-                setCurrentPath("/new");
-                closeMenu();
-              }}
-            >
-              <PenSquare size={20} strokeWidth={2} />
-            </a>
-
-            <a
-              href="/notifications"
-              className={`relative flex flex-col items-center justify-center w-14 h-14 rounded-xl transition-colors ${
-                isActive("/notifications")
-                  ? "text-primary-600"
-                  : "text-surface-500 hover:text-surface-700"
-              }`}
-              onClick={(e) => {
-                if (onNavigate) {
-                  e.preventDefault();
-                  onNavigate("/notifications");
-                }
-                setCurrentPath("/notifications");
-                closeMenu();
-              }}
-            >
-              <Bell size={24} strokeWidth={1.5} />
-              {unreadCount > 0 && (
-                <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full" />
-              )}
-            </a>
-          </>
+          <a
+            href="/new"
+            className="flex items-center justify-center w-11 h-11 rounded-2xl bg-primary-600 dark:bg-primary-600 text-white shadow-md active:scale-95 transition-transform"
+            onClick={(e) => {
+              if (onNavigate) {
+                e.preventDefault();
+                onNavigate("/new");
+              }
+              setCurrentPath("/new");
+              closeMenu();
+            }}
+          >
+            <PenSquare size={18} strokeWidth={2} />
+          </a>
         ) : (
           <a
             href="/login"
-            className="flex items-center justify-center w-12 h-12 rounded-full bg-primary-600 text-white shadow-lg hover:bg-primary-500 transition-colors -mt-4"
+            className="flex items-center justify-center w-11 h-11 rounded-2xl bg-primary-600 text-white shadow-md active:scale-95 transition-transform"
             onClick={closeMenu}
           >
-            <User size={20} strokeWidth={2} />
+            <User size={18} strokeWidth={2} />
           </a>
         )}
 
+        {isAuthenticated ? (
+          <a
+            href="/notifications"
+            className="flex flex-col items-center justify-center w-14 h-14 gap-0.5 relative transition-colors"
+            onClick={(e) => {
+              if (onNavigate) {
+                e.preventDefault();
+                onNavigate("/notifications");
+              }
+              setCurrentPath("/notifications");
+              closeMenu();
+            }}
+          >
+            <div
+              className={`p-2 rounded-xl transition-colors relative ${
+                isActive("/notifications")
+                  ? "bg-primary-50 dark:bg-primary-950/50 text-primary-600 dark:text-primary-400"
+                  : "text-surface-400 dark:text-surface-500"
+              }`}
+            >
+              <Bell
+                size={22}
+                strokeWidth={isActive("/notifications") ? 2 : 1.5}
+              />
+              {unreadCount > 0 && (
+                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white dark:ring-surface-900" />
+              )}
+            </div>
+          </a>
+        ) : (
+          <div className="w-14" />
+        )}
+
         <button
-          className={`flex flex-col items-center justify-center w-14 h-14 rounded-xl transition-colors ${
-            isMenuOpen
-              ? "text-primary-600"
-              : "text-surface-500 hover:text-surface-700"
-          }`}
+          className="flex flex-col items-center justify-center w-14 h-14 gap-0.5 transition-colors"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
-          {isMenuOpen ? (
-            <X size={24} strokeWidth={1.5} />
-          ) : (
-            <MoreHorizontal size={24} strokeWidth={1.5} />
-          )}
+          <div
+            className={`p-2 rounded-xl transition-colors ${
+              isMenuOpen
+                ? "bg-surface-100 dark:bg-surface-700 text-surface-700 dark:text-surface-200"
+                : "text-surface-400 dark:text-surface-500"
+            }`}
+          >
+            {isMenuOpen ? (
+              <X size={22} strokeWidth={1.5} />
+            ) : (
+              <svg
+                width="22"
+                height="22"
+                viewBox="0 0 22 22"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <circle cx="4" cy="11" r="1.75" fill="currentColor" />
+                <circle cx="11" cy="11" r="1.75" fill="currentColor" />
+                <circle cx="18" cy="11" r="1.75" fill="currentColor" />
+              </svg>
+            )}
+          </div>
         </button>
       </nav>
     </>

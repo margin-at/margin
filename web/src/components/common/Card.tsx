@@ -360,7 +360,7 @@ export default function Card({
   const displayImage = ogData?.image;
 
   return (
-    <article className="card p-4 hover:ring-black/10 dark:hover:ring-white/10 transition-all relative overflow-visible">
+    <article className="card p-4 hover:ring-black/10 dark:hover:ring-white/10 transition-all relative overflow-visible min-w-0 w-full">
       {!hideCollection &&
         (item.collection || (item.context && item.context.length > 0)) && (
           <div className="flex items-center gap-1.5 text-xs text-surface-400 dark:text-surface-500 mb-2 flex-wrap">
@@ -419,7 +419,7 @@ export default function Card({
           </div>
         )}
 
-      <div className="flex items-start gap-3">
+      <div className="flex items-start gap-3 min-w-0">
         <ProfileHoverCard did={item.author?.did}>
           <a href={`/profile/${item.author?.did}`} className="shrink-0">
             <div className="rounded-full overflow-hidden">
@@ -442,16 +442,19 @@ export default function Card({
         </ProfileHoverCard>
 
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <ProfileHoverCard did={item.author?.did}>
+          <div className="flex items-center gap-1.5 flex-wrap min-w-0">
+            <ProfileHoverCard
+              did={item.author?.did}
+              className="min-w-0 max-w-[180px] sm:max-w-[200px]"
+            >
               <a
                 href={`/profile/${item.author?.did}`}
-                className="font-semibold text-surface-900 dark:text-white text-[15px] hover:underline"
+                className="font-semibold text-surface-900 dark:text-white text-[15px] hover:underline block truncate"
               >
                 {item.author?.displayName || item.author?.handle}
               </a>
             </ProfileHoverCard>
-            <span className="text-surface-400 dark:text-surface-500 text-sm">
+            <span className="text-surface-400 dark:text-surface-500 text-sm truncate max-w-[120px]">
               @{item.author?.handle}
             </span>
             <span className="text-surface-300 dark:text-surface-600">·</span>
@@ -611,7 +614,7 @@ export default function Card({
                   "shrink-0 bg-surface-200 dark:bg-surface-700 relative",
                   layout === "mosaic"
                     ? "w-full aspect-video border-b border-surface-200 dark:border-surface-700"
-                    : "w-[140px] sm:w-[180px] border-r border-surface-200 dark:border-surface-700",
+                    : "w-[90px] sm:w-[140px] border-r border-surface-200 dark:border-surface-700",
                 )}
               >
                 <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
@@ -653,7 +656,7 @@ export default function Card({
                     <Globe size={9} />
                   )}
                 </div>
-                <span className="truncate max-w-[200px]">
+                <span className="truncate min-w-0 flex-1">
                   {displayUrl || pageUrl}
                 </span>
               </div>

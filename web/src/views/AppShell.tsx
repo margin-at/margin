@@ -175,8 +175,8 @@ function AppLayout() {
 
       <div className="flex-1 min-w-0 transition-all duration-200">
         <div className="flex w-full max-w-[1800px] mx-auto">
-          <main className="flex-1 w-full min-w-0 py-2 md:py-3">
-            <div className="bg-white dark:bg-surface-800 rounded-2xl min-h-[calc(100vh-16px)] md:min-h-[calc(100vh-24px)] py-6 px-4 md:px-6 lg:px-8 pb-20 md:pb-6">
+          <main className="flex-1 w-full min-w-0 p-2 md:py-3 md:px-0">
+            <div className="bg-white dark:bg-surface-800 rounded-2xl min-h-[calc(100vh-16px)] md:min-h-[calc(100vh-24px)] py-6 px-4 md:px-6 lg:px-8 pb-28 md:pb-6">
               <Routes>
                 <Route
                   path="/home"
