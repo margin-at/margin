@@ -1,168 +1,217 @@
 ---
 import BaseLayout from '../layouts/StaticLayout.astro';
+
+const lastUpdated = 'April 27, 2026';
+const effectiveDate = 'May 1, 2026';
+
+const sections = [
+	{ id: 'overview', title: 'Overview' },
+	{ id: 'data-collected', title: 'Data we collect' },
+	{ id: 'purposes', title: 'Purposes and legal bases' },
+	{ id: 'recipients', title: 'Recipients and transfers' },
+	{ id: 'retention', title: 'Retention' },
+	{ id: 'extension', title: 'Browser extension' },
+	{ id: 'cookies', title: 'Cookies' },
+	{ id: 'public-content', title: 'Public content' },
+	{ id: 'rights', title: 'Your rights' },
+	{ id: 'children', title: 'Children' },
+	{ id: 'contact', title: 'Contact' },
+];
 ---
 
 <BaseLayout title="Privacy Policy - Margin" description="Margin Privacy Policy">
-	<div class="max-w-3xl mx-auto py-12 px-4">
-		<a href="/home" class="inline-flex items-center gap-2 text-sm font-medium text-surface-500 hover:text-surface-900 dark:hover:text-white transition-colors mb-8">
-			<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
-			<span>Home</span>
-		</a>
+	<div class="min-h-screen bg-surface-100 dark:bg-surface-900">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 pt-10 md:pt-14 pb-20">
+			<a href="/home" class="inline-flex items-center gap-1.5 text-sm font-medium text-surface-500 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white transition-colors mb-8">
+				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+				Back
+			</a>
 
-		<div class="prose prose-surface dark:prose-invert max-w-none">
-			<h1 class="font-display font-bold text-3xl mb-2 text-surface-900 dark:text-white">Privacy Policy</h1>
-			<p class="text-surface-500 dark:text-surface-400 mb-8">Last updated: April 14, 2026</p>
+			<div class="lg:grid lg:grid-cols-[minmax(0,1fr)_200px] lg:gap-12">
+				<div class="bg-white dark:bg-surface-800 rounded-2xl px-5 sm:px-8 lg:px-12 py-10 md:py-14 lg:min-w-0">
+					<header class="mb-12">
+						<p class="text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider mb-3">Legal</p>
+						<h1 class="font-display font-bold text-3xl md:text-4xl text-surface-900 dark:text-white tracking-tight mb-2">Privacy Policy</h1>
+						<p class="text-sm text-surface-500 dark:text-surface-400">Effective {effectiveDate} &middot; Last updated {lastUpdated}</p>
+					</header>
 
-			<section class="mb-8">
-				<h2 class="text-xl font-bold text-surface-900 dark:text-white mb-4">Overview</h2>
-				<p class="text-surface-700 dark:text-surface-300 leading-relaxed">
-					Margin is a web annotation tool built on the AT Protocol, operated by <strong>Padding Labs LLC</strong> ("we", "our", or "us"). It lets you highlight, take notes, and bookmark any webpage. Because Margin is built on the AT Protocol, your notes are stored as records in your Personal Data Server (PDS) — you own your content and can take it with you. You must be at least 13 years old to use Margin.
-				</p>
-			</section>
+					<details class="lg:hidden mb-10 rounded-xl border border-surface-200 dark:border-surface-700/60 overflow-hidden">
+						<summary class="cursor-pointer px-4 py-3 text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider bg-surface-50 dark:bg-surface-900/40">On this page</summary>
+						<ol class="px-4 py-3 space-y-0.5 text-sm">
+							{sections.map((s) => (
+								<li><a href={`#${s.id}`} class="block py-1 text-surface-600 dark:text-surface-400">{s.title}</a></li>
+							))}
+						</ol>
+					</details>
 
-			<section class="mb-8">
-				<h2 class="text-xl font-bold text-surface-900 dark:text-white mb-4">Data We Collect</h2>
+					<div class="space-y-12 max-w-2xl">
+						<section id="overview" data-toc-section class="scroll-mt-6">
+							<h2 class="font-display font-bold text-xl text-surface-900 dark:text-white tracking-tight mb-2">Overview</h2>
+							<p class="text-sm italic text-surface-500 dark:text-surface-400 mb-4">Padding Labs LLC is the controller. We process the minimum needed to run Margin and do not sell your data.</p>
+							<p class="text-[15px] text-surface-700 dark:text-surface-300 leading-relaxed">This Privacy Policy describes how Padding Labs LLC ("we", "us", "our") processes personal data in connection with Margin and the Margin Personal Data Server at margin.cafe (together, the "Service"). For purposes of the EU and UK General Data Protection Regulations, we are the controller of personal data we process to operate the Service.</p>
+						</section>
 
-				<h3 class="text-lg font-semibold text-surface-900 dark:text-white mb-2">Account Information</h3>
-				<p class="text-surface-700 dark:text-surface-300 mb-4">
-					When you log in with your AT Protocol account (e.g. Bluesky), we access your:
-				</p>
-				<ul class="list-disc pl-5 mb-4 text-surface-700 dark:text-surface-300 space-y-1">
-					<li>Decentralized Identifier (DID)</li>
-					<li>Handle (username)</li>
-					<li>Display name, avatar, bio, and website (for showing your profile)</li>
-				</ul>
+						<section id="data-collected" data-toc-section class="scroll-mt-6">
+							<h2 class="font-display font-bold text-xl text-surface-900 dark:text-white tracking-tight mb-2">Data we collect</h2>
+							<p class="text-sm italic text-surface-500 dark:text-surface-400 mb-4">Identity from your AT Protocol account, the content you publish, and basic usage data.</p>
+							<div class="space-y-3 text-[15px] text-surface-700 dark:text-surface-300 leading-relaxed">
+								<p>We process the following categories of personal data:</p>
+								<ul class="list-disc pl-5 space-y-1.5 marker:text-surface-400 dark:marker:text-surface-600">
+									<li>Account identifiers obtained from your AT Protocol identity provider, including your decentralised identifier (DID), handle, display name, avatar, biography, and website.</li>
+									<li>OAuth access tokens, refresh tokens, and DPoP proof keys, used to maintain your authenticated session.</li>
+									<li>User Content, including the URL and title of pages you annotate, the text you select, surrounding context, your note text, tags, highlight colours, replies, likes, collections, and edit history.</li>
+									<li>Vector embeddings of your User Content and of public AT Protocol records, and an interest profile derived from those embeddings, used to generate recommendations on the Discover page.</li>
+									<li>Usage data, including IP address, browser type, operating system, extension version, and product analytics events such as page views and feature interactions.</li>
+									<li>For accounts on margin.cafe: your email address, used for account recovery and security notices, and a salted hash of your password. We do not store passwords in plain text.</li>
+									<li>Any correspondence you send to <a href="mailto:hello@margin.at" class="text-primary-600 dark:text-primary-400 hover:underline font-medium">hello@margin.at</a>.</li>
+								</ul>
+								<p>We do not knowingly process special categories of personal data (such as health, biometric, or government identification data), and ask that you do not include such information in your User Content.</p>
+							</div>
+						</section>
 
-				<h3 class="text-lg font-semibold text-surface-900 dark:text-white mb-2">Notes & Content</h3>
-				<p class="text-surface-700 dark:text-surface-300 mb-4">When you create a note, we store:</p>
-				<ul class="list-disc pl-5 mb-4 text-surface-700 dark:text-surface-300 space-y-1">
-					<li>The full URL of the page you noted on</li>
-					<li>The page title at the time of the note</li>
-					<li>The text you selected (up to 5,000 characters)</li>
-					<li>Surrounding context around your selection (up to 500 characters before and after), used to re-locate the note on the page</li>
-					<li>Any text you write as part of the note</li>
-					<li>Tags you apply</li>
-					<li>Highlight color (if set)</li>
-					<li>Replies and likes on notes</li>
-					<li>Collections you create, and which notes belong to them</li>
-					<li>An edit history of any changes you make to your notes</li>
-				</ul>
+						<section id="purposes" data-toc-section class="scroll-mt-6">
+							<h2 class="font-display font-bold text-xl text-surface-900 dark:text-white tracking-tight mb-2">Purposes and legal bases</h2>
+							<p class="text-sm italic text-surface-500 dark:text-surface-400 mb-4">Performance of contract for the core Service. Legitimate interests for analytics, recommendations, and security.</p>
+							<div class="space-y-3 text-[15px] text-surface-700 dark:text-surface-300 leading-relaxed">
+								<p>Where the GDPR or UK GDPR applies, we rely on the following legal bases under Article 6(1):</p>
+								<ul class="list-disc pl-5 space-y-1.5 marker:text-surface-400 dark:marker:text-surface-600">
+									<li><strong>Performance of contract:</strong> authenticating you, storing and synchronising your User Content, and providing the core features of the Service.</li>
+									<li><strong>Legitimate interests:</strong> maintaining a server-side index of public AT Protocol records, generating recommendations, conducting product analytics, preventing abuse, and improving the Service.</li>
+									<li><strong>Consent:</strong> for analytics cookies in jurisdictions such as the EEA and the United Kingdom. You may withdraw consent at any time.</li>
+									<li><strong>Legal obligation:</strong> to comply with applicable law or valid legal process.</li>
+								</ul>
+								<p>We do not sell personal data, and we do not share personal data for cross-context behavioural advertising.</p>
+							</div>
+						</section>
 
-				<h3 class="text-lg font-semibold text-surface-900 dark:text-white mb-2">Overlay Lookups (Browser Extension)</h3>
-				<p class="text-surface-700 dark:text-surface-300 mb-4">
-					When you browse the web with the extension enabled, it checks each page for existing notes. For these lookups, the extension computes a SHA-256 hash of the page URL locally and sends only that hash to our server — <strong>the raw URL is not sent for lookups.</strong> A hash cannot be reversed to recover the original URL. You can disable overlay lookups entirely by turning off page overlays in the extension settings.
-				</p>
-				<p class="text-surface-700 dark:text-surface-300 mb-4">
-					Note: when you <em>create</em> a note, the full URL is included as part of the record stored on your PDS.
-				</p>
+						<section id="recipients" data-toc-section class="scroll-mt-6">
+							<h2 class="font-display font-bold text-xl text-surface-900 dark:text-white tracking-tight mb-2">Recipients and transfers</h2>
+							<p class="text-sm italic text-surface-500 dark:text-surface-400 mb-4">Two sub-processors. Both are based in the United States.</p>
+							<div class="space-y-3 text-[15px] text-surface-700 dark:text-surface-300 leading-relaxed">
+								<p>We engage the following sub-processors:</p>
+								<ul class="list-disc pl-5 space-y-1.5 marker:text-surface-400 dark:marker:text-surface-600">
+									<li><strong>OpenAI</strong> generates vector embeddings of User Content and of public AT Protocol records under its API data usage policy. OpenAI does not use API inputs to train its models.</li>
+									<li><strong>PostHog</strong> provides product analytics. We identify users to PostHog by DID, handle, and display name.</li>
+								</ul>
+								<p>Where personal data is transferred from the European Economic Area, the United Kingdom, or Switzerland to a country without an adequacy decision, we rely on the European Commission's Standard Contractual Clauses (Decision 2021/914), supplemented by the UK International Data Transfer Addendum or the Swiss equivalent, as applicable.</p>
+								<p>We may also disclose personal data where required by law, to enforce these Terms, to protect users, or in connection with a merger, acquisition, or sale, subject to commitments at least as protective as this Policy.</p>
+							</div>
+						</section>
 
-				<h3 class="text-lg font-semibold text-surface-900 dark:text-white mb-2">Recommendations</h3>
-				<p class="text-surface-700 dark:text-surface-300 mb-4">
-					To power the Discover page, we generate vector embeddings of your notes and public documents on the AT Protocol network. These embeddings are used to build an interest profile and surface relevant content. Your interest profile is stored on our server and is not shared with other users.
-				</p>
-				<p class="text-surface-700 dark:text-surface-300 mb-4">
-					Embeddings are generated via the <strong>OpenAI</strong> API. The text content of your notes and public AT Protocol documents is sent to OpenAI for this purpose. OpenAI does not use API inputs to train their models — see their <a href="https://openai.com/policies/usage-policies/" class="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline" target="_blank" rel="noopener noreferrer">API data usage policy</a>. Recommendations are only generated if you have used Margin to annotate content.
-				</p>
+						<section id="retention" data-toc-section class="scroll-mt-6">
+							<h2 class="font-display font-bold text-xl text-surface-900 dark:text-white tracking-tight mb-2">Retention</h2>
+							<p class="text-sm italic text-surface-500 dark:text-surface-400 mb-4">Only as long as necessary, with short tails for backups, logs, and analytics.</p>
+							<div class="space-y-3 text-[15px] text-surface-700 dark:text-surface-300 leading-relaxed">
+								<ul class="list-disc pl-5 space-y-1.5 marker:text-surface-400 dark:marker:text-surface-600">
+									<li>Index of User Content: while the underlying record exists on the AT Protocol. Deletions propagate within 7 days, with up to 30 days in routine backups.</li>
+									<li>OAuth sessions: until expiry, revocation, or 90 days of inactivity.</li>
+									<li>Embeddings and recommendation profile: deleted within 30 days of account deletion.</li>
+									<li>Product analytics events: up to 12 months.</li>
+									<li>Server and security logs: up to 90 days.</li>
+									<li>margin.cafe account data: for the life of the account, deleted within 30 days of a verified deletion request, subject to any legal retention obligations.</li>
+								</ul>
+								<p>Once a record has federated to the wider AT Protocol, third parties may retain copies outside our control even after deletion from your Personal Data Server.</p>
+							</div>
+						</section>
 
-				<h3 class="text-lg font-semibold text-surface-900 dark:text-white mb-2">Analytics</h3>
-				<p class="text-surface-700 dark:text-surface-300 mb-4">
-					We use <strong>PostHog</strong> for product analytics to understand how Margin is used and improve the product. Analytics events — such as page views, note creation, and feature interactions — are collected on the Margin website and server. These events may include the URL of the page being noted on, your browser type, and extension version. PostHog may set cookies for this purpose. We do not use analytics to track you across other websites or share analytics data with advertisers. See PostHog's <a href="https://posthog.com/privacy" class="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline" target="_blank" rel="noopener noreferrer">privacy policy</a>.
-				</p>
+						<section id="extension" data-toc-section class="scroll-mt-6">
+							<h2 class="font-display font-bold text-xl text-surface-900 dark:text-white tracking-tight mb-2">Browser extension</h2>
+							<p class="text-sm italic text-surface-500 dark:text-surface-400 mb-4">URLs are hashed locally before lookup. Hashing reduces, but does not eliminate, what we can infer.</p>
+							<div class="space-y-3 text-[15px] text-surface-700 dark:text-surface-300 leading-relaxed">
+								<p>The Margin browser extension requests the following permissions: <code class="text-[13px] px-1 py-0.5 rounded bg-surface-100 dark:bg-surface-900 font-mono">storage</code>, <code class="text-[13px] px-1 py-0.5 rounded bg-surface-100 dark:bg-surface-900 font-mono">tabs</code>, <code class="text-[13px] px-1 py-0.5 rounded bg-surface-100 dark:bg-surface-900 font-mono">cookies</code>, <code class="text-[13px] px-1 py-0.5 rounded bg-surface-100 dark:bg-surface-900 font-mono">contextMenus</code>, <code class="text-[13px] px-1 py-0.5 rounded bg-surface-100 dark:bg-surface-900 font-mono">activeTab</code>, <code class="text-[13px] px-1 py-0.5 rounded bg-surface-100 dark:bg-surface-900 font-mono">scripting</code>, and on Chrome <code class="text-[13px] px-1 py-0.5 rounded bg-surface-100 dark:bg-surface-900 font-mono">sidePanel</code>. Host access is requested for all URLs so that notes can be displayed on any page.</p>
+								<p>To check whether a page contains annotations, the extension normalises the URL, computes a SHA-256 hash locally, and transmits only that hash to our server. We do not receive the underlying URL during this lookup. We note for transparency that SHA-256 is a one-way function but the URL space is enumerable: a party with a list of candidate URLs can match hashes back to URLs. Hashing therefore reduces, without fully eliminating, what we can infer about your browsing. We treat URL hashes as personal data. You may disable overlays in the extension settings.</p>
+								<p>When you create a note, the full URL is included in the record stored on your Personal Data Server, because the URL is the subject of the annotation.</p>
+							</div>
+						</section>
 
-				<h3 class="text-lg font-semibold text-surface-900 dark:text-white mb-2">Authentication</h3>
-				<p class="text-surface-700 dark:text-surface-300 mb-4">
-					We store your OAuth session tokens (access token, refresh token, and DPoP proof key) in our database to keep you logged in. These are used solely for authenticating requests to the AT Protocol on your behalf and expire when your session ends.
-				</p>
-			</section>
+						<section id="cookies" data-toc-section class="scroll-mt-6">
+							<h2 class="font-display font-bold text-xl text-surface-900 dark:text-white tracking-tight mb-2">Cookies</h2>
+							<p class="text-sm italic text-surface-500 dark:text-surface-400 mb-4">Strictly necessary cookies for sign-in. Analytics cookies require consent in the EEA and UK.</p>
+							<p class="text-[15px] text-surface-700 dark:text-surface-300 leading-relaxed">We use a session cookie to maintain your authenticated session. PostHog sets analytics cookies. In the EEA, the United Kingdom, and other jurisdictions where prior consent is required, analytics cookies load only after you opt in. You may withdraw consent at any time through the cookie controls.</p>
+						</section>
 
-			<section class="mb-8">
-				<h2 class="text-xl font-bold text-surface-900 dark:text-white mb-4">How We Use Your Data</h2>
-				<p class="text-surface-700 dark:text-surface-300 mb-4">Your data is used to:</p>
-				<ul class="list-disc pl-5 mb-4 text-surface-700 dark:text-surface-300 space-y-1">
-					<li>Display your notes on webpages via the browser extension</li>
-					<li>Sync your content across devices</li>
-					<li>Show your public notes to other users on the same page</li>
-					<li>Enable social features like replies and likes</li>
-					<li>Generate personalized content recommendations on the Discover page</li>
-					<li>Understand product usage and improve the service</li>
-				</ul>
-				<p class="text-surface-700 dark:text-surface-300">
-					<strong>We do not sell your data.</strong> We do not share your data with third parties for advertising or marketing purposes.
-				</p>
-			</section>
+						<section id="public-content" data-toc-section class="scroll-mt-6">
+							<h2 class="font-display font-bold text-xl text-surface-900 dark:text-white tracking-tight mb-2">Public content</h2>
+							<p class="text-sm italic text-surface-500 dark:text-surface-400 mb-4">Notes federate publicly. Federated copies may persist after you delete.</p>
+							<p class="text-[15px] text-surface-700 dark:text-surface-300 leading-relaxed">Notes published through the AT Protocol are broadcast on the public firehose and may be retrieved, copied, indexed, or cached by any third party subscribing to the network. Do not include in a note any information you do not wish to be public.</p>
+						</section>
 
-			<section class="mb-8">
-				<h2 class="text-xl font-bold text-surface-900 dark:text-white mb-4">The AT Protocol & Data Portability</h2>
-				<p class="text-surface-700 dark:text-surface-300 mb-4">
-					Margin is built on the AT Protocol. Your notes, collections, and profile are stored as records in your Personal Data Server (PDS). This means:
-				</p>
-				<ul class="list-disc pl-5 mb-4 text-surface-700 dark:text-surface-300 space-y-1">
-					<li>You own your content</li>
-					<li>You can export your full data repository from your PDS at any time</li>
-					<li>Your data is portable — you can use it with other AT Protocol-compatible services</li>
-					<li>You can migrate your account to a different PDS without losing your content</li>
-				</ul>
-				<p class="text-surface-700 dark:text-surface-300 mb-4">
-					We also maintain a server-side index of public notes to power features like search, discovery, and the extension overlay. This index is derived from the public AT Protocol firehose and is used solely to operate the service.
-				</p>
+						<section id="rights" data-toc-section class="scroll-mt-6">
+							<h2 class="font-display font-bold text-xl text-surface-900 dark:text-white tracking-tight mb-2">Your rights</h2>
+							<p class="text-sm italic text-surface-500 dark:text-surface-400 mb-4">Access, rectification, erasure, restriction, portability, objection, and withdrawal of consent.</p>
+							<div class="space-y-3 text-[15px] text-surface-700 dark:text-surface-300 leading-relaxed">
+								<p>Subject to applicable law, you may exercise the following rights in respect of personal data we hold about you: access, rectification, erasure, restriction of processing, portability, objection to processing based on our legitimate interests (including profiling), and withdrawal of consent where processing is based on consent. You may also lodge a complaint with your competent supervisory authority. Your AT Protocol repository remains independently exportable from your Personal Data Server at any time.</p>
+								<p>To exercise these rights, contact <a href="mailto:hello@margin.at" class="text-primary-600 dark:text-primary-400 hover:underline font-medium">hello@margin.at</a>. We will respond within the timeframes required by applicable law (one month under the GDPR, extendable by a further two months for complex requests). We may need to verify your identity. We will not discriminate against you for exercising your rights.</p>
+								<p>If you reside in California, the CCPA and CPRA grant additional rights, including the right to know, delete, correct, and limit the use of sensitive personal information. We do not sell or share personal information for cross-context behavioural advertising.</p>
+							</div>
+						</section>
 
-				<h3 class="text-lg font-semibold text-surface-900 dark:text-white mb-2">Margin PDS (margin.cafe)</h3>
-				<p class="text-surface-700 dark:text-surface-300 mb-4">
-					We operate an optional Personal Data Server at <strong>margin.cafe</strong>. If you create an account there, we additionally store:
-				</p>
-				<ul class="list-disc pl-5 mb-4 text-surface-700 dark:text-surface-300 space-y-1">
-					<li>Your account credentials (password is hashed and never stored in plain text)</li>
-					<li>Your email address (for account recovery)</li>
-					<li>All AT Protocol data repositories you create on this server</li>
-				</ul>
-				<p class="text-surface-700 dark:text-surface-300">
-					Using margin.cafe is entirely optional — Margin works with any AT Protocol PDS. You can migrate your account to a different PDS at any time using standard AT Protocol account migration.
-				</p>
-			</section>
+						<section id="children" data-toc-section class="scroll-mt-6">
+							<h2 class="font-display font-bold text-xl text-surface-900 dark:text-white tracking-tight mb-2">Children</h2>
+							<p class="text-sm italic text-surface-500 dark:text-surface-400 mb-4">Not directed to children under 13, or under 16 in the EEA and UK.</p>
+							<p class="text-[15px] text-surface-700 dark:text-surface-300 leading-relaxed">The Service is not directed to children under 13 years of age, or under 16 in the European Economic Area, the United Kingdom, or other jurisdictions with a higher age of digital consent. We do not knowingly collect personal data from such children. If you believe a child has provided us with personal data, please contact <a href="mailto:hello@margin.at" class="text-primary-600 dark:text-primary-400 hover:underline font-medium">hello@margin.at</a> and we will take appropriate steps to delete it.</p>
+						</section>
 
-			<section class="mb-8">
-				<h2 class="text-xl font-bold text-surface-900 dark:text-white mb-4">Public Content</h2>
-				<p class="text-surface-700 dark:text-surface-300 mb-4">
-					Notes you create are public by default on the AT Protocol network. This means they may be visible to:
-				</p>
-				<ul class="list-disc pl-5 mb-4 text-surface-700 dark:text-surface-300 space-y-1">
-					<li>Other Margin users viewing the same webpage</li>
-					<li>Anyone on the AT Protocol network who subscribes to public records</li>
-				</ul>
-			</section>
+						<section id="contact" data-toc-section class="scroll-mt-6">
+							<h2 class="font-display font-bold text-xl text-surface-900 dark:text-white tracking-tight mb-2">Contact</h2>
+							<address class="not-italic text-[15px] text-surface-700 dark:text-surface-300 leading-relaxed">
+								<strong class="text-surface-900 dark:text-white">Padding Labs LLC</strong><br />
+								<a href="mailto:hello@margin.at" class="text-primary-600 dark:text-primary-400 hover:underline font-medium">hello@margin.at</a>
+							</address>
+							<p class="text-[13px] text-surface-500 dark:text-surface-400 mt-4">We may amend this Policy from time to time. The "Last updated" date reflects the most recent revision. For material changes we will provide reasonable advance notice.</p>
+						</section>
+					</div>
+				</div>
 
-			<section class="mb-8">
-				<h2 class="text-xl font-bold text-surface-900 dark:text-white mb-4">Browser Extension Permissions</h2>
-				<p class="text-surface-700 dark:text-surface-300 mb-4">The Margin browser extension requires the following permissions:</p>
-				<ul class="list-disc pl-5 mb-4 text-surface-700 dark:text-surface-300 space-y-1">
-					<li><strong>All URLs:</strong> To display and create notes on any webpage. Overlay lookups use a local SHA-256 hash of the URL — the raw URL is only sent when you actively create a note.</li>
-					<li><strong>Storage:</strong> To save your preferences and session locally</li>
-					<li><strong>Cookies:</strong> To maintain your logged-in session</li>
-					<li><strong>Tabs:</strong> To know which page you're currently viewing</li>
-				</ul>
-			</section>
-
-			<section class="mb-8">
-				<h2 class="text-xl font-bold text-surface-900 dark:text-white mb-4">Your Rights</h2>
-				<p class="text-surface-700 dark:text-surface-300 mb-4">You can:</p>
-				<ul class="list-disc pl-5 mb-4 text-surface-700 dark:text-surface-300 space-y-1">
-					<li>Delete any note or reply you've created</li>
-					<li>Delete your collections</li>
-					<li>Export your full data repository from your PDS</li>
-					<li>Revoke Margin's OAuth access to your account at any time</li>
-					<li>Request deletion of your margin.cafe account by contacting us — deletion of AT Protocol data on your PDS is governed by your PDS provider</li>
-				</ul>
-				<p class="text-surface-700 dark:text-surface-300">
-					To exercise any of these rights, email us at <a href="mailto:hello@margin.at" class="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline">hello@margin.at</a>.
-				</p>
-			</section>
-
-			<section class="mb-8">
-				<h2 class="text-xl font-bold text-surface-900 dark:text-white mb-4">Contact</h2>
-				<p class="text-surface-700 dark:text-surface-300">
-					For privacy questions or concerns, contact us at <a href="mailto:hello@margin.at" class="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline">hello@margin.at</a>
-				</p>
-			</section>
+				<aside class="hidden lg:block">
+					<details class="sticky top-6 group" open>
+						<summary class="cursor-pointer list-none flex items-center gap-1.5 py-2 text-[11px] font-semibold text-surface-400 dark:text-surface-500 uppercase tracking-[0.12em] hover:text-surface-700 dark:hover:text-surface-200 transition-colors">
+							<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="transition-transform group-open:rotate-90"><path d="m9 18 6-6-6-6"/></svg>
+							On this page
+						</summary>
+						<ol class="mt-3 space-y-0.5 text-[13px]">
+							{sections.map((s) => (
+								<li>
+									<a href={`#${s.id}`} data-toc-link={s.id} class="toc-link block py-1 text-surface-500 dark:text-surface-500 hover:text-surface-900 dark:hover:text-white transition-colors leading-snug">{s.title}</a>
+								</li>
+							))}
+						</ol>
+					</details>
+				</aside>
+			</div>
 		</div>
 	</div>
+
+	<script>
+		const links = document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]');
+		const sections = document.querySelectorAll<HTMLElement>('[data-toc-section]');
+		if (links.length && sections.length) {
+			const setActive = (id: string) => {
+				links.forEach((l) => {
+					if (l.dataset.tocLink === id) {
+						l.classList.add('text-primary-600', 'dark:text-primary-400', 'font-medium');
+						l.classList.remove('text-surface-500', 'dark:text-surface-500');
+					} else {
+						l.classList.remove('text-primary-600', 'dark:text-primary-400', 'font-medium');
+						l.classList.add('text-surface-500', 'dark:text-surface-500');
+					}
+				});
+			};
+			let current = sections[0].id;
+			setActive(current);
+			const obs = new IntersectionObserver(
+				(entries) => {
+					const visible = entries
+						.filter((e) => e.isIntersecting)
+						.sort((a, b) => (a.target as HTMLElement).offsetTop - (b.target as HTMLElement).offsetTop);
+					if (visible.length > 0) {
+						current = visible[0].target.id;
+						setActive(current);
+					}
+				},
+				{ rootMargin: '-15% 0px -70% 0px', threshold: 0 }
+			);
+			sections.forEach((s) => obs.observe(s));
+		}
+	</script>
 </BaseLayout>

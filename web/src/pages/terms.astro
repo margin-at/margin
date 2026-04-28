@@ -1,105 +1,182 @@
 ---
 import BaseLayout from '../layouts/StaticLayout.astro';
+
+const lastUpdated = 'April 27, 2026';
+const effectiveDate = 'May 1, 2026';
+
+const sections = [
+	{ id: 'agreement', title: 'Agreement' },
+	{ id: 'eligibility', title: 'Eligibility' },
+	{ id: 'your-content', title: 'Your content' },
+	{ id: 'acceptable-use', title: 'Acceptable use' },
+	{ id: 'suspension', title: 'Suspension and termination' },
+	{ id: 'copyright', title: 'Copyright (DMCA)' },
+	{ id: 'disclaimers', title: 'Disclaimers and liability' },
+	{ id: 'indemnity', title: 'Indemnity' },
+	{ id: 'governing-law', title: 'Governing law and changes' },
+	{ id: 'contact', title: 'Contact' },
+];
 ---
 
 <BaseLayout title="Terms of Service - Margin" description="Margin Terms of Service">
-	<div class="max-w-3xl mx-auto py-12 px-4">
-		<a href="/home" class="inline-flex items-center gap-2 text-sm font-medium text-surface-500 hover:text-surface-900 dark:hover:text-white transition-colors mb-8">
-			<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
-			<span>Home</span>
-		</a>
+	<div class="min-h-screen bg-surface-100 dark:bg-surface-900">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 pt-10 md:pt-14 pb-20">
+			<a href="/home" class="inline-flex items-center gap-1.5 text-sm font-medium text-surface-500 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white transition-colors mb-8">
+				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+				Back
+			</a>
 
-		<div class="prose prose-surface dark:prose-invert max-w-none">
-			<h1 class="font-display font-bold text-3xl mb-2 text-surface-900 dark:text-white">Terms of Service</h1>
-			<p class="text-surface-500 dark:text-surface-400 mb-8">Last updated: April 14, 2026</p>
+			<div class="lg:grid lg:grid-cols-[minmax(0,1fr)_200px] lg:gap-12">
+				<div class="bg-white dark:bg-surface-800 rounded-2xl px-5 sm:px-8 lg:px-12 py-10 md:py-14 lg:min-w-0">
+					<header class="mb-12">
+						<p class="text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider mb-3">Legal</p>
+						<h1 class="font-display font-bold text-3xl md:text-4xl text-surface-900 dark:text-white tracking-tight mb-2">Terms of Service</h1>
+						<p class="text-sm text-surface-500 dark:text-surface-400">Effective {effectiveDate} &middot; Last updated {lastUpdated}</p>
+					</header>
 
-			<section class="mb-8">
-				<h2 class="text-xl font-bold text-surface-900 dark:text-white mb-4">Overview</h2>
-				<p class="text-surface-700 dark:text-surface-300 leading-relaxed">
-					Margin is a web annotation tool built on the AT Protocol, operated by Padding Labs LLC ("we", "our", or "us"). By using Margin (the "Service"), you agree to these Terms. If you do not agree, please do not use the Service. You must be at least 13 years old to use Margin.
-				</p>
-			</section>
+					<details class="lg:hidden mb-10 rounded-xl border border-surface-200 dark:border-surface-700/60 overflow-hidden">
+						<summary class="cursor-pointer px-4 py-3 text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider bg-surface-50 dark:bg-surface-900/40">On this page</summary>
+						<ol class="px-4 py-3 space-y-0.5 text-sm">
+							{sections.map((s) => (
+								<li><a href={`#${s.id}`} class="block py-1 text-surface-600 dark:text-surface-400">{s.title}</a></li>
+							))}
+						</ol>
+					</details>
 
-			<section class="mb-8">
-				<h2 class="text-xl font-bold text-surface-900 dark:text-white mb-4">Open Source</h2>
-				<p class="text-surface-700 dark:text-surface-300 leading-relaxed">
-					Margin is open source software. The source code is publicly available and provided "as is", without warranty of any kind, express or implied. These Terms govern your use of the hosted service at margin.at, not the source code itself.
-				</p>
-			</section>
+					<div class="space-y-12 max-w-2xl">
+						<section id="agreement" data-toc-section class="scroll-mt-6">
+							<h2 class="font-display font-bold text-xl text-surface-900 dark:text-white tracking-tight mb-2">Agreement</h2>
+							<p class="text-sm italic text-surface-500 dark:text-surface-400 mb-4">These Terms govern your use of Margin. Using it means you accept them.</p>
+							<p class="text-[15px] text-surface-700 dark:text-surface-300 leading-relaxed">These Terms of Service govern your access to and use of Margin, an open-source web annotation tool built on the AT Protocol, and the Margin Personal Data Server at margin.cafe (together, the "Service"), provided by Padding Labs LLC ("we", "us", "our"). By accessing or using the Service you agree to be bound by these Terms and by our <a href="/privacy" class="text-primary-600 dark:text-primary-400 hover:underline font-medium">Privacy Policy</a>. If you do not agree, you must not use the Service.</p>
+						</section>
 
-			<section class="mb-8">
-				<h2 class="text-xl font-bold text-surface-900 dark:text-white mb-4">Your Content</h2>
-				<p class="text-surface-700 dark:text-surface-300 mb-4">
-					You retain full ownership of all notes and other content you create ("Your Content"). By using the Service, you grant Padding Labs LLC a limited, non-exclusive, royalty-free license to store, index, display, and sync Your Content solely as needed to operate and improve the Service.
-				</p>
-				<p class="text-surface-700 dark:text-surface-300">
-					Because Margin is built on the AT Protocol, Your Content is stored as records on your Personal Data Server (PDS). It is portable and exportable at any time — we do not lock you in.
-				</p>
-			</section>
+						<section id="eligibility" data-toc-section class="scroll-mt-6">
+							<h2 class="font-display font-bold text-xl text-surface-900 dark:text-white tracking-tight mb-2">Eligibility</h2>
+							<p class="text-sm italic text-surface-500 dark:text-surface-400 mb-4">Be 13 or older (16 in the EEA and UK), legally able to agree, and not on a sanctions list.</p>
+							<p class="text-[15px] text-surface-700 dark:text-surface-300 leading-relaxed">You must be at least 13 years of age to use the Service, or 16 if you reside in the European Economic Area, the United Kingdom, or another jurisdiction with a higher age of digital consent. You must have the legal capacity to enter into a binding agreement. You represent that you are not located in a country subject to comprehensive United States sanctions and that you are not on a U.S. government list of restricted parties.</p>
+						</section>
 
-			<section class="mb-8">
-				<h2 class="text-xl font-bold text-surface-900 dark:text-white mb-4">Public Notes</h2>
-				<p class="text-surface-700 dark:text-surface-300 leading-relaxed">
-					Notes you create are public by default on the AT Protocol network and may be visible to other users and services that interact with the network. Do not include sensitive or private information in your notes if you do not want it to be publicly visible.
-				</p>
-			</section>
+						<section id="your-content" data-toc-section class="scroll-mt-6">
+							<h2 class="font-display font-bold text-xl text-surface-900 dark:text-white tracking-tight mb-2">Your content</h2>
+							<p class="text-sm italic text-surface-500 dark:text-surface-400 mb-4">You own your content. Notes are public by default and we cannot recall federated copies.</p>
+							<div class="space-y-3 text-[15px] text-surface-700 dark:text-surface-300 leading-relaxed">
+								<p>You retain all ownership rights in the content you submit through the Service ("User Content"). You grant us a worldwide, non-exclusive, royalty-free licence to host, store, reproduce, transmit, index, generate vector representations of, and display User Content as necessary to operate the Service. This licence terminates when you remove the relevant User Content, save for retention required by law, retention in routine backups for a reasonable period, and copies already disseminated to third parties via the AT Protocol that are outside our control.</p>
+								<p>Records you publish through the AT Protocol are public by default and may be retrieved, copied, indexed, and re-displayed by any third party. Removal from your Personal Data Server does not guarantee removal from such third parties. You are solely responsible for User Content and represent that you hold all rights necessary to publish it.</p>
+							</div>
+						</section>
 
-			<section class="mb-8">
-				<h2 class="text-xl font-bold text-surface-900 dark:text-white mb-4">User Conduct</h2>
-				<p class="text-surface-700 dark:text-surface-300 mb-4">
-					You are responsible for your use of the Service and for any content you provide, including compliance with applicable laws, rules, and regulations.
-				</p>
-				<p class="text-surface-700 dark:text-surface-300 mb-4">
-					We reserve the right to remove content or suspend access for violations of these Terms, including but not limited to:
-				</p>
-				<ul class="list-disc pl-5 mb-4 text-surface-700 dark:text-surface-300 space-y-1">
-					<li>Illegal content</li>
-					<li>Harassment or hate speech</li>
-					<li>Spam or malicious content</li>
-				</ul>
-			</section>
+						<section id="acceptable-use" data-toc-section class="scroll-mt-6">
+							<h2 class="font-display font-bold text-xl text-surface-900 dark:text-white tracking-tight mb-2">Acceptable use</h2>
+							<p class="text-sm italic text-surface-500 dark:text-surface-400 mb-4">Do not break the law or harm other users.</p>
+							<div class="space-y-3 text-[15px] text-surface-700 dark:text-surface-300 leading-relaxed">
+								<p>You agree not to use the Service to:</p>
+								<ul class="list-disc pl-5 space-y-1.5 marker:text-surface-400 dark:marker:text-surface-600">
+									<li>violate applicable law or any third-party right;</li>
+									<li>post unlawful material, child sexual abuse material, terrorist content, non-consensual intimate imagery, or content that infringes intellectual property;</li>
+									<li>harass, threaten, dox, or impersonate any person;</li>
+									<li>transmit spam, phishing, fraud, or malware;</li>
+									<li>attack, disrupt, or probe the Service, or circumvent rate limits, access controls, or other technical measures; or</li>
+									<li>scrape or harvest data outside our public APIs, or train machine-learning models on User Content other than your own.</li>
+								</ul>
+							</div>
+						</section>
 
-			<section class="mb-8">
-				<h2 class="text-xl font-bold text-surface-900 dark:text-white mb-4">The AT Protocol</h2>
-				<p class="text-surface-700 dark:text-surface-300 leading-relaxed">
-					Margin interacts with the AT Protocol network. We do not control the network itself, other services on the network, or the data stored on your Personal Data Server. Your PDS provider's own terms govern data stored there. Content published to the AT Protocol is public and may be indexed by other services beyond Margin's control.
-				</p>
-			</section>
+						<section id="suspension" data-toc-section class="scroll-mt-6">
+							<h2 class="font-display font-bold text-xl text-surface-900 dark:text-white tracking-tight mb-2">Suspension and termination</h2>
+							<p class="text-sm italic text-surface-500 dark:text-surface-400 mb-4">We may remove content or accounts for violations. You may appeal.</p>
+							<p class="text-[15px] text-surface-700 dark:text-surface-300 leading-relaxed">You may discontinue use of the Service at any time. We may suspend or terminate your access, or remove specific User Content, where we reasonably determine that you have breached these Terms, the law requires us to do so, or such action is necessary to protect users or third parties. Where we take such action, and unless prohibited by law, we will provide a statement of reasons. You may appeal by replying to the relevant notice or by writing to <a href="mailto:hello@margin.at" class="text-primary-600 dark:text-primary-400 hover:underline font-medium">hello@margin.at</a> within six months.</p>
+						</section>
 
-			<section class="mb-8">
-				<h2 class="text-xl font-bold text-surface-900 dark:text-white mb-4">Disclaimer of Warranties</h2>
-				<p class="text-surface-700 dark:text-surface-300 leading-relaxed">
-					The Service is provided "as is" and "as available" without warranties of any kind, either express or implied, including but not limited to implied warranties of merchantability, fitness for a particular purpose, or non-infringement. We do not warrant that the Service will be uninterrupted, error-free, or free of harmful components.
-				</p>
-			</section>
+						<section id="copyright" data-toc-section class="scroll-mt-6">
+							<h2 class="font-display font-bold text-xl text-surface-900 dark:text-white tracking-tight mb-2">Copyright (DMCA)</h2>
+							<p class="text-sm italic text-surface-500 dark:text-surface-400 mb-4">Send a properly-formed DMCA notice if your copyright is infringed.</p>
+							<p class="text-[15px] text-surface-700 dark:text-surface-300 leading-relaxed">We respond to notices that comply with the U.S. Digital Millennium Copyright Act. If you believe content on the Service infringes your copyright, send a notice containing the elements required by 17 U.S.C. § 512(c)(3) to <a href="mailto:hello@margin.at" class="text-primary-600 dark:text-primary-400 hover:underline font-medium">hello@margin.at</a> with the subject line "DMCA Notice". Knowingly false notices may give rise to liability under § 512(f). We terminate the accounts of repeat infringers.</p>
+						</section>
 
-			<section class="mb-8">
-				<h2 class="text-xl font-bold text-surface-900 dark:text-white mb-4">Limitation of Liability</h2>
-				<p class="text-surface-700 dark:text-surface-300 leading-relaxed">
-					To the fullest extent permitted by law, Padding Labs LLC shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising out of or related to your use of the Service. Because Margin is provided free of charge, our total aggregate liability to you shall not exceed $0.
-				</p>
-			</section>
+						<section id="disclaimers" data-toc-section class="scroll-mt-6">
+							<h2 class="font-display font-bold text-xl text-surface-900 dark:text-white tracking-tight mb-2">Disclaimers and liability</h2>
+							<p class="text-sm italic text-surface-500 dark:text-surface-400 mb-4">Provided "as is". Aggregate liability capped at US$50. Mandatory protections still apply.</p>
+							<div class="space-y-3 text-[15px] text-surface-700 dark:text-surface-300 leading-relaxed">
+								<p>To the maximum extent permitted by law, the Service is provided <strong>"as is" and "as available"</strong>, without warranties of any kind, express or implied, including merchantability, fitness for a particular purpose, and non-infringement. We do not warrant that the Service will be uninterrupted, secure, or free from defects.</p>
+								<p>To the maximum extent permitted by law, we shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or for loss of profits, revenue, goodwill, or data. Our aggregate liability arising out of or relating to the Service shall not exceed the greater of fifty United States dollars (US$50) or the amount you paid us during the twelve months preceding the event giving rise to the claim.</p>
+								<p>Nothing in these Terms excludes or limits liability that cannot be excluded or limited under applicable law, including liability for fraud, gross negligence, wilful misconduct, or death or personal injury caused by negligence.</p>
+							</div>
+						</section>
 
-			<section class="mb-8">
-				<h2 class="text-xl font-bold text-surface-900 dark:text-white mb-4">Governing Law</h2>
-				<p class="text-surface-700 dark:text-surface-300 leading-relaxed">
-					These Terms are governed by the laws of the State of Wyoming, without regard to its conflict of law provisions.
-				</p>
-			</section>
+						<section id="indemnity" data-toc-section class="scroll-mt-6">
+							<h2 class="font-display font-bold text-xl text-surface-900 dark:text-white tracking-tight mb-2">Indemnity</h2>
+							<p class="text-sm italic text-surface-500 dark:text-surface-400 mb-4">If your conduct or content gives rise to a claim against us, you cover our costs.</p>
+							<p class="text-[15px] text-surface-700 dark:text-surface-300 leading-relaxed">To the extent permitted by law, you shall indemnify, defend, and hold us harmless from any third-party claim, demand, or proceeding arising out of your User Content, your use of the Service, or your breach of these Terms or applicable law. This obligation does not apply where prohibited by mandatory consumer-protection law.</p>
+						</section>
 
-			<section class="mb-8">
-				<h2 class="text-xl font-bold text-surface-900 dark:text-white mb-4">Changes to These Terms</h2>
-				<p class="text-surface-700 dark:text-surface-300 leading-relaxed">
-					We may update these Terms from time to time. We will note the date of the last update at the top of this page. Continued use of the Service after changes constitutes acceptance of the updated Terms.
-				</p>
-			</section>
+						<section id="governing-law" data-toc-section class="scroll-mt-6">
+							<h2 class="font-display font-bold text-xl text-surface-900 dark:text-white tracking-tight mb-2">Governing law and changes</h2>
+							<p class="text-sm italic text-surface-500 dark:text-surface-400 mb-4">Wyoming law applies. We give notice of material changes.</p>
+							<div class="space-y-3 text-[15px] text-surface-700 dark:text-surface-300 leading-relaxed">
+								<p>These Terms are governed by the laws of the State of Wyoming, without regard to its conflict-of-laws rules. The state and federal courts located in Sheridan County, Wyoming shall have exclusive jurisdiction over any dispute, save where mandatory consumer-protection law in your country of residence provides otherwise. Before commencing any claim, you agree to contact us at <a href="mailto:hello@margin.at" class="text-primary-600 dark:text-primary-400 hover:underline font-medium">hello@margin.at</a> and to attempt to resolve the matter informally for a period of sixty days.</p>
+								<p>We may amend these Terms from time to time. We will provide at least thirty days' notice of any material change by in-product notice or, where applicable, by email. If any provision is held unenforceable, the remainder of these Terms shall continue in full force and effect. We may assign these Terms in connection with a merger, acquisition, reorganisation, or sale.</p>
+							</div>
+						</section>
 
-			<section class="mb-8">
-				<h2 class="text-xl font-bold text-surface-900 dark:text-white mb-4">Contact</h2>
-				<p class="text-surface-700 dark:text-surface-300">
-					For questions about these Terms, contact us at <a href="mailto:hello@margin.at" class="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:underline">hello@margin.at</a>
-				</p>
-			</section>
+						<section id="contact" data-toc-section class="scroll-mt-6">
+							<h2 class="font-display font-bold text-xl text-surface-900 dark:text-white tracking-tight mb-2">Contact</h2>
+							<address class="not-italic text-[15px] text-surface-700 dark:text-surface-300 leading-relaxed">
+								<strong class="text-surface-900 dark:text-white">Padding Labs LLC</strong><br />
+								<a href="mailto:hello@margin.at" class="text-primary-600 dark:text-primary-400 hover:underline font-medium">hello@margin.at</a>
+							</address>
+						</section>
+					</div>
+				</div>
+
+				<aside class="hidden lg:block">
+					<details class="sticky top-6 group" open>
+						<summary class="cursor-pointer list-none flex items-center gap-1.5 py-2 text-[11px] font-semibold text-surface-400 dark:text-surface-500 uppercase tracking-[0.12em] hover:text-surface-700 dark:hover:text-surface-200 transition-colors">
+							<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="transition-transform group-open:rotate-90"><path d="m9 18 6-6-6-6"/></svg>
+							On this page
+						</summary>
+						<ol class="mt-3 space-y-0.5 text-[13px]">
+							{sections.map((s) => (
+								<li>
+									<a href={`#${s.id}`} data-toc-link={s.id} class="toc-link block py-1 text-surface-500 dark:text-surface-500 hover:text-surface-900 dark:hover:text-white transition-colors leading-snug">{s.title}</a>
+								</li>
+							))}
+						</ol>
+					</details>
+				</aside>
+			</div>
 		</div>
 	</div>
+
+	<script>
+		const links = document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]');
+		const sections = document.querySelectorAll<HTMLElement>('[data-toc-section]');
+		if (links.length && sections.length) {
+			const setActive = (id: string) => {
+				links.forEach((l) => {
+					if (l.dataset.tocLink === id) {
+						l.classList.add('text-primary-600', 'dark:text-primary-400', 'font-medium');
+						l.classList.remove('text-surface-500', 'dark:text-surface-500');
+					} else {
+						l.classList.remove('text-primary-600', 'dark:text-primary-400', 'font-medium');
+						l.classList.add('text-surface-500', 'dark:text-surface-500');
+					}
+				});
+			};
+			let current = sections[0].id;
+			setActive(current);
+			const obs = new IntersectionObserver(
+				(entries) => {
+					const visible = entries
+						.filter((e) => e.isIntersecting)
+						.sort((a, b) => (a.target as HTMLElement).offsetTop - (b.target as HTMLElement).offsetTop);
+					if (visible.length > 0) {
+						current = visible[0].target.id;
+						setActive(current);
+					}
+				},
+				{ rootMargin: '-15% 0px -70% 0px', threshold: 0 }
+			);
+			sections.forEach((s) => obs.observe(s));
+		}
+	</script>
 </BaseLayout>
