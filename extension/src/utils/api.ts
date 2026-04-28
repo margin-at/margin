@@ -8,11 +8,44 @@ async function getApiUrl(): Promise<string> {
 async function getSessionCookie(): Promise<string | null> {
   try {
     const apiUrl = await getApiUrl();
-    const cookie = await browser.cookies.get({
-      url: apiUrl,
-      name: 'margin_session',
-    });
-    return cookie?.value || null;
+
+    const readFrom = async (storeId?: string) => {
+      const cookie = await browser.cookies.get({
+        url: apiUrl,
+        name: 'margin_session',
+        ...(storeId ? { storeId } : {}),
+      });
+      return cookie?.value || null;
+    };
+
+    let activeStoreId: string | undefined;
+    try {
+      const [activeTab] = await browser.tabs.query({ active: true, currentWindow: true });
+      activeStoreId = (activeTab as { cookieStoreId?: string } | undefined)?.cookieStoreId;
+    } catch {
+      // ignore: tabs.query can fail in some contexts
+    }
+
+    if (activeStoreId) {
+      const value = await readFrom(activeStoreId);
+      if (value) return value;
+    }
+
+    const defaultValue = await readFrom();
+    if (defaultValue) return defaultValue;
+
+    try {
+      const stores = await browser.cookies.getAllCookieStores();
+      for (const store of stores) {
+        if (store.id === activeStoreId) continue;
+        const value = await readFrom(store.id);
+        if (value) return value;
+      }
+    } catch {
+      // ignore: getAllCookieStores may not be supported everywhere
+    }
+
+    return null;
   } catch (error) {
     console.error('Get cookie error:', error);
     return null;
