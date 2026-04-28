@@ -787,6 +787,12 @@ export default function About() {
                 {t("about.footer.terms")}
               </a>
               <a
+                href="/brand"
+                className="hover:text-surface-600 dark:hover:text-surface-300 transition-colors"
+              >
+                Brand
+              </a>
+              <a
                 href="https://github.com/margin-at"
                 target="_blank"
                 rel="noreferrer"

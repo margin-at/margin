@@ -1,0 +1,248 @@
+---
+import BaseLayout from '../layouts/StaticLayout.astro';
+
+const sections = [
+	{ id: 'logo', title: 'Logo' },
+	{ id: 'colors', title: 'Colors' },
+	{ id: 'typography', title: 'Typography' },
+	{ id: 'usage', title: 'Usage guidelines' },
+];
+---
+
+<BaseLayout title="Brand — Margin" description="Margin brand guidelines">
+	<div class="min-h-screen bg-surface-100 dark:bg-surface-900">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 pt-10 md:pt-14 pb-20">
+			<a href="/home" class="inline-flex items-center gap-1.5 text-sm font-medium text-surface-500 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white transition-colors mb-8">
+				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+				Back
+			</a>
+
+			<div class="lg:grid lg:grid-cols-[minmax(0,1fr)_200px] lg:gap-12">
+				<div class="bg-white dark:bg-surface-800 rounded-2xl px-5 sm:px-8 lg:px-12 py-10 md:py-14 lg:min-w-0">
+					<header class="mb-12">
+						<p class="text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider mb-3">Brand</p>
+						<h1 class="font-display font-bold text-3xl md:text-4xl text-surface-900 dark:text-white tracking-tight mb-2">Brand Guidelines</h1>
+						<p class="text-[15px] text-surface-500 dark:text-surface-400">Assets and rules for representing Margin in third-party contexts.</p>
+					</header>
+
+					<details class="lg:hidden mb-10 rounded-xl border border-surface-200 dark:border-surface-700/60 overflow-hidden">
+						<summary class="cursor-pointer px-4 py-3 text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider bg-surface-50 dark:bg-surface-900/40">On this page</summary>
+						<ol class="px-4 py-3 space-y-0.5 text-sm">
+							{sections.map((s) => (
+								<li><a href={`#${s.id}`} class="block py-1 text-surface-600 dark:text-surface-400">{s.title}</a></li>
+							))}
+						</ol>
+					</details>
+
+					<div class="space-y-14">
+
+						<section id="logo" data-toc-section class="scroll-mt-6">
+							<h2 class="font-display font-bold text-xl text-surface-900 dark:text-white tracking-tight mb-1">Logo</h2>
+							<p class="text-sm text-surface-500 dark:text-surface-400 mb-6">Use the SVG whenever possible. Do not alter the shape, proportions, or color.</p>
+
+							<div class="grid sm:grid-cols-2 gap-3 mb-6">
+								<div class="rounded-xl border border-surface-200 dark:border-surface-700/60 bg-white flex items-center justify-center h-36">
+									<svg width="56" height="49" viewBox="0 0 265 231" fill="#027bff" xmlns="http://www.w3.org/2000/svg">
+										<path d="M0 230 V0 H199 V65.7156 H149.5 V115.216 H182.5 L199 131.716 V230 Z"/>
+										<path d="M215 214.224 V230 H264.5 V0 H215 V16.2242 H248.5 V214.224 H215 Z"/>
+									</svg>
+								</div>
+								<div class="rounded-xl border border-surface-700/60 bg-surface-900 flex items-center justify-center h-36">
+									<svg width="56" height="49" viewBox="0 0 265 231" fill="#027bff" xmlns="http://www.w3.org/2000/svg">
+										<path d="M0 230 V0 H199 V65.7156 H149.5 V115.216 H182.5 L199 131.716 V230 Z"/>
+										<path d="M215 214.224 V230 H264.5 V0 H215 V16.2242 H248.5 V214.224 H215 Z"/>
+									</svg>
+								</div>
+							</div>
+
+							<div class="flex flex-wrap gap-3 mb-8">
+								<a href="/logo.svg" download class="inline-flex items-center gap-1.5 text-sm font-medium text-surface-600 dark:text-surface-300 border border-surface-200 dark:border-surface-700 rounded-lg px-3 py-1.5 hover:border-surface-400 dark:hover:border-surface-500 transition-colors">
+									<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+									SVG
+								</a>
+								<a href="/logo.png" download class="inline-flex items-center gap-1.5 text-sm font-medium text-surface-600 dark:text-surface-300 border border-surface-200 dark:border-surface-700 rounded-lg px-3 py-1.5 hover:border-surface-400 dark:hover:border-surface-500 transition-colors">
+									<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+									PNG
+								</a>
+							</div>
+
+							<div class="space-y-2 text-[15px] text-surface-700 dark:text-surface-300 leading-relaxed">
+								<p class="font-medium text-surface-900 dark:text-white text-sm">Do not:</p>
+								<ul class="list-disc pl-5 space-y-1.5 marker:text-surface-400 dark:marker:text-surface-600">
+									<li>Recolor the logo to anything other than <span class="font-mono text-[13px] px-1 py-0.5 rounded bg-surface-100 dark:bg-surface-900">#027bff</span>, white, or black.</li>
+									<li>Stretch, rotate, or otherwise distort the mark.</li>
+									<li>Place the logo on a background that reduces legibility.</li>
+									<li>Add effects such as shadows, gradients, or outlines.</li>
+									<li>Use the logo in a way that implies an official partnership or endorsement without written permission from Padding Labs LLC.</li>
+								</ul>
+							</div>
+						</section>
+
+						<section id="colors" data-toc-section class="scroll-mt-6">
+							<h2 class="font-display font-bold text-xl text-surface-900 dark:text-white tracking-tight mb-1">Colors</h2>
+							<p class="text-sm text-surface-500 dark:text-surface-400 mb-6">Use <span class="font-mono text-[13px] px-1 py-0.5 rounded bg-surface-100 dark:bg-surface-900">#027bff</span> to match the logo. Use <span class="font-mono text-[13px] px-1 py-0.5 rounded bg-surface-100 dark:bg-surface-900">#2563eb</span> for interactive UI elements such as buttons and links.</p>
+
+							<div class="space-y-8">
+								<div>
+									<p class="text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider mb-3">Brand</p>
+									<div class="flex flex-wrap gap-3">
+										<div class="flex flex-col gap-1.5">
+											<div class="w-16 h-16 rounded-xl shadow-sm" style="background:#027bff;"></div>
+											<p class="text-xs font-mono text-surface-600 dark:text-surface-400">#027bff</p>
+											<p class="text-xs text-surface-500 dark:text-surface-500">Brand Blue</p>
+										</div>
+									</div>
+								</div>
+
+								<div>
+									<p class="text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider mb-3">Primary (UI)</p>
+									<div class="flex flex-wrap gap-3">
+										{[
+											{ hex: '#dbeafe', label: '100' },
+											{ hex: '#93c5fd', label: '300' },
+											{ hex: '#3b82f6', label: '500' },
+											{ hex: '#2563eb', label: '600' },
+											{ hex: '#1d4ed8', label: '700' },
+											{ hex: '#1e3a8a', label: '900' },
+										].map(({ hex, label }) => (
+											<div class="flex flex-col gap-1.5">
+												<div class="w-12 h-12 rounded-xl shadow-sm border border-black/5" style={`background:${hex};`}></div>
+												<p class="text-xs font-mono text-surface-600 dark:text-surface-400">{hex}</p>
+												<p class="text-xs text-surface-500 dark:text-surface-500">{label}</p>
+											</div>
+										))}
+									</div>
+								</div>
+
+								<div>
+									<p class="text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider mb-3">Surface (Neutral)</p>
+									<div class="flex flex-wrap gap-3">
+										{[
+											{ hex: '#f4f4f5', label: '100' },
+											{ hex: '#e4e4e7', label: '200' },
+											{ hex: '#a1a1aa', label: '400' },
+											{ hex: '#71717a', label: '500' },
+											{ hex: '#3f3f46', label: '700' },
+											{ hex: '#27272a', label: '800' },
+											{ hex: '#18181b', label: '900' },
+										].map(({ hex, label }) => (
+											<div class="flex flex-col gap-1.5">
+												<div class="w-12 h-12 rounded-xl shadow-sm border border-black/5" style={`background:${hex};`}></div>
+												<p class="text-xs font-mono text-surface-600 dark:text-surface-400">{hex}</p>
+												<p class="text-xs text-surface-500 dark:text-surface-500">{label}</p>
+											</div>
+										))}
+									</div>
+								</div>
+							</div>
+						</section>
+
+						<section id="typography" data-toc-section class="scroll-mt-6">
+							<h2 class="font-display font-bold text-xl text-surface-900 dark:text-white tracking-tight mb-1">Typography</h2>
+							<p class="text-sm text-surface-500 dark:text-surface-400 mb-6">Two typefaces, both from Google Fonts.</p>
+
+							<div class="space-y-5">
+								<div class="rounded-xl border border-surface-200 dark:border-surface-700/60 p-5">
+									<p class="text-xs font-semibold text-surface-400 dark:text-surface-500 uppercase tracking-wider mb-2">Display — Outfit</p>
+									<p class="font-display font-bold text-4xl text-surface-900 dark:text-white tracking-tight leading-tight">Annotate the web.</p>
+									<p class="text-xs text-surface-500 dark:text-surface-400 mt-3">Used for headings and display text. Weights 500, 600, 700.</p>
+								</div>
+								<div class="rounded-xl border border-surface-200 dark:border-surface-700/60 p-5">
+									<p class="text-xs font-semibold text-surface-400 dark:text-surface-500 uppercase tracking-wider mb-2">Body — Inter</p>
+									<p class="text-[15px] text-surface-700 dark:text-surface-300 leading-relaxed">Margin is an open-source web annotation tool built on the AT Protocol. Highlight, bookmark, and annotate any page, then share with the network.</p>
+									<p class="text-xs text-surface-500 dark:text-surface-400 mt-3">Used for body copy and UI. Weights 400, 500, 600, 700.</p>
+								</div>
+							</div>
+						</section>
+
+						<section id="usage" data-toc-section class="scroll-mt-6">
+							<h2 class="font-display font-bold text-xl text-surface-900 dark:text-white tracking-tight mb-1">Usage guidelines</h2>
+							<p class="text-sm text-surface-500 dark:text-surface-400 mb-6">Rules for referencing Margin in third-party apps, integrations, and content.</p>
+
+							<div class="space-y-6 text-[15px] text-surface-700 dark:text-surface-300 leading-relaxed">
+								<div>
+									<p class="font-medium text-surface-900 dark:text-white text-sm mb-2">Name</p>
+									<ul class="list-disc pl-5 space-y-1.5 marker:text-surface-400 dark:marker:text-surface-600">
+										<li>Write the product name as <strong>Margin</strong>, capitalized, with no prefix or suffix.</li>
+										<li>Do not write "margin", "MarginApp", "MarginAt", or similar variants.</li>
+										<li>On first reference, "Margin" is sufficient. You do not need to append "by Padding Labs" unless legal context requires it.</li>
+									</ul>
+								</div>
+
+								<div>
+									<p class="font-medium text-surface-900 dark:text-white text-sm mb-2">Permitted uses</p>
+									<ul class="list-disc pl-5 space-y-1.5 marker:text-surface-400 dark:marker:text-surface-600">
+										<li>Referring to Margin by name in editorial content, blog posts, and documentation.</li>
+										<li>Using the phrase "Works with Margin", "Built for Margin", or "Powered by Margin" in product descriptions.</li>
+										<li>Using the logo in "Works with" or "Get it on" badge contexts, unmodified and at a reasonable size.</li>
+									</ul>
+								</div>
+
+								<div>
+									<p class="font-medium text-surface-900 dark:text-white text-sm mb-2">Prohibited uses</p>
+									<ul class="list-disc pl-5 space-y-1.5 marker:text-surface-400 dark:marker:text-surface-600">
+										<li>Using the Margin name or logo as the primary element of a third-party product name or domain.</li>
+										<li>Implying affiliation, sponsorship, or endorsement by Padding Labs LLC without prior written consent.</li>
+										<li>Using brand assets in a way that is misleading, defamatory, or that violates any applicable law.</li>
+									</ul>
+								</div>
+
+								<p>For permissions beyond these guidelines, contact <a href="mailto:hello@margin.at" class="text-primary-600 dark:text-primary-400 hover:underline font-medium">hello@margin.at</a>.</p>
+							</div>
+						</section>
+
+					</div>
+				</div>
+
+				<aside class="hidden lg:block">
+					<details class="sticky top-6 group" open>
+						<summary class="cursor-pointer list-none flex items-center gap-1.5 py-2 text-[11px] font-semibold text-surface-400 dark:text-surface-500 uppercase tracking-[0.12em] hover:text-surface-700 dark:hover:text-surface-200 transition-colors">
+							<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="transition-transform group-open:rotate-90"><path d="m9 18 6-6-6-6"/></svg>
+							On this page
+						</summary>
+						<ol class="mt-3 space-y-0.5 text-[13px]">
+							{sections.map((s) => (
+								<li>
+									<a href={`#${s.id}`} data-toc-link={s.id} class="toc-link block py-1 text-surface-500 dark:text-surface-500 hover:text-surface-900 dark:hover:text-white transition-colors leading-snug">{s.title}</a>
+								</li>
+							))}
+						</ol>
+					</details>
+				</aside>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		const links = document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]');
+		const sections = document.querySelectorAll<HTMLElement>('[data-toc-section]');
+		if (links.length && sections.length) {
+			const setActive = (id: string) => {
+				links.forEach((l) => {
+					if (l.dataset.tocLink === id) {
+						l.classList.add('text-primary-600', 'dark:text-primary-400', 'font-medium');
+						l.classList.remove('text-surface-500', 'dark:text-surface-500');
+					} else {
+						l.classList.remove('text-primary-600', 'dark:text-primary-400', 'font-medium');
+						l.classList.add('text-surface-500', 'dark:text-surface-500');
+					}
+				});
+			};
+			let current = sections[0].id;
+			setActive(current);
+			const obs = new IntersectionObserver(
+				(entries) => {
+					const visible = entries
+						.filter((e) => e.isIntersecting)
+						.sort((a, b) => (a.target as HTMLElement).offsetTop - (b.target as HTMLElement).offsetTop);
+					if (visible.length > 0) {
+						current = visible[0].target.id;
+						setActive(current);
+					}
+				},
+				{ rootMargin: '-15% 0px -70% 0px', threshold: 0 }
+			);
+			sections.forEach((s) => obs.observe(s));
+		}
+	</script>
+</BaseLayout>

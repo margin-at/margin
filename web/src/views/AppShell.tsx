@@ -149,6 +149,7 @@ function AppLayout() {
       "/about",
       "/privacy",
       "/terms",
+      "/brand",
       "/auth/",
       "/api/",
       "/og-image",
