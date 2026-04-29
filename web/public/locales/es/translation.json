@@ -13,7 +13,8 @@
         "bookmarks": "Marcadores",
         "new": "Nuevo",
         "feed": "Feed",
-        "highlights": "Resaltados"
+        "highlights": "Resaltados",
+        "discover": ""
     },
     "pageTitles": {
         "home": "Inicio — Margin",
@@ -25,7 +26,8 @@
         "settings": "Configuración — Margin",
         "collections": "Colecciones — Margin",
         "admin": "Admin — Margin",
-        "highlights": "Resaltados — Margin"
+        "highlights": "Resaltados — Margin",
+        "discover": ""
     },
     "sidebar": {
         "getExtension": "Obtén la extensión",
@@ -36,7 +38,10 @@
         "trending": "Tendencias",
         "nothingTrending": "No hay nada en tendencia ahora mismo.",
         "searchPlaceholder": "Buscar personas, etiquetas, URLs…",
-        "copyright": "© 2026 Padding Labs LLC"
+        "copyright": "© 2026 Padding Labs LLC",
+        "postCount_one": "",
+        "postCount_many": "",
+        "postCount_other": ""
     },
     "mobileNav": {
         "iosShortcut": "Atajo de iOS"
@@ -50,7 +55,8 @@
             "recent": "Recientes",
             "popular": "Popular",
             "margin": "Margin",
-            "semble": "Semble"
+            "semble": "Semble",
+            "shelved": ""
         },
         "filters": {
             "all": "Todo",
@@ -194,7 +200,11 @@
         "termsPrefix": "Al iniciar sesión, aceptas nuestros",
         "termsLink": "Términos de servicio",
         "termsAnd": "y",
-        "privacyLink": "Política de privacidad"
+        "privacyLink": "Política de privacidad",
+        "bannedMessage": "",
+        "bannedSignOut": "",
+        "bannedAppeal": "",
+        "bannedTitle": ""
     },
     "signUp": {
         "title": "Crea tu cuenta",
@@ -374,6 +384,390 @@
         "emojisTab": "Emojis",
         "selected": "Seleccionado:",
         "cancel": "Cancelar",
-        "save": "Guardar cambios"
+        "save": "Guardar cambios",
+        "saving": "",
+        "errorUpdating": "",
+        "failedUpdate": ""
+    },
+    "annotationDetail": {
+        "reply": "",
+        "mayBeDeleted": "",
+        "replyPlaceholder": "",
+        "back": "",
+        "signInToReply": "",
+        "failedReply": "",
+        "notFound": "",
+        "failedDelete": "",
+        "replyingTo": "",
+        "logIn": "",
+        "failedResolve": "",
+        "backToFeed": "",
+        "replies": "",
+        "deleteReplyConfirm": ""
+    },
+    "iosShortcut": {
+        "step6Title": "",
+        "step3Title": "",
+        "step4Title": "",
+        "step1Link": "",
+        "step2Title": "",
+        "step6Description": "",
+        "step2Description": "",
+        "gotIt": "",
+        "title": "",
+        "howTo": "",
+        "step5Description": "",
+        "step4Description": "",
+        "step1Title": "",
+        "step3Description": "",
+        "step5Title": ""
+    },
+    "settings": {
+        "apiKeys": {
+            "keyNamePlaceholder": "",
+            "created": "",
+            "copyNow": "",
+            "description": "",
+            "empty": "",
+            "revokeConfirm": "",
+            "generate": ""
+        },
+        "logout": "",
+        "contentFiltering": {
+            "noLabelers": "",
+            "add": "",
+            "remove": "",
+            "hide": "",
+            "description": "",
+            "labelerDidPlaceholder": "",
+            "ignore": "",
+            "labelVisibility": "",
+            "labelVisibilityDesc": "",
+            "warn": "",
+            "subscribedLabelers": ""
+        },
+        "moderation": {
+            "noBlocked": "",
+            "mutedAccounts": "",
+            "unblock": "",
+            "description": "",
+            "blockedAccounts": "",
+            "noMuted": "",
+            "unmute": ""
+        },
+        "iosShortcut": {
+            "description": "",
+            "setupButton": ""
+        },
+        "language": {
+            "label": "",
+            "description": ""
+        },
+        "sections": {
+            "appearance": "",
+            "language": "",
+            "contentFiltering": "",
+            "iosShortcut": "",
+            "moderation": "",
+            "batchImport": "",
+            "profile": "",
+            "apiKeys": ""
+        },
+        "appearance": {
+            "communityBookmarksDesc": "",
+            "communityBookmarks": "",
+            "disableExternalLinkWarningDesc": "",
+            "disableExternalLinkWarning": ""
+        },
+        "batchImport": {
+            "description": ""
+        },
+        "title": ""
+    },
+    "urlPage": {
+        "tabs": {
+            "all": "",
+            "highlights": "",
+            "annotations": "",
+            "collections": "",
+            "bookmarks": ""
+        },
+        "noHighlightsYet": "",
+        "noAnnotationsMessage": "",
+        "loading": "",
+        "loadingAnnotations": "",
+        "copied": "",
+        "noHighlightsMessage": "",
+        "loadMore": "",
+        "blankCanvasMessage": "",
+        "blankCanvas": "",
+        "noAnnotationsYet": "",
+        "urlPlaceholder": "",
+        "view": "",
+        "contributor_one": "",
+        "contributor_many": "",
+        "contributor_other": "",
+        "myAnnotations": "",
+        "description": "",
+        "share": "",
+        "title": "",
+        "failedLoadMore": ""
+    },
+    "about": {
+        "protocol": {
+            "point2": "",
+            "point3": "",
+            "descriptionPre": "",
+            "title": "",
+            "point1": "",
+            "point0": "",
+            "badge": "",
+            "descriptionPost": ""
+        },
+        "nav": {
+            "install": "",
+            "getExtension": ""
+        },
+        "features": {
+            "title": "",
+            "annotations": {
+                "title": "",
+                "description": ""
+            },
+            "collections": {
+                "title": "",
+                "description": ""
+            },
+            "highlights": {
+                "description": "",
+                "title": ""
+            },
+            "socialDiscovery": {
+                "description": "",
+                "title": ""
+            },
+            "tagsSearch": {
+                "description": "",
+                "title": ""
+            },
+            "bookmarks": {
+                "description": "",
+                "title": ""
+            },
+            "subtitle": ""
+        },
+        "cta": {
+            "viewTangled": "",
+            "signIn": "",
+            "title": "",
+            "description": "",
+            "viewGitHub": ""
+        },
+        "hero": {
+            "descriptionPost": "",
+            "openApp": "",
+            "descriptionPre": "",
+            "headline": "",
+            "installFor": "",
+            "openSource": "",
+            "headlineAccent": "",
+            "getStarted": "",
+            "atProtocol": ""
+        },
+        "extension": {
+            "features": {
+                "sidePanel": {
+                    "description": "",
+                    "title": ""
+                },
+                "keyboard": {
+                    "title": "",
+                    "description": ""
+                },
+                "contextMenu": {
+                    "title": "",
+                    "description": ""
+                },
+                "inlineOverlay": {
+                    "description": "",
+                    "title": ""
+                }
+            },
+            "description": "",
+            "title": "",
+            "titleLine2": "",
+            "iosShortcut": "",
+            "badge": ""
+        },
+        "footer": {
+            "contact": "",
+            "terms": "",
+            "privacy": ""
+        }
+    },
+    "adminModeration": {
+        "reasons": {
+            "spam": "",
+            "rude": "",
+            "misleading": "",
+            "other": "",
+            "violation": "",
+            "sexual": ""
+        },
+        "actions": {
+            "applyWarningDesc": "",
+            "applyWarning": "",
+            "labelApplied": "",
+            "contentUriOptional": "",
+            "applyLabel": "",
+            "accountDid": "",
+            "contentUri": "",
+            "labelType": ""
+        },
+        "reports": {
+            "empty": "",
+            "reportedUser": "",
+            "details": "",
+            "contentUri": "",
+            "emptyFiltered": "",
+            "takedown": "",
+            "reporter": "",
+            "acknowledge": "",
+            "emptyPending": "",
+            "dismiss": ""
+        },
+        "accessDeniedMessage": "",
+        "labels": {
+            "empty": "",
+            "accountLevel": "",
+            "removeConfirm": "",
+            "removeTitle": "",
+            "emptyMessage": ""
+        },
+        "accessDenied": "",
+        "tabs": {
+            "actions": "",
+            "labels": "",
+            "reports": ""
+        },
+        "filters": {
+            "pending": "",
+            "resolved": "",
+            "dismissed": "",
+            "escalated": "",
+            "all": ""
+        },
+        "stats": "",
+        "title": ""
+    },
+    "new": {
+        "composeTitle": "",
+        "needsAccount": "",
+        "composeTagline": "",
+        "urlLabel": "",
+        "signInRequired": "",
+        "signInButton": "",
+        "urlPlaceholder": ""
+    },
+    "report": {
+        "reasons": {
+            "spam": "",
+            "rudeOrHarassing": "",
+            "ruleViolation": "",
+            "inappropriateContent": "",
+            "misleading": "",
+            "other": ""
+        },
+        "submittedMessage": "",
+        "reportingContent": "",
+        "detailsPlaceholder": "",
+        "titleGeneric": "",
+        "titleUser": "",
+        "submitted": "",
+        "cancel": "",
+        "submit": "",
+        "submitting": "",
+        "issueLabel": ""
+    },
+    "editProfile": {
+        "uploadButton": "",
+        "bioLabel": "",
+        "addLinkPlaceholder": "",
+        "avatarUploadError": "",
+        "displayNameLabel": "",
+        "cancel": "",
+        "avatarTypeError": "",
+        "title": "",
+        "uploading": "",
+        "avatarLabel": "",
+        "avatarSizeError": "",
+        "linksLabel": "",
+        "save": "",
+        "websiteLabel": "",
+        "saving": ""
+    },
+    "userUrlPage": {
+        "noUrl": "",
+        "noItemsMessage": "",
+        "loadingAnnotations": "",
+        "loadMore": "",
+        "noAnnotations": "",
+        "on": "",
+        "failedLoadMore": "",
+        "noHighlights": "",
+        "noUrlMessage": "",
+        "loading": "",
+        "noItems": ""
+    },
+    "common": {
+        "loadMore": "",
+        "save": "",
+        "error": "",
+        "retry": "",
+        "cancel": "",
+        "back": "",
+        "new": "",
+        "continue": "",
+        "loading": "",
+        "close": ""
+    },
+    "highlightImporter": {
+        "complete": "",
+        "moreErrors": "",
+        "row": "",
+        "noHighlights": "",
+        "downloadTemplate": "",
+        "requiredColumns": "",
+        "success": "",
+        "importProgress": "",
+        "csvMustHaveText": "",
+        "csvMustHaveUrl": "",
+        "processing": "",
+        "importing": "",
+        "errorsTitle": "",
+        "importAnother": "",
+        "failed_one": "",
+        "failed_many": "",
+        "failed_other": "",
+        "clickToUpload": "",
+        "errorParsing": ""
+    },
+    "editHistory": {
+        "close": "",
+        "failedLoad": "",
+        "currentVersion": "",
+        "previousVersion": "",
+        "title": "",
+        "editedAgo": "",
+        "noHistory": "",
+        "timeAgo": "",
+        "postedAgo": ""
+    },
+    "externalLink": {
+        "cancel": "",
+        "alwaysAllow": "",
+        "message": "",
+        "open": "",
+        "title": ""
     }
 }
