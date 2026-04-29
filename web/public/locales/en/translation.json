@@ -228,11 +228,11 @@
             },
             "bluesky": {
                 "name": "Bluesky",
-                "description": "The largest and most popular community"
+                "description": "The largest Atmosphere community"
             },
             "blacksky": {
                 "name": "Blacksky",
-                "description": "A Black-owned instance."
+                "description": "A Black-owned community"
             },
             "eurosky": {
                 "name": "Eurosky",
@@ -244,11 +244,11 @@
             },
             "northsky": {
                 "name": "Northsky",
-                "description": "A Canadian worker-owned cooperative"
+                "description": "A Canadian queer-owned instance"
             },
             "tophhie": {
                 "name": "Tophhie",
-                "description": "A welcoming and friendly community"
+                "description": "A British community"
             },
             "customPds": {
                 "name": "Use a custom PDS",
