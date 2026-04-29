@@ -83,6 +83,7 @@ interface SignUpModalProps {
 export default function SignUpModal({ onClose }: SignUpModalProps) {
   const { t } = useTranslation();
   const [showCustomInput, setShowCustomInput] = useState(false);
+  const [showMore, setShowMore] = useState(false);
   const [customService, setCustomService] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -204,8 +205,15 @@ export default function SignUpModal({ onClose }: SignUpModalProps) {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center sm:p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-      <div className="w-full sm:max-w-md bg-white dark:bg-surface-900 rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden animate-slide-up max-h-[90vh] sm:max-h-[85vh] flex flex-col">
-        <div className="p-3 sm:p-4 flex justify-end flex-shrink-0">
+      <div className="w-full sm:max-w-md bg-white dark:bg-surface-900 rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden animate-slide-up flex flex-col">
+        <div className="px-5 sm:px-8 pt-5 sm:pt-6 pb-2 flex items-center justify-between flex-shrink-0">
+          <h2 className="text-xl font-display font-bold text-surface-900 dark:text-white">
+            {loading
+              ? t("signUp.connecting")
+              : showCustomInput
+                ? t("signUp.customPdsTitle")
+                : t("signUp.title")}
+          </h2>
           <button
             onClick={onClose}
             className="p-2 text-surface-400 dark:text-surface-500 hover:text-surface-900 dark:hover:text-white hover:bg-surface-50 dark:hover:bg-surface-800 rounded-full transition-colors"
@@ -214,22 +222,17 @@ export default function SignUpModal({ onClose }: SignUpModalProps) {
           </button>
         </div>
 
-        <div className="px-5 sm:px-8 pb-8 sm:pb-10 overflow-y-auto">
+        <div className="px-5 sm:px-8 pb-8 sm:pb-10 overflow-y-auto custom-scrollbar">
           {loading ? (
             <div className="text-center py-10">
               <Loader2
                 size={40}
                 className="animate-spin text-primary-600 dark:text-primary-400 mx-auto mb-4"
               />
-              <p className="text-surface-600 dark:text-surface-400 font-medium">
-                {t("signUp.connecting")}
-              </p>
             </div>
           ) : showCustomInput ? (
             <div>
-              <h2 className="text-2xl font-display font-bold text-surface-900 dark:text-white mb-2">
-                {t("signUp.customPdsTitle")}
-              </h2>
+              <h2 className="sr-only">{t("signUp.customPdsTitle")}</h2>
 
               <p className="text-sm text-surface-500 dark:text-surface-400 mb-6">
                 {t("signUp.customPdsSubtitle")}
@@ -279,9 +282,6 @@ export default function SignUpModal({ onClose }: SignUpModalProps) {
             </div>
           ) : (
             <div>
-              <h2 className="text-2xl font-display font-bold text-surface-900 dark:text-white mb-2">
-                {t("signUp.title")}
-              </h2>
               <p className="text-surface-500 dark:text-surface-400 mb-6">
                 {t("signUp.subtitle")}{" "}
                 <a
@@ -303,12 +303,12 @@ export default function SignUpModal({ onClose }: SignUpModalProps) {
               )}
 
               <div className="space-y-2">
-                {providers.map((p) => (
+                {(showMore ? providers : providers.slice(0, 1)).map((p) => (
                   <button
                     key={p.id}
                     className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all text-left group ${
                       p.id === "margin"
-                        ? "bg-primary-50/80 dark:bg-primary-900/20 border border-primary-200/60 dark:border-primary-800/40 hover:border-primary-300 dark:hover:border-primary-700"
+                        ? "bg-primary-50/60 dark:bg-primary-900/15 border border-transparent hover:bg-primary-100/60 dark:hover:bg-primary-900/25"
                         : "bg-surface-50 dark:bg-surface-800/60 hover:bg-surface-100 dark:hover:bg-surface-800 border border-transparent"
                     }`}
                     onClick={() => handleProviderSelect(p)}
@@ -346,6 +346,20 @@ export default function SignUpModal({ onClose }: SignUpModalProps) {
                   </button>
                 ))}
               </div>
+
+              {!showMore && (
+                <div className="mt-3 space-y-3">
+                  <button
+                    onClick={() => setShowMore(true)}
+                    className="w-full py-2.5 text-sm font-medium text-surface-500 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white bg-surface-50 dark:bg-surface-800/60 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-xl border border-transparent transition-colors"
+                  >
+                    {t("signUp.moreOptions")}
+                  </button>
+                  <p className="text-center text-xs text-surface-400 dark:text-surface-500">
+                    {t("signUp.atmosphereNote")}
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </div>

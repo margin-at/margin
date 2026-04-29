@@ -298,7 +298,7 @@ export default function Login({ initialError }: LoginProps) {
           <button
             type="submit"
             disabled={loading || !handle}
-            className="w-full py-3.5 bg-[#027bff] hover:bg-[#0269d9] active:scale-[0.98] text-white rounded-xl font-bold text-lg shadow-md shadow-[#027bff]/20 focus:outline-none focus:ring-4 focus:ring-[#027bff]/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 mt-2"
+            className="w-full py-3.5 bg-[#027bff] hover:bg-[#0269d9] text-white rounded-xl font-semibold text-base tracking-wide disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 mt-2"
           >
             {loading ? t("login.connecting") : t("login.continue")}
           </button>
@@ -320,18 +320,16 @@ export default function Login({ initialError }: LoginProps) {
             </a>
           </p>
 
-          <div className="flex items-center gap-4 py-2 opacity-50">
-            <div className="h-px bg-surface-200 dark:bg-surface-700 flex-1" />
-            <span className="text-xs font-bold text-surface-400 dark:text-surface-500 uppercase tracking-wider">
-              or
+          <div className="flex items-center justify-center py-1">
+            <span className="text-xs text-surface-300 dark:text-surface-600">
+              {t("login.or")}
             </span>
-            <div className="h-px bg-surface-200 dark:bg-surface-700 flex-1" />
           </div>
 
           <button
             type="button"
             onClick={() => setShowSignUp(true)}
-            className="w-full py-3.5 bg-transparent border border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800 text-surface-600 dark:text-surface-300 hover:text-surface-900 dark:hover:text-white rounded-xl font-bold transition-all text-sm"
+            className="w-full py-2.5 text-sm font-medium text-surface-500 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white bg-surface-50 dark:bg-surface-800/60 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-xl transition-colors"
           >
             {t("login.createAccount")}
           </button>

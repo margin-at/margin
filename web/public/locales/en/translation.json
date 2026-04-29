@@ -194,6 +194,7 @@
     "connecting": "Connecting…",
     "continue": "Continue",
     "createAccount": "Create New Account",
+    "or": "or",
     "termsPrefix": "By signing in, you agree to our",
     "termsLink": "Terms of Service",
     "termsAnd": "and",
@@ -216,6 +217,8 @@
     "back": "Back",
     "continue": "Continue",
     "invite": "Invite",
+    "moreOptions": "More options",
+    "atmosphereNote": "Already have an atmosphere account? Just sign in!",
     "providerError": "Could not connect to this provider. Please try again.",
     "customPdsError": "Couldn't connect to that PDS. Double-check the address.",
     "providers": {
@@ -233,7 +236,7 @@
       },
       "eurosky": {
         "name": "Eurosky",
-        "description": "Eurosky is your European home on the Atmosphere"
+        "description": "Your European home on the Atmosphere"
       },
       "selfhostedSocial": {
         "name": "selfhosted.social",
