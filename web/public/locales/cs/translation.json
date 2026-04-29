@@ -69,13 +69,14 @@
         "failedUpdate": "",
         "itemCount_one": "",
         "itemCount_few": "",
-        "itemCount_other": ""
+        "itemCount_other": "",
+        "deleteConfirm": "Smazat tuto složku?"
     },
     "about": {
         "footer": {
             "contact": "Kontakt",
-            "terms": "Smluvní podmínky",
-            "privacy": "Ochrana soukromí"
+            "terms": "Podmínky",
+            "privacy": "Soukromí"
         },
         "cta": {
             "viewGitHub": "GitHub",
@@ -87,7 +88,12 @@
         "protocol": {
             "descriptionPre": "Margin je vystavěn na",
             "point2": "",
-            "point3": ""
+            "point3": "",
+            "title": "Vaše data, vaše identita",
+            "point1": "Všechna data jsou uložena ve Vámi zvoleném prostoru PDS",
+            "point0": "Nevytvářejte si nový účet, přihlašte se přes Protokol AT",
+            "badge": "Decentralizováno",
+            "descriptionPost": ", otevřeném protokolu, na kterém stojí aplikace jako Bluesky. Vaše poznámky, výňatky a oblíbené položky (záložky) jsou bezpečně uloženy ve Vašem vlastním prostoru PDS, ne u jednoho poskytovatele."
         },
         "extension": {
             "features": {
@@ -96,7 +102,8 @@
                     "description": ""
                 },
                 "sidePanel": {
-                    "description": ""
+                    "description": "",
+                    "title": "Boční panel"
                 },
                 "contextMenu": {
                     "title": "",
@@ -108,33 +115,53 @@
                 }
             },
             "description": "",
-            "badge": ""
+            "badge": "",
+            "title": "Vaše sada anotačních nástrojů",
+            "titleLine2": "přímo v prohlížeči",
+            "iosShortcut": "Zkratka iOS"
         },
         "features": {
             "title": "",
             "highlights": {
-                "description": ""
+                "description": "",
+                "title": "Výňatky"
             },
             "socialDiscovery": {
                 "description": "",
                 "title": ""
             },
             "tagsSearch": {
-                "description": ""
+                "description": "",
+                "title": "Štítky & Vyhledávání"
             },
             "bookmarks": {
-                "description": ""
+                "description": "",
+                "title": "Oblíbené"
             },
             "subtitle": "",
             "collections": {
-                "description": ""
+                "description": "",
+                "title": "Složky"
             },
             "annotations": {
-                "description": ""
+                "description": "",
+                "title": "Poznámky"
             }
         },
         "hero": {
-            "openApp": ""
+            "openApp": "",
+            "descriptionPost": ". Ne u jednoho poskytovatele.",
+            "descriptionPre": "Margin je otevřená poznámková vrstva internetu. Podtrhávejte si, pište poznámky pro sebe nebo ostatní a ukládejte si stránky do oblíbených. Všechno decentralizovaně uložené na síti",
+            "headline": "Pište poznámky na okraj",
+            "installFor": "Rozšíření pro {{browser}}",
+            "openSource": "Kompletně open source",
+            "headlineAccent": "celého internetu.",
+            "getStarted": "Pustit se do toho",
+            "atProtocol": "Protokolu AT"
+        },
+        "nav": {
+            "install": "Nainstalovat",
+            "getExtension": "Stáhnout rozšíření"
         }
     },
     "profile": {
@@ -253,7 +280,10 @@
         "bannedTitle": "",
         "handleSuffix": "",
         "continue": "",
-        "connecting": ""
+        "connecting": "",
+        "termsPrefix": "Přihlášením souhlasíte s",
+        "createAccount": "Vytvořit nový účet",
+        "signInWith": "Přihlašte se Vaším"
     },
     "signUp": {
         "atProtocol": "Protokol AT",
@@ -722,7 +752,8 @@
         "delete": "",
         "empty": "",
         "removeConfirm": "",
-        "failedToLoad": ""
+        "failedToLoad": "",
+        "viewInSemble": "Zobrazit na Semble"
     },
     "profileHoverCard": {
         "notFound": "",
