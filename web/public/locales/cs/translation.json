@@ -1,230 +1,741 @@
 {
-  "nav": {
-    "discover": "Objevuj",
-    "activity": "Notifikace",
-    "bookmarks": "Záložky",
-    "annotations": "Vpisky",
-    "highlights": "Úryvky",
-    "collections": "Složky",
-    "signIn": "Přihlásit se",
-    "logOut": "Odhlásit se",
-    "feed": "Feed",
-    "settings": "Nastavení",
-    "new": "Anotovat",
-    "themeLight": "Světlo",
-    "themeDark": "Tma",
-    "themeSystem": "Režim podle OS"
-  },
-  "appTitle": "Margin",
-  "feed": {
-    "mine": "Pouze já",
-    "everyone": "Všichni",
-    "filters": {
-      "bookmarks": "Záložky",
-      "highlights": "Úryvky"
+    "nav": {
+        "discover": "Objevuj",
+        "activity": "Notifikace",
+        "bookmarks": "Záložky",
+        "annotations": "Vpisky",
+        "highlights": "Úryvky",
+        "collections": "Složky",
+        "signIn": "Přihlásit se",
+        "logOut": "Odhlásit se",
+        "feed": "Feed",
+        "settings": "Nastavení",
+        "new": "Anotovat",
+        "themeLight": "Světlo",
+        "themeDark": "Tma",
+        "themeSystem": "Režim podle OS"
     },
-    "itemsWithTag": "Položky se štítkem:",
-    "tabs": {
-      "recent": "Nedávné",
-      "popular": "Populární",
-      "shelved": "Málo diskutované"
+    "appTitle": "Margin",
+    "feed": {
+        "mine": "Pouze já",
+        "everyone": "Všichni",
+        "filters": {
+            "bookmarks": "Záložky",
+            "highlights": "Úryvky",
+            "all": "",
+            "annotations": ""
+        },
+        "itemsWithTag": "Položky se štítkem:",
+        "tabs": {
+            "recent": "Nedávné",
+            "popular": "Populární",
+            "shelved": "Málo diskutované",
+            "semble": "",
+            "margin": ""
+        },
+        "welcome": "Vítejte na Marginu",
+        "getStarted": "Pustit se do toho",
+        "clearFilter": "Odepnout filtr",
+        "loading": "Načítání…",
+        "nothingHereYet": "Prozatím tady nic není",
+        "defaultEmptyMessage": "",
+        "welcomeTagline": "",
+        "learnMore": ""
     },
-    "welcome": "Vítejte na Marginu",
-    "getStarted": "Pustit se do toho",
-    "clearFilter": "Odepnout filtr",
-    "loading": "Načítání…",
-    "nothingHereYet": "Prozatím tady nic není"
-  },
-  "collections": {
-    "title": "Složky",
-    "namePlaceholderEdit": "Název složky",
-    "nameLabel": "Název",
-    "iconLabel": "Ikona",
-    "iconsTab": "Ikony",
-    "emojisTab": "Emotikony",
-    "selectedIcon": "Vybráno:",
-    "descriptionLabel": "Popisek (volitelně)",
-    "descriptionPlaceholder": "K čemu by měla tato složka sloužit?",
-    "descriptionPlaceholderEdit": "O čem by měla být tato složka?",
-    "cancel": "Zrušit",
-    "creating": "Vytvářím…",
-    "save": "Uložit změny",
-    "saving": "Ukládám…",
-    "subtitle": "Uspořádejte si vpisky a úryvky",
-    "namePlaceholder": "Moje složka",
-    "createButton": "Vytvořit složku",
-    "editTitle": "Upravit složku",
-    "newTitle": "Nová složka",
-    "create": "Vytvořit složku",
-    "noneMessage": "Vytvořte si novou složku k organizaci Vašich vpisků a úryvků."
-  },
-  "about": {
-    "footer": {
-      "contact": "Kontakt",
-      "terms": "Smluvní podmínky",
-      "privacy": "Ochrana soukromí"
+    "collections": {
+        "title": "Složky",
+        "namePlaceholderEdit": "Název složky",
+        "nameLabel": "Název",
+        "iconLabel": "Ikona",
+        "iconsTab": "Ikony",
+        "emojisTab": "Emotikony",
+        "selectedIcon": "Vybráno:",
+        "descriptionLabel": "Popisek (volitelně)",
+        "descriptionPlaceholder": "K čemu by měla tato složka sloužit?",
+        "descriptionPlaceholderEdit": "O čem by měla být tato složka?",
+        "cancel": "Zrušit",
+        "creating": "Vytvářím…",
+        "save": "Uložit změny",
+        "saving": "Ukládám…",
+        "subtitle": "Uspořádejte si vpisky a úryvky",
+        "namePlaceholder": "Moje složka",
+        "createButton": "Vytvořit složku",
+        "editTitle": "Upravit složku",
+        "newTitle": "Nová složka",
+        "create": "Vytvořit složku",
+        "noneMessage": "Vytvořte si novou složku k organizaci Vašich vpisků a úryvků.",
+        "none": "",
+        "errorUpdating": "",
+        "failedUpdate": "",
+        "itemCount_one": "",
+        "itemCount_few": "",
+        "itemCount_other": ""
     },
-    "cta": {
-      "viewGitHub": "GitHub",
-      "viewTangled": "Tangled",
-      "signIn": "Přihlásit se",
-      "title": "Začněte psát pod čarou"
-    },
-    "protocol": {
-      "descriptionPre": "Margin je vystavěn na"
-    },
-    "extension": {
-      "features": {
-        "keyboard": {
-          "title": "Klávesové zkratky"
+    "about": {
+        "footer": {
+            "contact": "Kontakt",
+            "terms": "Smluvní podmínky",
+            "privacy": "Ochrana soukromí"
+        },
+        "cta": {
+            "viewGitHub": "GitHub",
+            "viewTangled": "Tangled",
+            "signIn": "Přihlásit se",
+            "title": "Začněte psát pod čarou",
+            "description": ""
+        },
+        "protocol": {
+            "descriptionPre": "Margin je vystavěn na",
+            "point2": "",
+            "point3": ""
+        },
+        "extension": {
+            "features": {
+                "keyboard": {
+                    "title": "Klávesové zkratky",
+                    "description": ""
+                },
+                "sidePanel": {
+                    "description": ""
+                },
+                "contextMenu": {
+                    "title": "",
+                    "description": ""
+                },
+                "inlineOverlay": {
+                    "description": "",
+                    "title": ""
+                }
+            },
+            "description": "",
+            "badge": ""
+        },
+        "features": {
+            "title": "",
+            "highlights": {
+                "description": ""
+            },
+            "socialDiscovery": {
+                "description": "",
+                "title": ""
+            },
+            "tagsSearch": {
+                "description": ""
+            },
+            "bookmarks": {
+                "description": ""
+            },
+            "subtitle": "",
+            "collections": {
+                "description": ""
+            },
+            "annotations": {
+                "description": ""
+            }
+        },
+        "hero": {
+            "openApp": ""
         }
-      }
+    },
+    "profile": {
+        "unblock_action": "Zablokovat",
+        "unmute_action": "Ztišit",
+        "emptyCollectionsOwn": "Prozatím jste si nevytvořili žádné složky.",
+        "emptyCollectionsOther": "Žádné složky",
+        "show": "Zobrazit",
+        "hide": "Skrýt",
+        "report": "",
+        "mutedMessage": "",
+        "mutedBanner": "",
+        "accountLabeled": "",
+        "mute": "",
+        "notFound": "",
+        "unblock": "",
+        "blockedByBanner": "",
+        "emptyTabOwn": "",
+        "labelApplied": "",
+        "viewInBluesky": "",
+        "blockedMessage": "",
+        "block": "",
+        "notFoundMessage": "",
+        "unmute": "",
+        "emptyTabOther": "",
+        "edit": "",
+        "blockedBanner": "",
+        "itemCount_one": "",
+        "itemCount_few": "",
+        "itemCount_other": ""
+    },
+    "pageTitles": {
+        "discover": "Objevuj — Margin",
+        "home": "Úvod — Margin",
+        "bookmarks": "Záložky — Margin",
+        "settings": "Nastavení — Margin",
+        "collections": "Složky — Margin",
+        "admin": "Administrace — Margin",
+        "search": "Vyhledávání — Margin",
+        "notifications": "Notifikace — Margin",
+        "new": "Nový vpisek — Margin",
+        "highlights": "Úryvky — Margin",
+        "annotations": "Vpisky — Margin"
+    },
+    "sidebar": {
+        "downloadForFirefox": "Stáhnout pro Firefox",
+        "downloadForEdge": "Stáhnout pro Edge",
+        "downloadForChrome": "Stáhnout pro Chrome",
+        "trending": "Populární",
+        "searchPlaceholder": "Vyhledávejte napříč uživateli, tagy, URL…",
+        "getExtension": "Stáhnout rozšíření",
+        "nothingTrending": "Aktuálně není nic moc v kurzu.",
+        "postCount_one": "",
+        "postCount_few": "",
+        "postCount_other": "",
+        "copyright": "",
+        "extensionTagline": ""
+    },
+    "mobileNav": {
+        "iosShortcut": "Zkratka iOS"
+    },
+    "discover": {
+        "tabs": {
+            "new": "Nové",
+            "popular": "Populární",
+            "forYou": "Výběr"
+        },
+        "comingSoon": "Již brzy",
+        "forYouNotAvailable": "Personalizovaná doporučení nejsou na tomto serveru prozatím k dispozici.",
+        "loadMore": "Načíst další",
+        "noDocumentsYet": "Prozatím tady nejsou žádné dokumenty. Zkuste to znova později.",
+        "startAnnotating": ""
+    },
+    "search": {
+        "noResults": "Nic nenalezeno",
+        "emptyTitle": "Vyhledávejte ve Vaší knihovně",
+        "filters": {
+            "all": "Všechno",
+            "mine": "",
+            "annotations": "",
+            "highlights": "",
+            "bookmarks": ""
+        },
+        "loadMore": "Načíst další",
+        "noResultsMessage": "",
+        "placeholder": "",
+        "emptyMessage": "",
+        "resultCount": ""
+    },
+    "notifications": {
+        "inReplyTo": "v odpovědi na",
+        "aReply": "odpověď",
+        "anAnnotation": "vpisek",
+        "likedAnnotation": "se líbí Váš vpisek",
+        "likedHighlight": "se líbí Váš úryvek",
+        "likedBookmark": "se líbí Vaše záložka",
+        "likedReply": "se líbí Vaše odpověď",
+        "likedPost": "se líbí Váš příspěvek",
+        "repliedToReply": "reagoval*a na Vaši odpověď",
+        "repliedToAnnotation": "odpověděl*a na Váš vpisek",
+        "mentionedInAnnotation": "Vás zmínil*a ve vpisku",
+        "followedYou": "Vás začal*a sledovat",
+        "title": "Události",
+        "noActivity": "Prozatím tady nic není",
+        "highlightedPage": "si vytáhnul*a úryvek z Vaší stránky",
+        "noActivityMessage": "Reakce na Váš obsah se objeví tady."
+    },
+    "login": {
+        "termsLink": "Smluvní podmínky",
+        "termsAnd": "a",
+        "privacyLink": "Zásady ochrany osobních údajů",
+        "bannedMessage": "",
+        "bannedSignOut": "",
+        "handlePlaceholder": "",
+        "bannedAppeal": "",
+        "bannedTitle": "",
+        "handleSuffix": "",
+        "continue": "",
+        "connecting": ""
+    },
+    "signUp": {
+        "atProtocol": "Protokol AT",
+        "pdsAddressLabel": "Adresa PDS",
+        "pdsAddressPlaceholder": "pds.vasedomena.cz",
+        "connecting": "Připojuji…",
+        "back": "Zpátky",
+        "continue": "Pokračovat",
+        "invite": "Pozvat",
+        "providerError": "K tomuto poskytovateli se teď nelze připojit. Zkuste to znova.",
+        "customPdsError": "K tomuto PDS se teď nelze připojit. Zkontrolujte, zda zadáváte správnou adresu.",
+        "providers": {
+            "margin": {
+                "name": "Margin",
+                "description": ""
+            },
+            "customPds": {
+                "description": "PDS už máte? Pokud ano, zadejte jeho adresu.",
+                "name": "Použít vlastní PDS"
+            },
+            "bluesky": {
+                "name": "Bluesky",
+                "description": "Největší a nejrozšířenější komunita"
+            },
+            "blacksky": {
+                "name": "Blacksky"
+            },
+            "northsky": {
+                "description": "Kanadské družstvo vlastněné a provozované zaměstnanci",
+                "name": "Northsky"
+            },
+            "eurosky": {
+                "description": "Eurosky je Vaším kouskem Evropy v Atmosféře",
+                "name": ""
+            },
+            "selfhostedSocial": {
+                "name": "selfhosted.social",
+                "description": "Prostor pro všechny umělce, kutily a objevitele"
+            },
+            "tophhie": {
+                "name": "Tophhie",
+                "description": "Komunita plná přátelské atmosféry"
+            }
+        },
+        "customPdsSubtitle": "",
+        "subtitle": "",
+        "subtitleSuffix": "",
+        "customPdsTitle": "",
+        "title": ""
+    },
+    "composer": {
+        "newHighlight": "Nový úryvek",
+        "newAnnotation": "Nový vpisek",
+        "newNote": "Nová poznámka",
+        "saveHighlight": "Uložit úryvek",
+        "postAnnotation": "Vložit vpisek",
+        "postNote": "Vložit poznámku",
+        "removeQuote": "Odebrat citaci",
+        "labels": {
+            "sexual": "Sexualita",
+            "nudity": "Nahota",
+            "violence": "Násilí",
+            "gore": "Gore",
+            "spam": "Spam",
+            "misleading": "Manipulace"
+        },
+        "contentWarning": "Upozornění na obsah",
+        "cancel": "Zrušit",
+        "contentWarningCount": "",
+        "highlightHint": "",
+        "quotePlaceholder": "",
+        "failedToPost": "",
+        "addQuote": "",
+        "tagsPlaceholder": "",
+        "mindPlaceholder": "",
+        "thoughtsPlaceholder": ""
+    },
+    "card": {
+        "communityBookmark": "Komunitní záložka",
+        "lichenBookmark": "Záložka Lichen",
+        "untitledBookmark": "Nepojmenovaná záložka",
+        "editTitle": "Upravit",
+        "deleteTitle": "Smazat",
+        "report": "Nahlásit",
+        "muteUser": "Ztišit @{{handle}}",
+        "blockUser": "Zablokovat @{{handle}}",
+        "addToCollectionTitle": "",
+        "openInSemble": "",
+        "deleteConfirm": "",
+        "addedTo": "",
+        "labelDescriptions": {
+            "gore": "",
+            "spam": "",
+            "misleading": "",
+            "violence": "",
+            "sexual": "",
+            "nudity": ""
+        },
+        "and": "",
+        "edited": "",
+        "addNotePlaceholder": "",
+        "convertToAnnotation": "",
+        "hideContent": "",
+        "justNow": "",
+        "annotateTitle": "",
+        "show": "",
+        "annotate": "",
+        "addedToLower": ""
+    },
+    "editCollection": {
+        "namePlaceholder": "",
+        "iconsTab": "",
+        "nameLabel": "",
+        "saving": "",
+        "descriptionLabel": "",
+        "iconLabel": "",
+        "errorUpdating": "",
+        "save": "",
+        "cancel": "",
+        "title": "",
+        "descriptionPlaceholder": "",
+        "failedUpdate": "",
+        "emojisTab": "",
+        "selected": ""
+    },
+    "annotationDetail": {
+        "reply": "",
+        "mayBeDeleted": "",
+        "replyPlaceholder": "",
+        "back": "",
+        "signInToReply": "",
+        "failedReply": "",
+        "notFound": "",
+        "failedDelete": "",
+        "replyingTo": "",
+        "logIn": "",
+        "failedResolve": "",
+        "backToFeed": "",
+        "replies": "",
+        "deleteReplyConfirm": ""
+    },
+    "iosShortcut": {
+        "step6Title": "",
+        "step3Title": "",
+        "step4Title": "",
+        "step1Link": "",
+        "step2Title": "",
+        "step6Description": "",
+        "step2Description": "",
+        "gotIt": "",
+        "title": "",
+        "howTo": "",
+        "step5Description": "",
+        "step4Description": "",
+        "step1Title": "",
+        "step3Description": "",
+        "step5Title": ""
+    },
+    "settings": {
+        "apiKeys": {
+            "keyNamePlaceholder": "",
+            "created": "",
+            "copyNow": "",
+            "description": "",
+            "empty": "",
+            "revokeConfirm": "",
+            "generate": ""
+        },
+        "logout": "",
+        "contentFiltering": {
+            "noLabelers": "",
+            "add": "",
+            "remove": "",
+            "hide": "",
+            "description": "",
+            "labelerDidPlaceholder": "",
+            "ignore": "",
+            "labelVisibility": "",
+            "labelVisibilityDesc": "",
+            "warn": "",
+            "subscribedLabelers": ""
+        },
+        "moderation": {
+            "noBlocked": "",
+            "mutedAccounts": "",
+            "unblock": "",
+            "description": "",
+            "blockedAccounts": "",
+            "noMuted": "",
+            "unmute": ""
+        },
+        "iosShortcut": {
+            "description": "",
+            "setupButton": ""
+        },
+        "language": {
+            "label": "",
+            "description": ""
+        },
+        "sections": {
+            "appearance": "",
+            "language": "",
+            "contentFiltering": "",
+            "iosShortcut": "",
+            "moderation": "",
+            "batchImport": "",
+            "profile": "",
+            "apiKeys": ""
+        },
+        "appearance": {
+            "communityBookmarksDesc": "",
+            "communityBookmarks": "",
+            "disableExternalLinkWarningDesc": "",
+            "disableExternalLinkWarning": ""
+        },
+        "batchImport": {
+            "description": ""
+        },
+        "title": ""
+    },
+    "shareMenu": {
+        "moreOptions": "",
+        "copyLink": "",
+        "openOnSemble": "",
+        "sembleIntegration": "",
+        "shareViaApp": "",
+        "copied": "",
+        "copyUniversalLink": "",
+        "copySembleLink": ""
+    },
+    "editItem": {
+        "titlePlaceholder": "",
+        "descriptionPlaceholder": "",
+        "colorLabel": "",
+        "save": "",
+        "editAnnotation": "",
+        "tagsLabel": "",
+        "failedSave": "",
+        "saving": "",
+        "cancel": "",
+        "descriptionLabel": "",
+        "editHighlight": "",
+        "textPlaceholder": "",
+        "contentWarning": "",
+        "titleLabel": "",
+        "textLabel": "",
+        "editBookmark": "",
+        "tagPlaceholder": ""
+    },
+    "urlPage": {
+        "tabs": {
+            "all": "",
+            "highlights": "",
+            "annotations": "",
+            "collections": "",
+            "bookmarks": ""
+        },
+        "noHighlightsYet": "",
+        "noAnnotationsMessage": "",
+        "loading": "",
+        "loadingAnnotations": "",
+        "copied": "",
+        "noHighlightsMessage": "",
+        "loadMore": "",
+        "blankCanvasMessage": "",
+        "blankCanvas": "",
+        "noAnnotationsYet": "",
+        "urlPlaceholder": "",
+        "view": "",
+        "contributor_one": "",
+        "contributor_few": "",
+        "contributor_other": "",
+        "myAnnotations": "",
+        "description": "",
+        "share": "",
+        "title": "",
+        "failedLoadMore": ""
+    },
+    "addToCollection": {
+        "title": "",
+        "back": "",
+        "descriptionPlaceholder": "",
+        "creating": "",
+        "iconLabel": "",
+        "create": "",
+        "descriptionLabel": "",
+        "collectionNameLabel": "",
+        "newCollectionButton": "",
+        "failedAdd": "",
+        "failedCreate": "",
+        "namePlaceholder": "",
+        "emojisTab": "",
+        "done": "",
+        "createNewDescription": "",
+        "none": "",
+        "failedLoad": "",
+        "selected": "",
+        "loading": "",
+        "iconsTab": ""
+    },
+    "adminModeration": {
+        "reasons": {
+            "spam": "",
+            "rude": "",
+            "misleading": "",
+            "other": "",
+            "violation": "",
+            "sexual": ""
+        },
+        "actions": {
+            "applyWarningDesc": "",
+            "applyWarning": "",
+            "labelApplied": "",
+            "contentUriOptional": "",
+            "applyLabel": "",
+            "accountDid": "",
+            "contentUri": "",
+            "labelType": ""
+        },
+        "reports": {
+            "empty": "",
+            "reportedUser": "",
+            "details": "",
+            "contentUri": "",
+            "emptyFiltered": "",
+            "takedown": "",
+            "reporter": "",
+            "acknowledge": "",
+            "emptyPending": "",
+            "dismiss": ""
+        },
+        "accessDeniedMessage": "",
+        "labels": {
+            "empty": "",
+            "accountLevel": "",
+            "removeConfirm": "",
+            "removeTitle": "",
+            "emptyMessage": ""
+        },
+        "accessDenied": "",
+        "tabs": {
+            "actions": "",
+            "labels": "",
+            "reports": ""
+        },
+        "filters": {
+            "pending": "",
+            "resolved": "",
+            "dismissed": "",
+            "escalated": "",
+            "all": ""
+        },
+        "stats": "",
+        "title": ""
+    },
+    "new": {
+        "composeTitle": "",
+        "needsAccount": "",
+        "composeTagline": "",
+        "urlLabel": "",
+        "signInRequired": "",
+        "signInButton": "",
+        "urlPlaceholder": ""
+    },
+    "report": {
+        "reasons": {
+            "spam": "",
+            "rudeOrHarassing": "",
+            "ruleViolation": "",
+            "inappropriateContent": "",
+            "misleading": "",
+            "other": ""
+        },
+        "submittedMessage": "",
+        "reportingContent": "",
+        "detailsPlaceholder": "",
+        "titleGeneric": "",
+        "titleUser": "",
+        "submitted": "",
+        "cancel": "",
+        "submit": "",
+        "submitting": "",
+        "issueLabel": ""
+    },
+    "editProfile": {
+        "uploadButton": "",
+        "bioLabel": "",
+        "addLinkPlaceholder": "",
+        "avatarUploadError": "",
+        "displayNameLabel": "",
+        "cancel": "",
+        "avatarTypeError": "",
+        "title": "",
+        "uploading": "",
+        "avatarLabel": "",
+        "avatarSizeError": "",
+        "linksLabel": "",
+        "save": "",
+        "websiteLabel": "",
+        "saving": ""
+    },
+    "userUrlPage": {
+        "noUrl": "",
+        "noItemsMessage": "",
+        "loadingAnnotations": "",
+        "loadMore": "",
+        "noAnnotations": "",
+        "on": "",
+        "failedLoadMore": "",
+        "noHighlights": "",
+        "noUrlMessage": "",
+        "loading": "",
+        "noItems": ""
+    },
+    "common": {
+        "loadMore": "",
+        "save": "",
+        "error": "",
+        "retry": "",
+        "cancel": "",
+        "back": "",
+        "new": "",
+        "continue": "",
+        "loading": "",
+        "close": ""
+    },
+    "highlightImporter": {
+        "complete": "",
+        "moreErrors": "",
+        "row": "",
+        "noHighlights": "",
+        "downloadTemplate": "",
+        "requiredColumns": "",
+        "success": "",
+        "importProgress": "",
+        "csvMustHaveText": "",
+        "csvMustHaveUrl": "",
+        "processing": "",
+        "importing": "",
+        "errorsTitle": "",
+        "importAnother": "",
+        "failed_one": "",
+        "failed_few": "",
+        "failed_other": "",
+        "clickToUpload": "",
+        "errorParsing": ""
+    },
+    "editHistory": {
+        "close": "",
+        "failedLoad": "",
+        "currentVersion": "",
+        "previousVersion": "",
+        "title": "",
+        "editedAgo": "",
+        "noHistory": "",
+        "timeAgo": "",
+        "postedAgo": ""
+    },
+    "collectionDetail": {
+        "notFound": "",
+        "backLink": "",
+        "by": "",
+        "removeFromCollection": "",
+        "edit": "",
+        "deleteConfirm": "",
+        "delete": "",
+        "empty": "",
+        "removeConfirm": "",
+        "failedToLoad": ""
+    },
+    "profileHoverCard": {
+        "notFound": "",
+        "viewProfile": ""
+    },
+    "externalLink": {
+        "cancel": "",
+        "alwaysAllow": "",
+        "message": "",
+        "open": "",
+        "title": ""
+    },
+    "replyList": {
+        "noReplies": ""
     }
-  },
-  "profile": {
-    "unblock_action": "Zablokovat",
-    "unmute_action": "Ztišit",
-    "emptyCollectionsOwn": "Prozatím jste si nevytvořili žádné složky.",
-    "emptyCollectionsOther": "Žádné složky",
-    "show": "Zobrazit",
-    "hide": "Skrýt"
-  },
-  "pageTitles": {
-    "discover": "Objevuj — Margin",
-    "home": "Úvod — Margin",
-    "bookmarks": "Záložky — Margin",
-    "settings": "Nastavení — Margin",
-    "collections": "Složky — Margin",
-    "admin": "Administrace — Margin",
-    "search": "Vyhledávání — Margin",
-    "notifications": "Notifikace — Margin",
-    "new": "Nový vpisek — Margin",
-    "highlights": "Úryvky — Margin",
-    "annotations": "Vpisky — Margin"
-  },
-  "sidebar": {
-    "downloadForFirefox": "Stáhnout pro Firefox",
-    "downloadForEdge": "Stáhnout pro Edge",
-    "downloadForChrome": "Stáhnout pro Chrome",
-    "trending": "Populární",
-    "searchPlaceholder": "Vyhledávejte napříč uživateli, tagy, URL…",
-    "getExtension": "Stáhnout rozšíření",
-    "nothingTrending": "Aktuálně není nic moc v kurzu."
-  },
-  "mobileNav": {
-    "iosShortcut": "Zkratka iOS"
-  },
-  "discover": {
-    "tabs": {
-      "new": "Nové",
-      "popular": "Populární",
-      "forYou": "Výběr"
-    },
-    "comingSoon": "Již brzy",
-    "forYouNotAvailable": "Personalizovaná doporučení nejsou na tomto serveru prozatím k dispozici.",
-    "loadMore": "Načíst další",
-    "noDocumentsYet": "Prozatím tady nejsou žádné dokumenty. Zkuste to znova později."
-  },
-  "search": {
-    "noResults": "Nic nenalezeno",
-    "emptyTitle": "Vyhledávejte ve Vaší knihovně",
-    "filters": {
-      "all": "Všechno"
-    },
-    "loadMore": "Načíst další"
-  },
-  "notifications": {
-    "inReplyTo": "v odpovědi na",
-    "aReply": "odpověď",
-    "anAnnotation": "vpisek",
-    "likedAnnotation": "se líbí Váš vpisek",
-    "likedHighlight": "se líbí Váš úryvek",
-    "likedBookmark": "se líbí Vaše záložka",
-    "likedReply": "se líbí Vaše odpověď",
-    "likedPost": "se líbí Váš příspěvek",
-    "repliedToReply": "reagoval*a na Vaši odpověď",
-    "repliedToAnnotation": "odpověděl*a na Váš vpisek",
-    "mentionedInAnnotation": "Vás zmínil*a ve vpisku",
-    "followedYou": "Vás začal*a sledovat",
-    "title": "Události",
-    "noActivity": "Prozatím tady nic není",
-    "highlightedPage": "si vytáhnul*a úryvek z Vaší stránky",
-    "noActivityMessage": "Reakce na Váš obsah se objeví tady."
-  },
-  "login": {
-    "termsLink": "Smluvní podmínky",
-    "termsAnd": "a",
-    "privacyLink": "Zásady ochrany osobních údajů"
-  },
-  "signUp": {
-    "atProtocol": "Protokol AT",
-    "pdsAddressLabel": "Adresa PDS",
-    "pdsAddressPlaceholder": "pds.vasedomena.cz",
-    "connecting": "Připojuji…",
-    "back": "Zpátky",
-    "continue": "Pokračovat",
-    "invite": "Pozvat",
-    "providerError": "K tomuto poskytovateli se teď nelze připojit. Zkuste to znova.",
-    "customPdsError": "K tomuto PDS se teď nelze připojit. Zkontrolujte, zda zadáváte správnou adresu.",
-    "providers": {
-      "margin": {
-        "name": "Margin"
-      },
-      "customPds": {
-        "description": "PDS už máte? Pokud ano, zadejte jeho adresu.",
-        "name": "Použít vlastní PDS"
-      },
-      "bluesky": {
-        "name": "Bluesky",
-        "description": "Největší a nejrozšířenější komunita"
-      },
-      "blacksky": {
-        "name": "Blacksky"
-      },
-      "northsky": {
-        "description": "Kanadské družstvo vlastněné a provozované zaměstnanci",
-        "name": "Northsky"
-      },
-      "eurosky": {
-        "description": "Eurosky je Vaším kouskem Evropy v Atmosféře"
-      },
-      "selfhostedSocial": {
-        "name": "selfhosted.social",
-        "description": "Prostor pro všechny umělce, kutily a objevitele"
-      },
-      "tophhie": {
-        "name": "Tophhie",
-        "description": "Komunita plná přátelské atmosféry"
-      }
-    }
-  },
-  "composer": {
-    "newHighlight": "Nový úryvek",
-    "newAnnotation": "Nový vpisek",
-    "newNote": "Nová poznámka",
-    "saveHighlight": "Uložit úryvek",
-    "postAnnotation": "Vložit vpisek",
-    "postNote": "Vložit poznámku",
-    "removeQuote": "Odebrat citaci",
-    "labels": {
-      "sexual": "Sexualita",
-      "nudity": "Nahota",
-      "violence": "Násilí",
-      "gore": "Gore",
-      "spam": "Spam",
-      "misleading": "Manipulace"
-    },
-    "contentWarning": "Upozornění na obsah",
-    "cancel": "Zrušit"
-  },
-  "card": {
-    "communityBookmark": "Komunitní záložka",
-    "lichenBookmark": "Záložka Lichen",
-    "untitledBookmark": "Nepojmenovaná záložka",
-    "editTitle": "Upravit",
-    "deleteTitle": "Smazat",
-    "report": "Nahlásit",
-    "muteUser": "Ztišit @{{handle}}",
-    "blockUser": "Zablokovat @{{handle}}"
-  }
 }
