@@ -7,6 +7,7 @@ import {
   BlueskyIcon,
   TophhieIcon,
   MarginIcon,
+  EuroskuIcon,
 } from "../common/Icons";
 import { startSignup } from "../../api/client";
 import { analytics } from "../../lib/analytics";
@@ -37,7 +38,7 @@ const MARGIN_PROVIDER_BASE: ProviderBase = {
 const OTHER_PROVIDERS_BASE: ProviderBase[] = [
   { id: "bluesky", service: "https://bsky.social", Icon: BlueskyIcon },
   { id: "blacksky", service: "https://blacksky.app", Icon: BlackskyIcon },
-  { id: "eurosky", service: "https://eurosky.social", Icon: null },
+  { id: "eurosky", service: "https://eurosky.social", Icon: EuroskuIcon },
   { id: "selfhosted.social", service: "https://selfhosted.social", Icon: null },
   { id: "northsky", service: "https://northsky.social", Icon: NorthskyIcon },
   { id: "tophhie", service: "https://tophhie.social", Icon: TophhieIcon },

@@ -580,6 +580,20 @@ export function DeerIcon({ size = 18 }: IconProps) {
   );
 }
 
+export function EuroskuIcon({ size = 18 }: IconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 63 63"
+      fill="currentColor"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M62.648 32.6363V29.7902H53.1194C34.2617 29.5447 33.6784 24.4289 32.7471 9.44843V0H29.901V9.44843C28.9697 24.4289 28.4795 29.5447 9.62175 29.7902H0V32.6363H9.62175C24.9301 33.6663 29.5103 33.3917 29.901 51.6058V62.6216H32.7471V51.5809C33.1378 33.3667 37.8111 33.6663 53.1194 32.6363L62.648 32.6363Z" />
+    </svg>
+  );
+}
+
 export function TangledIcon({
   size = 18,
   className = "",
