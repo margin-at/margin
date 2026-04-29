@@ -204,7 +204,8 @@
         "bannedMessage": "",
         "bannedSignOut": "",
         "bannedAppeal": "",
-        "bannedTitle": ""
+        "bannedTitle": "",
+        "or": ""
     },
     "signUp": {
         "title": "Crea tu cuenta",
@@ -254,7 +255,9 @@
                 "name": "Usa un PDS personalizado",
                 "description": "¿Ya tienes un PDS? Introduce su dirección."
             }
-        }
+        },
+        "moreOptions": "",
+        "atmosphereNote": ""
     },
     "composer": {
         "newHighlight": "Nuevo resaltado",
