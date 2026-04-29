@@ -283,7 +283,8 @@
         "connecting": "",
         "termsPrefix": "Přihlášením souhlasíte s",
         "createAccount": "Vytvořit nový účet",
-        "signInWith": "Přihlašte se Vaším"
+        "signInWith": "Přihlašte se Vaším",
+        "or": ""
     },
     "signUp": {
         "atProtocol": "Protokol AT",
@@ -333,7 +334,9 @@
         "subtitle": "",
         "subtitleSuffix": "",
         "customPdsTitle": "",
-        "title": ""
+        "title": "",
+        "moreOptions": "",
+        "atmosphereNote": ""
     },
     "composer": {
         "newHighlight": "Nový úryvek",
