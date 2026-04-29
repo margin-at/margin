@@ -870,7 +870,7 @@ export function App() {
                       <BookmarkIcon size={16} className="text-[var(--accent)]" />
                     </div>
                     <a
-                      href={item.source}
+                      href={item.target?.source || item.source}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex-1 min-w-0"
