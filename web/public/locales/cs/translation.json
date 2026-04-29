@@ -309,7 +309,8 @@
                 "description": "Největší a nejrozšířenější komunita"
             },
             "blacksky": {
-                "name": "Blacksky"
+                "name": "Blacksky",
+                "description": ""
             },
             "northsky": {
                 "description": "Kanadské družstvo vlastněné a provozované zaměstnanci",
