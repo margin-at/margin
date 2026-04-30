@@ -1,1 +1,32 @@
-{}
+{
+    "appTitle": "Margin",
+    "nav": {
+        "feed": "Feed",
+        "discover": "Descobrir",
+        "annotations": "Anotações",
+        "highlights": "Destaques",
+        "collections": "Coleções",
+        "settings": "Configurações",
+        "new": "Novo",
+        "signIn": "Entrar",
+        "logOut": "Sair",
+        "themeLight": "Claro",
+        "themeDark": "Escuro",
+        "themeSystem": "Sistema"
+    },
+    "pageTitles": {
+        "home": "Página Inicial — Margin",
+        "highlights": "Destaques — Margin",
+        "annotations": "Anotações — Margin",
+        "discover": "Descobrir — Margin",
+        "search": "Buscar — Margin",
+        "notifications": "Notificações — Margin",
+        "new": "Nova Anotação — Margin",
+        "settings": "Configurações — Margin",
+        "collections": "Coleções — Margin"
+    },
+    "sidebar": {
+        "getExtension": "Obter a Extensão",
+        "extensionTagline": "Destaque, anote e salve a partir de qualquer página."
+    }
+}
