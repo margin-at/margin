@@ -445,16 +445,16 @@ export default function Card({
           <div className="flex items-center gap-1.5 flex-wrap min-w-0">
             <ProfileHoverCard
               did={item.author?.did}
-              className="min-w-0 max-w-[180px] sm:max-w-[200px]"
+              className="min-w-0 max-w-[180px] sm:max-w-none"
             >
               <a
                 href={`/profile/${item.author?.did}`}
-                className="font-semibold text-surface-900 dark:text-white text-[15px] hover:underline block truncate"
+                className="font-semibold text-surface-900 dark:text-white text-[15px] hover:underline block truncate sm:whitespace-normal sm:overflow-visible"
               >
                 {item.author?.displayName || item.author?.handle}
               </a>
             </ProfileHoverCard>
-            <span className="text-surface-400 dark:text-surface-500 text-sm truncate max-w-[120px]">
+            <span className="text-surface-400 dark:text-surface-500 text-sm truncate max-w-[120px] sm:max-w-none sm:whitespace-normal sm:overflow-visible break-all">
               @{item.author?.handle}
             </span>
             <span className="text-surface-300 dark:text-surface-600">·</span>
