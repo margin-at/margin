@@ -20,6 +20,8 @@ try {
     uri = decodeURIComponent(segments[1]);
   } else if (segments.length === 3 && segments[0] === 'at') {
     uri = `at://${segments[1]}/at.margin.note/${segments[2]}`;
+  } else if (segments.length === 4 && segments[0] === 'at') {
+    uri = `at://${segments[1]}/${segments[2]}/${segments[3]}`;
   } else if (segments.length === 3) {
     const [handle, type, rkey] = segments;
     const contentTypes = ['note', 'annotation', 'highlight', 'bookmark', 'collection'];

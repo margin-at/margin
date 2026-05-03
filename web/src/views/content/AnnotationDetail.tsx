@@ -29,6 +29,7 @@ interface AnnotationDetailProps {
   type?: string;
   uri?: string;
   did?: string;
+  collection?: string;
   initialAnnotation?: AnnotationItem | null;
   initialReplies?: AnnotationItem[];
   resolvedUri?: string;
@@ -40,6 +41,7 @@ export default function AnnotationDetail({
   type,
   uri,
   did,
+  collection,
   initialAnnotation,
   initialReplies,
   resolvedUri,
@@ -76,15 +78,15 @@ export default function AnnotationDetail({
       }
 
       if (handle && rkey) {
-        let collection = "at.margin.note";
-        if (type === "annotation") collection = "at.margin.annotation";
-        if (type === "highlight") collection = "at.margin.highlight";
-        if (type === "bookmark") collection = "at.margin.bookmark";
+        let resolvedCollection = "at.margin.note";
+        if (type === "annotation") resolvedCollection = "at.margin.annotation";
+        if (type === "highlight") resolvedCollection = "at.margin.highlight";
+        if (type === "bookmark") resolvedCollection = "at.margin.bookmark";
 
         try {
           const resolvedDid = await resolveHandle(handle);
           if (resolvedDid) {
-            setTargetUri(`at://${resolvedDid}/${collection}/${rkey}`);
+            setTargetUri(`at://${resolvedDid}/${resolvedCollection}/${rkey}`);
           } else {
             throw new Error("Could not resolve handle");
           }
@@ -97,11 +99,12 @@ export default function AnnotationDetail({
           setLoading(false);
         }
       } else if (did && rkey) {
-        setTargetUri(`at://${did}/at.margin.note/${rkey}`);
+        const resolvedCollection = collection || "at.margin.note";
+        setTargetUri(`at://${did}/${resolvedCollection}/${rkey}`);
       }
     }
     resolve();
-  }, [uri, did, rkey, handle, type, resolvedUri, t]);
+  }, [uri, did, rkey, handle, type, collection, resolvedUri, t]);
 
   const refreshReplies = async () => {
     if (!targetUri) return;

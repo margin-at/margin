@@ -99,20 +99,22 @@ export default function ShareMenu({
     const did = uriParts[2];
     const collection = uriParts[3] ?? "";
 
-    if (uri.includes("network.cosmik.card"))
-      return `${origin}/at/${did}/${rkey}`;
+    const marginSegment = collection.startsWith("at.margin.note")
+      ? "note"
+      : collection.startsWith("at.margin.highlight")
+        ? "highlight"
+        : collection.startsWith("at.margin.bookmark")
+          ? "bookmark"
+          : collection.startsWith("at.margin.annotation")
+            ? "annotation"
+            : null;
 
-    if (handle) {
-      const segment = collection.includes("at.margin.note")
-        ? "note"
-        : collection.includes("at.margin.highlight")
-          ? "highlight"
-          : collection.includes("at.margin.bookmark")
-            ? "bookmark"
-            : collection.includes("at.margin.annotation")
-              ? "annotation"
-              : (type?.toLowerCase() ?? "note");
-      return `${origin}/${handle}/${segment}/${rkey}`;
+    if (marginSegment && handle) {
+      return `${origin}/${handle}/${marginSegment}/${rkey}`;
+    }
+
+    if (did && collection && rkey) {
+      return `${origin}/at/${did}/${collection}/${rkey}`;
     }
 
     return `${origin}/at/${did}/${rkey}`;

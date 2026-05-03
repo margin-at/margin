@@ -99,6 +99,15 @@ function AtAnnotationRoute() {
   return <AnnotationDetail did={did} rkey={rkey} />;
 }
 
+function AtCollectionAnnotationRoute() {
+  const { did, collection, rkey } = useParams<{
+    did: string;
+    collection: string;
+    rkey: string;
+  }>();
+  return <AnnotationDetail did={did} collection={collection} rkey={rkey} />;
+}
+
 function UriAnnotationRoute() {
   const { uri } = useParams<{ uri: string }>();
   return <AnnotationDetail uri={uri ? decodeURIComponent(uri) : undefined} />;
@@ -292,6 +301,10 @@ function AppLayout() {
                   element={<UriAnnotationRoute />}
                 />
                 <Route path="/at/:did/:rkey" element={<AtAnnotationRoute />} />
+                <Route
+                  path="/at/:did/:collection/:rkey"
+                  element={<AtCollectionAnnotationRoute />}
+                />
                 <Route path="/url/*" element={<UrlRoute />} />
                 <Route path="/:handle/url/*" element={<UserUrlRoute />} />
                 <Route path="/profile/:did" element={<ProfileRoute />} />
