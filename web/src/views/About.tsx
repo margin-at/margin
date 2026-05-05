@@ -416,6 +416,24 @@ export default function About() {
     },
   ];
 
+  const [navHidden, setNavHidden] = React.useState(false);
+  React.useEffect(() => {
+    let last = typeof window === "undefined" ? 0 : window.scrollY;
+    const onScroll = () => {
+      const cur = window.scrollY;
+      if (cur < 24) {
+        setNavHidden(false);
+      } else if (cur > last + 4) {
+        setNavHidden(true);
+      } else if (cur < last - 4) {
+        setNavHidden(false);
+      }
+      last = cur;
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   const heroPrimaryHref = user ? "/home" : "/login";
   const heroPrimaryLabel = user
     ? t("about.hero.openApp")
@@ -423,8 +441,12 @@ export default function About() {
 
   return (
     <div className="min-h-screen bg-surface-100 dark:bg-surface-900 text-surface-900 dark:text-surface-100 antialiased selection:bg-yellow-200 selection:text-surface-900 dark:selection:bg-yellow-300/40 dark:selection:text-white">
-      <nav className="sticky top-3 sm:top-4 z-50 px-3 sm:px-5">
-        <div className="max-w-[60rem] mx-auto flex items-center justify-between gap-3 bg-white dark:bg-surface-800 ring-1 ring-surface-200 dark:ring-white/10 rounded-full pl-3.5 pr-2 py-2 shadow-md shadow-surface-900/5 dark:shadow-surface-900/15">
+      <nav
+        className={`sticky top-3 sm:top-4 z-50 px-3 sm:px-5 transition-transform duration-300 ease-out ${
+          navHidden ? "-translate-y-[150%]" : "translate-y-0"
+        }`}
+      >
+        <div className="max-w-[28rem] mx-auto flex items-center justify-between gap-3 bg-white dark:bg-surface-800 ring-1 ring-surface-200 dark:ring-white/10 rounded-full pl-3.5 pr-2 py-2 shadow-md shadow-surface-900/5 dark:shadow-surface-900/15">
           <a href="/" className="group flex items-center">
             <img
               src="/logo.svg"
@@ -478,7 +500,7 @@ export default function About() {
               href={STORE_LINKS[primaryStore]}
               target="_blank"
               rel="noopener noreferrer"
-              className="group inline-flex items-center gap-2 px-5 py-3 text-[14.5px] font-semibold bg-surface-900 dark:bg-white text-white dark:text-surface-900 rounded-full hover:bg-surface-800 dark:hover:bg-surface-100 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/60 ring-1 ring-surface-900/10 dark:ring-white/10 shadow-sm"
+              className="group inline-flex items-center gap-2 px-5 py-3 text-[14.5px] font-semibold bg-[#027bff] text-white rounded-full hover:bg-[#026ae0] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#027bff]/60 ring-1 ring-[#027bff]/30 shadow-sm shadow-[#027bff]/20"
             >
               <PrimaryIcon size={15} />
               {t("about.hero.installFor", { browser: primaryLabel })}
