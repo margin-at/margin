@@ -733,7 +733,7 @@
         },
         "contextMenu": {
           "title": "Context Menu & Selection",
-          "description": "Right-click any selected text to annotate or highlight it. Or just right-click the page to bookmark it instantly."
+          "description": "Right-click any selection to annotate or highlight it. Right-click anywhere on the page to bookmark it from the Margin submenu."
         },
         "keyboard": {
           "title": "Keyboard Shortcuts",
