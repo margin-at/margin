@@ -1,776 +1,776 @@
 {
-    "appTitle": "Margin",
-    "nav": {
-        "settings": "Ajustes",
-        "annotations": "Anotaciones",
-        "collections": "Colecciones",
-        "activity": "Actividad",
-        "signIn": "Iniciar sesión",
-        "logOut": "Cerrar sesión",
-        "themeLight": "Claro",
-        "themeDark": "Oscuro",
-        "themeSystem": "Sistema",
-        "bookmarks": "Marcadores",
-        "new": "Nuevo",
-        "feed": "Feed",
-        "highlights": "Resaltados",
-        "discover": ""
+  "appTitle": "Margin",
+  "nav": {
+    "settings": "Ajustes",
+    "annotations": "Anotaciones",
+    "collections": "Colecciones",
+    "activity": "Actividad",
+    "signIn": "Iniciar sesión",
+    "logOut": "Cerrar sesión",
+    "themeLight": "Claro",
+    "themeDark": "Oscuro",
+    "themeSystem": "Sistema",
+    "bookmarks": "Marcadores",
+    "new": "Nuevo",
+    "feed": "Feed",
+    "highlights": "Resaltados",
+    "discover": ""
+  },
+  "pageTitles": {
+    "home": "Inicio — Margin",
+    "bookmarks": "Marcadores — Margin",
+    "annotations": "Anotaciones — Margin",
+    "search": "Buscar — Margin",
+    "notifications": "Notificaciones — Margin",
+    "new": "Nueva anotación — Margin",
+    "settings": "Configuración — Margin",
+    "collections": "Colecciones — Margin",
+    "admin": "Admin — Margin",
+    "highlights": "Resaltados — Margin",
+    "discover": ""
+  },
+  "sidebar": {
+    "getExtension": "Obtén la extensión",
+    "extensionTagline": "Resalta, anota y guarda marcadores desde cualquier página.",
+    "downloadForFirefox": "Descargar para Firefox",
+    "downloadForEdge": "Descargar para Edge",
+    "downloadForChrome": "Descargar para Chrome",
+    "trending": "Tendencias",
+    "nothingTrending": "No hay nada en tendencia ahora mismo.",
+    "searchPlaceholder": "Buscar personas, etiquetas, URLs…",
+    "copyright": "© 2026 Padding Labs LLC",
+    "postCount_one": "",
+    "postCount_many": "",
+    "postCount_other": ""
+  },
+  "mobileNav": {
+    "iosShortcut": "Atajo de iOS"
+  },
+  "feed": {
+    "welcome": "Bienvenido a Margin",
+    "welcomeTagline": "Un lugar tranquilo para anotar, resaltar y guardar lo que lees en la web.",
+    "getStarted": "Empezar",
+    "learnMore": "Más información",
+    "tabs": {
+      "recent": "Recientes",
+      "popular": "Popular",
+      "margin": "Margin",
+      "semble": "Semble",
+      "shelved": ""
     },
-    "pageTitles": {
-        "home": "Inicio — Margin",
-        "bookmarks": "Marcadores — Margin",
-        "annotations": "Anotaciones — Margin",
-        "search": "Buscar — Margin",
-        "notifications": "Notificaciones — Margin",
-        "new": "Nueva anotación — Margin",
-        "settings": "Configuración — Margin",
-        "collections": "Colecciones — Margin",
-        "admin": "Admin — Margin",
-        "highlights": "Resaltados — Margin",
-        "discover": ""
+    "filters": {
+      "all": "Todo",
+      "annotations": "Anotaciones",
+      "highlights": "Resaltados",
+      "bookmarks": "Marcadores"
     },
-    "sidebar": {
-        "getExtension": "Obtén la extensión",
-        "extensionTagline": "Resalta, anota y guarda marcadores desde cualquier página.",
-        "downloadForFirefox": "Descargar para Firefox",
-        "downloadForEdge": "Descargar para Edge",
-        "downloadForChrome": "Descargar para Chrome",
-        "trending": "Tendencias",
-        "nothingTrending": "No hay nada en tendencia ahora mismo.",
-        "searchPlaceholder": "Buscar personas, etiquetas, URLs…",
-        "copyright": "© 2026 Padding Labs LLC",
-        "postCount_one": "",
-        "postCount_many": "",
-        "postCount_other": ""
+    "itemsWithTag": "Elementos con la etiqueta:",
+    "clearFilter": "Limpiar filtro",
+    "everyone": "Todos",
+    "mine": "Mío",
+    "defaultEmptyMessage": "Todavía no hay nada aquí — las anotaciones tuyas y de las personas a las que sigues aparecerán aquí.",
+    "nothingHereYet": "Aún no hay nada aquí",
+    "loading": "Cargando…"
+  },
+  "discover": {
+    "tabs": {
+      "new": "Nuevo",
+      "popular": "Popular",
+      "forYou": "Para ti"
     },
-    "mobileNav": {
-        "iosShortcut": "Atajo de iOS"
+    "comingSoon": "Próximamente",
+    "forYouNotAvailable": "Las recomendaciones personalizadas aún no están disponibles en este servidor.",
+    "noDocumentsYet": "Aún no se han descubierto documentos. ¡Vuelve pronto!",
+    "startAnnotating": "Empieza a anotar y resaltar para recibir recomendaciones personalizadas.",
+    "loadMore": "Cargar más"
+  },
+  "search": {
+    "placeholder": "Buscar anotaciones, resaltados, marcadores…",
+    "noResults": "No se encontraron resultados",
+    "noResultsMessage": "No se encontró nada que coincida con \"{{query}}\". Prueba con otras palabras clave.",
+    "emptyTitle": "Busca en tu biblioteca",
+    "emptyMessage": "Busca anotaciones, resaltados y marcadores por palabra clave, URL o etiqueta.",
+    "filters": {
+      "all": "Todo",
+      "annotations": "Anotaciones",
+      "bookmarks": "Marcadores",
+      "mine": "Mío",
+      "highlights": "Resaltados"
     },
-    "feed": {
-        "welcome": "Bienvenido a Margin",
-        "welcomeTagline": "Un lugar tranquilo para anotar, resaltar y guardar lo que lees en la web.",
-        "getStarted": "Empezar",
-        "learnMore": "Más información",
-        "tabs": {
-            "recent": "Recientes",
-            "popular": "Popular",
-            "margin": "Margin",
-            "semble": "Semble",
-            "shelved": ""
-        },
-        "filters": {
-            "all": "Todo",
-            "annotations": "Anotaciones",
-            "highlights": "Resaltados",
-            "bookmarks": "Marcadores"
-        },
-        "itemsWithTag": "Elementos con la etiqueta:",
-        "clearFilter": "Limpiar filtro",
-        "everyone": "Todos",
-        "mine": "Mío",
-        "defaultEmptyMessage": "Todavía no hay nada aquí — las anotaciones tuyas y de las personas a las que sigues aparecerán aquí.",
-        "nothingHereYet": "Aún no hay nada aquí",
-        "loading": "Cargando…"
+    "resultCount": "{{count}}{{hasMore}} resultados para \"{{query}}\"",
+    "loadMore": "Cargar más"
+  },
+  "notifications": {
+    "title": "Actividad",
+    "noActivity": "Aún no hay actividad",
+    "noActivityMessage": "Las interacciones con tu contenido aparecerán aquí.",
+    "likedAnnotation": "le gustó tu anotación",
+    "likedHighlight": "le dio me gusta a tu resaltado",
+    "likedBookmark": "le dio me gusta a tu marcador",
+    "likedReply": "le gustó tu respuesta",
+    "likedPost": "le dio me gusta a tu publicación",
+    "repliedToReply": "respondió a tu respuesta",
+    "repliedToAnnotation": "respondió a tu anotación",
+    "mentionedInAnnotation": "te mencionó en una anotación",
+    "followedYou": "te empezó a seguir",
+    "highlightedPage": "resaltó tu página",
+    "inReplyTo": "en respuesta a",
+    "aReply": "una respuesta",
+    "anAnnotation": "una anotación"
+  },
+  "collections": {
+    "title": "Colecciones",
+    "subtitle": "Organiza tus anotaciones y resaltados",
+    "none": "Aún no hay colecciones",
+    "noneMessage": "Crea una colección para organizar tus resaltados y anotaciones.",
+    "createButton": "Crear colección",
+    "newTitle": "Nueva colección",
+    "editTitle": "Editar colección",
+    "namePlaceholder": "Mi colección",
+    "namePlaceholderEdit": "Nombre de la colección",
+    "nameLabel": "Nombre",
+    "iconLabel": "Icono",
+    "iconsTab": "Iconos",
+    "emojisTab": "Emojis",
+    "selectedIcon": "Seleccionado:",
+    "descriptionLabel": "Descripción (opcional)",
+    "descriptionPlaceholder": "¿Para qué es esta colección?",
+    "descriptionPlaceholderEdit": "¿De qué trata esta colección?",
+    "cancel": "Cancelar",
+    "create": "Crear colección",
+    "creating": "Creando…",
+    "save": "Guardar cambios",
+    "saving": "Guardando…",
+    "deleteConfirm": "¿Eliminar esta colección?",
+    "failedUpdate": "Error al actualizar la colección",
+    "errorUpdating": "Ocurrió un error al actualizar",
+    "itemCount_one": "{{count}} elemento",
+    "itemCount_many": "",
+    "itemCount_other": "{{count}} elementos"
+  },
+  "collectionDetail": {
+    "by": "por",
+    "edit": "Editar colección",
+    "delete": "Eliminar colección",
+    "removeFromCollection": "Quitar de la colección",
+    "viewInSemble": "Ver en Semble",
+    "empty": "La colección está vacía",
+    "notFound": "Colección no encontrada",
+    "failedToLoad": "Error al cargar la colección",
+    "deleteConfirm": "¿Eliminar esta colección?",
+    "removeConfirm": "¿Eliminar de la colección?",
+    "backLink": "Colecciones"
+  },
+  "profile": {
+    "notFound": "Usuario no encontrado",
+    "notFoundMessage": "Este perfil no existe o no se pudo cargar.",
+    "edit": "Editar",
+    "viewInBluesky": "Ver perfil en Bluesky",
+    "unblock": "Desbloquear a {{handle}}",
+    "block": "Bloquear a {{handle}}",
+    "unmute": "Desactivar silencio de {{handle}}",
+    "mute": "Silenciar a {{handle}}",
+    "report": "Reportar",
+    "accountLabeled": "Cuenta etiquetada: {{description}}",
+    "labelApplied": "Esta etiqueta fue aplicada por un servicio de moderación al que estás suscrito.",
+    "show": "Mostrar",
+    "hide": "Ocultar",
+    "blockedBanner": "Has bloqueado a {{handle}}",
+    "blockedMessage": "Su contenido está oculto de tus feeds.",
+    "mutedBanner": "Has silenciado a {{handle}}",
+    "mutedMessage": "Su contenido está oculto de tus feeds.",
+    "blockedByBanner": "{{handle}} te ha bloqueado. No puedes interactuar con su contenido.",
+    "unblock_action": "Desbloquear",
+    "unmute_action": "Activar sonido",
+    "emptyCollectionsOwn": "Aún no has creado ninguna colección.",
+    "emptyCollectionsOther": "Sin colecciones",
+    "itemCount_one": "{{count}} elemento",
+    "itemCount_many": "",
+    "itemCount_other": "{{count}} elementos",
+    "emptyTabOwn": "Tus {{tab}} aparecerán aquí.",
+    "emptyTabOther": "Aún no hay nada que ver aquí."
+  },
+  "login": {
+    "signInWith": "Inicia sesión con tu",
+    "handleSuffix": "handle",
+    "handlePlaceholder": "handle.margin.cafe",
+    "connecting": "Conectando…",
+    "continue": "Continuar",
+    "createAccount": "Crear cuenta nueva",
+    "termsPrefix": "Al iniciar sesión, aceptas nuestros",
+    "termsLink": "Términos de servicio",
+    "termsAnd": "y",
+    "privacyLink": "Política de privacidad",
+    "bannedMessage": "",
+    "bannedSignOut": "",
+    "bannedAppeal": "",
+    "bannedTitle": "",
+    "or": ""
+  },
+  "signUp": {
+    "title": "Crea tu cuenta",
+    "subtitle": "Margin se adhiere al",
+    "atProtocol": "AT Protocol",
+    "subtitleSuffix": ". Elige un proveedor para alojar tu cuenta.",
+    "customPdsTitle": "Usa un PDS personalizado",
+    "customPdsSubtitle": "Introduce la dirección del PDS que aloja tu cuenta.",
+    "pdsAddressLabel": "Dirección del PDS",
+    "pdsAddressPlaceholder": "pds.example.com",
+    "connecting": "Conectando…",
+    "back": "Volver",
+    "continue": "Continuar",
+    "invite": "Invitar",
+    "providerError": "No se pudo conectar con este proveedor. Por favor, inténtalo de nuevo.",
+    "customPdsError": "No se pudo conectar con ese PDS. Revisa la dirección.",
+    "providers": {
+      "margin": {
+        "description": "La forma más fácil de empezar",
+        "name": "Margin"
+      },
+      "bluesky": {
+        "name": "Bluesky",
+        "description": "La comunidad más grande y popular"
+      },
+      "blacksky": {
+        "name": "Blacksky",
+        "description": "Para la cultura — un espacio seguro para usuarios y aliados"
+      },
+      "eurosky": {
+        "name": "Eurosky",
+        "description": "Eurosky es tu hogar europeo en la Atmosphere"
+      },
+      "selfhostedSocial": {
+        "name": "selfhosted.social",
+        "description": "Un hogar para creadores, entusiastas y curiosos"
+      },
+      "northsky": {
+        "name": "Northsky",
+        "description": "Una cooperativa canadiense propiedad de los trabajadores"
+      },
+      "tophhie": {
+        "name": "Tophhie",
+        "description": "Una comunidad acogedora y amable"
+      },
+      "customPds": {
+        "name": "Usa un PDS personalizado",
+        "description": "¿Ya tienes un PDS? Introduce su dirección."
+      }
     },
-    "discover": {
-        "tabs": {
-            "new": "Nuevo",
-            "popular": "Popular",
-            "forYou": "Para ti"
-        },
-        "comingSoon": "Próximamente",
-        "forYouNotAvailable": "Las recomendaciones personalizadas aún no están disponibles en este servidor.",
-        "noDocumentsYet": "Aún no se han descubierto documentos. ¡Vuelve pronto!",
-        "startAnnotating": "Empieza a anotar y resaltar para recibir recomendaciones personalizadas.",
-        "loadMore": "Cargar más"
+    "moreOptions": "",
+    "atmosphereNote": ""
+  },
+  "composer": {
+    "newHighlight": "Nuevo resaltado",
+    "newAnnotation": "Nueva anotación",
+    "newNote": "Nueva nota",
+    "saveHighlight": "Guardar resaltado",
+    "postAnnotation": "Publicar anotación",
+    "postNote": "Publicar nota",
+    "highlightHint": "Guardando un pasaje sin comentario. Añade texto debajo para convertirlo en una anotación.",
+    "addQuote": "+ Añadir una cita de la página",
+    "quotePlaceholder": "Pega o escribe el texto que estás anotando…",
+    "removeQuote": "Eliminar cita",
+    "thoughtsPlaceholder": "Añade tus reflexiones sobre este pasaje…",
+    "mindPlaceholder": "¿Qué tienes en mente?",
+    "tagsPlaceholder": "Añadir etiquetas…",
+    "contentWarning": "Advertencia de contenido",
+    "contentWarningCount": "Advertencia de contenido ({{count}})",
+    "cancel": "Cancelar",
+    "failedToPost": "Error al publicar",
+    "labels": {
+      "sexual": "Sexual",
+      "nudity": "Desnudez",
+      "violence": "Violencia",
+      "gore": "Gore",
+      "spam": "Spam",
+      "misleading": "Engañoso"
+    }
+  },
+  "card": {
+    "addedTo": "Añadido a",
+    "addedToLower": "añadido a",
+    "and": "y",
+    "communityBookmark": "Marcador de la comunidad",
+    "lichenBookmark": "Marcador de Lichen",
+    "openInSemble": "Abrir en Semble",
+    "deleteConfirm": "¿Eliminar este elemento?",
+    "hideContent": "Ocultar contenido",
+    "show": "Mostrar",
+    "edited": "(editado)",
+    "annotate": "Anotar",
+    "untitledBookmark": "Marcador sin título",
+    "addNotePlaceholder": "Añade tu nota para convertir este resaltado en una anotación…",
+    "addToCollectionTitle": "Añadir a la colección",
+    "annotateTitle": "Anotar este resaltado",
+    "editTitle": "Editar",
+    "deleteTitle": "Eliminar",
+    "report": "Reportar",
+    "muteUser": "Silenciar a {{handle}}",
+    "blockUser": "Bloquear a {{handle}}",
+    "convertToAnnotation": "Convertir en anotación",
+    "justNow": "hace un momento",
+    "labelDescriptions": {
+      "sexual": "Contenido sexual",
+      "nudity": "Desnudez",
+      "violence": "Violencia",
+      "gore": "Contenido gráfico",
+      "spam": "Spam",
+      "misleading": "Engañoso"
+    }
+  },
+  "profileHoverCard": {
+    "viewProfile": "Ver perfil",
+    "notFound": "Perfil no encontrado"
+  },
+  "replyList": {
+    "noReplies": "Aún no hay respuestas"
+  },
+  "shareMenu": {
+    "sembleIntegration": "Integración con Semble",
+    "openOnSemble": "Abrir en Semble",
+    "copySembleLink": "Copiar enlace de Semble",
+    "copyLink": "Copiar enlace",
+    "shareViaApp": "Compartir vía app",
+    "copyUniversalLink": "Copiar enlace universal",
+    "moreOptions": "Más opciones…",
+    "copied": "¡Copiado!"
+  },
+  "addToCollection": {
+    "title": "Añadir a la colección",
+    "loading": "Cargando colecciones…",
+    "collectionNameLabel": "Nombre de la colección",
+    "namePlaceholder": "Mi colección",
+    "descriptionLabel": "Descripción (opcional)",
+    "descriptionPlaceholder": "¿De qué trata esta colección?",
+    "iconLabel": "Icono",
+    "iconsTab": "Iconos",
+    "emojisTab": "Emojis",
+    "selected": "Seleccionado:",
+    "back": "Volver",
+    "create": "Crear",
+    "creating": "Creando…",
+    "newCollectionButton": "Nueva colección",
+    "createNewDescription": "Crear una nueva colección",
+    "none": "Aún no hay colecciones",
+    "done": "Hecho",
+    "failedLoad": "Error al cargar las colecciones",
+    "failedAdd": "Error al añadir a la colección",
+    "failedCreate": "Error al crear la colección"
+  },
+  "editItem": {
+    "editAnnotation": "Editar anotación",
+    "editHighlight": "Editar resaltado",
+    "editBookmark": "Editar marcador",
+    "textLabel": "Texto",
+    "textPlaceholder": "Escribe tu anotación…",
+    "colorLabel": "Color",
+    "tagsLabel": "Etiquetas",
+    "tagPlaceholder": "Añadir una etiqueta…",
+    "contentWarning": "Advertencia de contenido",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "saving": "Guardando…",
+    "failedSave": "Error al guardar los cambios. Por favor, inténtalo de nuevo.",
+    "titleLabel": "Título",
+    "titlePlaceholder": "Título del marcador",
+    "descriptionLabel": "Descripción",
+    "descriptionPlaceholder": "Descripción opcional…"
+  },
+  "editCollection": {
+    "title": "Editar colección",
+    "nameLabel": "Nombre de la colección",
+    "namePlaceholder": "Mi colección",
+    "descriptionLabel": "Descripción (opcional)",
+    "descriptionPlaceholder": "¿De qué trata esta colección?",
+    "iconLabel": "Icono",
+    "iconsTab": "Iconos",
+    "emojisTab": "Emojis",
+    "selected": "Seleccionado:",
+    "cancel": "Cancelar",
+    "save": "Guardar cambios",
+    "saving": "",
+    "errorUpdating": "",
+    "failedUpdate": ""
+  },
+  "annotationDetail": {
+    "reply": "",
+    "mayBeDeleted": "",
+    "replyPlaceholder": "",
+    "back": "",
+    "signInToReply": "",
+    "failedReply": "",
+    "notFound": "",
+    "failedDelete": "",
+    "replyingTo": "",
+    "logIn": "",
+    "failedResolve": "",
+    "backToFeed": "",
+    "replies": "",
+    "deleteReplyConfirm": ""
+  },
+  "iosShortcut": {
+    "step6Title": "",
+    "step3Title": "",
+    "step4Title": "",
+    "step1Link": "",
+    "step2Title": "",
+    "step6Description": "",
+    "step2Description": "",
+    "gotIt": "",
+    "title": "",
+    "howTo": "",
+    "step5Description": "",
+    "step4Description": "",
+    "step1Title": "",
+    "step3Description": "",
+    "step5Title": ""
+  },
+  "settings": {
+    "apiKeys": {
+      "keyNamePlaceholder": "",
+      "created": "",
+      "copyNow": "",
+      "description": "",
+      "empty": "",
+      "revokeConfirm": "",
+      "generate": ""
     },
-    "search": {
-        "placeholder": "Buscar anotaciones, resaltados, marcadores…",
-        "noResults": "No se encontraron resultados",
-        "noResultsMessage": "No se encontró nada que coincida con \"{{query}}\". Prueba con otras palabras clave.",
-        "emptyTitle": "Busca en tu biblioteca",
-        "emptyMessage": "Busca anotaciones, resaltados y marcadores por palabra clave, URL o etiqueta.",
-        "filters": {
-            "all": "Todo",
-            "annotations": "Anotaciones",
-            "bookmarks": "Marcadores",
-            "mine": "Mío",
-            "highlights": "Resaltados"
-        },
-        "resultCount": "{{count}}{{hasMore}} resultados para \"{{query}}\"",
-        "loadMore": "Cargar más"
+    "logout": "",
+    "contentFiltering": {
+      "noLabelers": "",
+      "add": "",
+      "remove": "",
+      "hide": "",
+      "description": "",
+      "labelerDidPlaceholder": "",
+      "ignore": "",
+      "labelVisibility": "",
+      "labelVisibilityDesc": "",
+      "warn": "",
+      "subscribedLabelers": ""
     },
-    "notifications": {
-        "title": "Actividad",
-        "noActivity": "Aún no hay actividad",
-        "noActivityMessage": "Las interacciones con tu contenido aparecerán aquí.",
-        "likedAnnotation": "le gustó tu anotación",
-        "likedHighlight": "le dio me gusta a tu resaltado",
-        "likedBookmark": "le dio me gusta a tu marcador",
-        "likedReply": "le gustó tu respuesta",
-        "likedPost": "le dio me gusta a tu publicación",
-        "repliedToReply": "respondió a tu respuesta",
-        "repliedToAnnotation": "respondió a tu anotación",
-        "mentionedInAnnotation": "te mencionó en una anotación",
-        "followedYou": "te empezó a seguir",
-        "highlightedPage": "resaltó tu página",
-        "inReplyTo": "en respuesta a",
-        "aReply": "una respuesta",
-        "anAnnotation": "una anotación"
-    },
-    "collections": {
-        "title": "Colecciones",
-        "subtitle": "Organiza tus anotaciones y resaltados",
-        "none": "Aún no hay colecciones",
-        "noneMessage": "Crea una colección para organizar tus resaltados y anotaciones.",
-        "createButton": "Crear colección",
-        "newTitle": "Nueva colección",
-        "editTitle": "Editar colección",
-        "namePlaceholder": "Mi colección",
-        "namePlaceholderEdit": "Nombre de la colección",
-        "nameLabel": "Nombre",
-        "iconLabel": "Icono",
-        "iconsTab": "Iconos",
-        "emojisTab": "Emojis",
-        "selectedIcon": "Seleccionado:",
-        "descriptionLabel": "Descripción (opcional)",
-        "descriptionPlaceholder": "¿Para qué es esta colección?",
-        "descriptionPlaceholderEdit": "¿De qué trata esta colección?",
-        "cancel": "Cancelar",
-        "create": "Crear colección",
-        "creating": "Creando…",
-        "save": "Guardar cambios",
-        "saving": "Guardando…",
-        "deleteConfirm": "¿Eliminar esta colección?",
-        "failedUpdate": "Error al actualizar la colección",
-        "errorUpdating": "Ocurrió un error al actualizar",
-        "itemCount_one": "{{count}} elemento",
-        "itemCount_many": "",
-        "itemCount_other": "{{count}} elementos"
-    },
-    "collectionDetail": {
-        "by": "por",
-        "edit": "Editar colección",
-        "delete": "Eliminar colección",
-        "removeFromCollection": "Quitar de la colección",
-        "viewInSemble": "Ver en Semble",
-        "empty": "La colección está vacía",
-        "notFound": "Colección no encontrada",
-        "failedToLoad": "Error al cargar la colección",
-        "deleteConfirm": "¿Eliminar esta colección?",
-        "removeConfirm": "¿Eliminar de la colección?",
-        "backLink": "Colecciones"
-    },
-    "profile": {
-        "notFound": "Usuario no encontrado",
-        "notFoundMessage": "Este perfil no existe o no se pudo cargar.",
-        "edit": "Editar",
-        "viewInBluesky": "Ver perfil en Bluesky",
-        "unblock": "Desbloquear a {{handle}}",
-        "block": "Bloquear a {{handle}}",
-        "unmute": "Desactivar silencio de {{handle}}",
-        "mute": "Silenciar a {{handle}}",
-        "report": "Reportar",
-        "accountLabeled": "Cuenta etiquetada: {{description}}",
-        "labelApplied": "Esta etiqueta fue aplicada por un servicio de moderación al que estás suscrito.",
-        "show": "Mostrar",
-        "hide": "Ocultar",
-        "blockedBanner": "Has bloqueado a {{handle}}",
-        "blockedMessage": "Su contenido está oculto de tus feeds.",
-        "mutedBanner": "Has silenciado a {{handle}}",
-        "mutedMessage": "Su contenido está oculto de tus feeds.",
-        "blockedByBanner": "{{handle}} te ha bloqueado. No puedes interactuar con su contenido.",
-        "unblock_action": "Desbloquear",
-        "unmute_action": "Activar sonido",
-        "emptyCollectionsOwn": "Aún no has creado ninguna colección.",
-        "emptyCollectionsOther": "Sin colecciones",
-        "itemCount_one": "{{count}} elemento",
-        "itemCount_many": "",
-        "itemCount_other": "{{count}} elementos",
-        "emptyTabOwn": "Tus {{tab}} aparecerán aquí.",
-        "emptyTabOther": "Aún no hay nada que ver aquí."
-    },
-    "login": {
-        "signInWith": "Inicia sesión con tu",
-        "handleSuffix": "handle",
-        "handlePlaceholder": "handle.margin.cafe",
-        "connecting": "Conectando…",
-        "continue": "Continuar",
-        "createAccount": "Crear cuenta nueva",
-        "termsPrefix": "Al iniciar sesión, aceptas nuestros",
-        "termsLink": "Términos de servicio",
-        "termsAnd": "y",
-        "privacyLink": "Política de privacidad",
-        "bannedMessage": "",
-        "bannedSignOut": "",
-        "bannedAppeal": "",
-        "bannedTitle": "",
-        "or": ""
-    },
-    "signUp": {
-        "title": "Crea tu cuenta",
-        "subtitle": "Margin se adhiere al",
-        "atProtocol": "AT Protocol",
-        "subtitleSuffix": ". Elige un proveedor para alojar tu cuenta.",
-        "customPdsTitle": "Usa un PDS personalizado",
-        "customPdsSubtitle": "Introduce la dirección del PDS que aloja tu cuenta.",
-        "pdsAddressLabel": "Dirección del PDS",
-        "pdsAddressPlaceholder": "pds.example.com",
-        "connecting": "Conectando…",
-        "back": "Volver",
-        "continue": "Continuar",
-        "invite": "Invitar",
-        "providerError": "No se pudo conectar con este proveedor. Por favor, inténtalo de nuevo.",
-        "customPdsError": "No se pudo conectar con ese PDS. Revisa la dirección.",
-        "providers": {
-            "margin": {
-                "description": "La forma más fácil de empezar",
-                "name": "Margin"
-            },
-            "bluesky": {
-                "name": "Bluesky",
-                "description": "La comunidad más grande y popular"
-            },
-            "blacksky": {
-                "name": "Blacksky",
-                "description": "Para la cultura — un espacio seguro para usuarios y aliados"
-            },
-            "eurosky": {
-                "name": "Eurosky",
-                "description": "Eurosky es tu hogar europeo en la Atmosphere"
-            },
-            "selfhostedSocial": {
-                "name": "selfhosted.social",
-                "description": "Un hogar para creadores, entusiastas y curiosos"
-            },
-            "northsky": {
-                "name": "Northsky",
-                "description": "Una cooperativa canadiense propiedad de los trabajadores"
-            },
-            "tophhie": {
-                "name": "Tophhie",
-                "description": "Una comunidad acogedora y amable"
-            },
-            "customPds": {
-                "name": "Usa un PDS personalizado",
-                "description": "¿Ya tienes un PDS? Introduce su dirección."
-            }
-        },
-        "moreOptions": "",
-        "atmosphereNote": ""
-    },
-    "composer": {
-        "newHighlight": "Nuevo resaltado",
-        "newAnnotation": "Nueva anotación",
-        "newNote": "Nueva nota",
-        "saveHighlight": "Guardar resaltado",
-        "postAnnotation": "Publicar anotación",
-        "postNote": "Publicar nota",
-        "highlightHint": "Guardando un pasaje sin comentario. Añade texto debajo para convertirlo en una anotación.",
-        "addQuote": "+ Añadir una cita de la página",
-        "quotePlaceholder": "Pega o escribe el texto que estás anotando…",
-        "removeQuote": "Eliminar cita",
-        "thoughtsPlaceholder": "Añade tus reflexiones sobre este pasaje…",
-        "mindPlaceholder": "¿Qué tienes en mente?",
-        "tagsPlaceholder": "Añadir etiquetas…",
-        "contentWarning": "Advertencia de contenido",
-        "contentWarningCount": "Advertencia de contenido ({{count}})",
-        "cancel": "Cancelar",
-        "failedToPost": "Error al publicar",
-        "labels": {
-            "sexual": "Sexual",
-            "nudity": "Desnudez",
-            "violence": "Violencia",
-            "gore": "Gore",
-            "spam": "Spam",
-            "misleading": "Engañoso"
-        }
-    },
-    "card": {
-        "addedTo": "Añadido a",
-        "addedToLower": "añadido a",
-        "and": "y",
-        "communityBookmark": "Marcador de la comunidad",
-        "lichenBookmark": "Marcador de Lichen",
-        "openInSemble": "Abrir en Semble",
-        "deleteConfirm": "¿Eliminar este elemento?",
-        "hideContent": "Ocultar contenido",
-        "show": "Mostrar",
-        "edited": "(editado)",
-        "annotate": "Anotar",
-        "untitledBookmark": "Marcador sin título",
-        "addNotePlaceholder": "Añade tu nota para convertir este resaltado en una anotación…",
-        "addToCollectionTitle": "Añadir a la colección",
-        "annotateTitle": "Anotar este resaltado",
-        "editTitle": "Editar",
-        "deleteTitle": "Eliminar",
-        "report": "Reportar",
-        "muteUser": "Silenciar a {{handle}}",
-        "blockUser": "Bloquear a {{handle}}",
-        "convertToAnnotation": "Convertir en anotación",
-        "justNow": "hace un momento",
-        "labelDescriptions": {
-            "sexual": "Contenido sexual",
-            "nudity": "Desnudez",
-            "violence": "Violencia",
-            "gore": "Contenido gráfico",
-            "spam": "Spam",
-            "misleading": "Engañoso"
-        }
-    },
-    "profileHoverCard": {
-        "viewProfile": "Ver perfil",
-        "notFound": "Perfil no encontrado"
-    },
-    "replyList": {
-        "noReplies": "Aún no hay respuestas"
-    },
-    "shareMenu": {
-        "sembleIntegration": "Integración con Semble",
-        "openOnSemble": "Abrir en Semble",
-        "copySembleLink": "Copiar enlace de Semble",
-        "copyLink": "Copiar enlace",
-        "shareViaApp": "Compartir vía app",
-        "copyUniversalLink": "Copiar enlace universal",
-        "moreOptions": "Más opciones…",
-        "copied": "¡Copiado!"
-    },
-    "addToCollection": {
-        "title": "Añadir a la colección",
-        "loading": "Cargando colecciones…",
-        "collectionNameLabel": "Nombre de la colección",
-        "namePlaceholder": "Mi colección",
-        "descriptionLabel": "Descripción (opcional)",
-        "descriptionPlaceholder": "¿De qué trata esta colección?",
-        "iconLabel": "Icono",
-        "iconsTab": "Iconos",
-        "emojisTab": "Emojis",
-        "selected": "Seleccionado:",
-        "back": "Volver",
-        "create": "Crear",
-        "creating": "Creando…",
-        "newCollectionButton": "Nueva colección",
-        "createNewDescription": "Crear una nueva colección",
-        "none": "Aún no hay colecciones",
-        "done": "Hecho",
-        "failedLoad": "Error al cargar las colecciones",
-        "failedAdd": "Error al añadir a la colección",
-        "failedCreate": "Error al crear la colección"
-    },
-    "editItem": {
-        "editAnnotation": "Editar anotación",
-        "editHighlight": "Editar resaltado",
-        "editBookmark": "Editar marcador",
-        "textLabel": "Texto",
-        "textPlaceholder": "Escribe tu anotación…",
-        "colorLabel": "Color",
-        "tagsLabel": "Etiquetas",
-        "tagPlaceholder": "Añadir una etiqueta…",
-        "contentWarning": "Advertencia de contenido",
-        "cancel": "Cancelar",
-        "save": "Guardar",
-        "saving": "Guardando…",
-        "failedSave": "Error al guardar los cambios. Por favor, inténtalo de nuevo.",
-        "titleLabel": "Título",
-        "titlePlaceholder": "Título del marcador",
-        "descriptionLabel": "Descripción",
-        "descriptionPlaceholder": "Descripción opcional…"
-    },
-    "editCollection": {
-        "title": "Editar colección",
-        "nameLabel": "Nombre de la colección",
-        "namePlaceholder": "Mi colección",
-        "descriptionLabel": "Descripción (opcional)",
-        "descriptionPlaceholder": "¿De qué trata esta colección?",
-        "iconLabel": "Icono",
-        "iconsTab": "Iconos",
-        "emojisTab": "Emojis",
-        "selected": "Seleccionado:",
-        "cancel": "Cancelar",
-        "save": "Guardar cambios",
-        "saving": "",
-        "errorUpdating": "",
-        "failedUpdate": ""
-    },
-    "annotationDetail": {
-        "reply": "",
-        "mayBeDeleted": "",
-        "replyPlaceholder": "",
-        "back": "",
-        "signInToReply": "",
-        "failedReply": "",
-        "notFound": "",
-        "failedDelete": "",
-        "replyingTo": "",
-        "logIn": "",
-        "failedResolve": "",
-        "backToFeed": "",
-        "replies": "",
-        "deleteReplyConfirm": ""
+    "moderation": {
+      "noBlocked": "",
+      "mutedAccounts": "",
+      "unblock": "",
+      "description": "",
+      "blockedAccounts": "",
+      "noMuted": "",
+      "unmute": ""
     },
     "iosShortcut": {
-        "step6Title": "",
-        "step3Title": "",
-        "step4Title": "",
-        "step1Link": "",
-        "step2Title": "",
-        "step6Description": "",
-        "step2Description": "",
-        "gotIt": "",
+      "description": "",
+      "setupButton": ""
+    },
+    "language": {
+      "label": "",
+      "description": ""
+    },
+    "sections": {
+      "appearance": "",
+      "language": "",
+      "contentFiltering": "",
+      "iosShortcut": "",
+      "moderation": "",
+      "batchImport": "",
+      "profile": "",
+      "apiKeys": ""
+    },
+    "appearance": {
+      "communityBookmarksDesc": "",
+      "communityBookmarks": "",
+      "disableExternalLinkWarningDesc": "",
+      "disableExternalLinkWarning": ""
+    },
+    "batchImport": {
+      "description": ""
+    },
+    "title": ""
+  },
+  "urlPage": {
+    "tabs": {
+      "all": "",
+      "highlights": "",
+      "annotations": "",
+      "collections": "",
+      "bookmarks": ""
+    },
+    "noHighlightsYet": "",
+    "noAnnotationsMessage": "",
+    "loading": "",
+    "loadingAnnotations": "",
+    "copied": "",
+    "noHighlightsMessage": "",
+    "loadMore": "",
+    "blankCanvasMessage": "",
+    "blankCanvas": "",
+    "noAnnotationsYet": "",
+    "urlPlaceholder": "",
+    "view": "",
+    "contributor_one": "",
+    "contributor_many": "",
+    "contributor_other": "",
+    "myAnnotations": "",
+    "description": "",
+    "share": "",
+    "title": "",
+    "failedLoadMore": ""
+  },
+  "about": {
+    "protocol": {
+      "point2": "",
+      "point3": "",
+      "descriptionPre": "",
+      "title": "",
+      "point1": "",
+      "point0": "",
+      "badge": "",
+      "descriptionPost": ""
+    },
+    "nav": {
+      "install": "",
+      "getExtension": ""
+    },
+    "features": {
+      "title": "",
+      "annotations": {
         "title": "",
-        "howTo": "",
-        "step5Description": "",
-        "step4Description": "",
-        "step1Title": "",
-        "step3Description": "",
-        "step5Title": ""
-    },
-    "settings": {
-        "apiKeys": {
-            "keyNamePlaceholder": "",
-            "created": "",
-            "copyNow": "",
-            "description": "",
-            "empty": "",
-            "revokeConfirm": "",
-            "generate": ""
-        },
-        "logout": "",
-        "contentFiltering": {
-            "noLabelers": "",
-            "add": "",
-            "remove": "",
-            "hide": "",
-            "description": "",
-            "labelerDidPlaceholder": "",
-            "ignore": "",
-            "labelVisibility": "",
-            "labelVisibilityDesc": "",
-            "warn": "",
-            "subscribedLabelers": ""
-        },
-        "moderation": {
-            "noBlocked": "",
-            "mutedAccounts": "",
-            "unblock": "",
-            "description": "",
-            "blockedAccounts": "",
-            "noMuted": "",
-            "unmute": ""
-        },
-        "iosShortcut": {
-            "description": "",
-            "setupButton": ""
-        },
-        "language": {
-            "label": "",
-            "description": ""
-        },
-        "sections": {
-            "appearance": "",
-            "language": "",
-            "contentFiltering": "",
-            "iosShortcut": "",
-            "moderation": "",
-            "batchImport": "",
-            "profile": "",
-            "apiKeys": ""
-        },
-        "appearance": {
-            "communityBookmarksDesc": "",
-            "communityBookmarks": "",
-            "disableExternalLinkWarningDesc": "",
-            "disableExternalLinkWarning": ""
-        },
-        "batchImport": {
-            "description": ""
-        },
-        "title": ""
-    },
-    "urlPage": {
-        "tabs": {
-            "all": "",
-            "highlights": "",
-            "annotations": "",
-            "collections": "",
-            "bookmarks": ""
-        },
-        "noHighlightsYet": "",
-        "noAnnotationsMessage": "",
-        "loading": "",
-        "loadingAnnotations": "",
-        "copied": "",
-        "noHighlightsMessage": "",
-        "loadMore": "",
-        "blankCanvasMessage": "",
-        "blankCanvas": "",
-        "noAnnotationsYet": "",
-        "urlPlaceholder": "",
-        "view": "",
-        "contributor_one": "",
-        "contributor_many": "",
-        "contributor_other": "",
-        "myAnnotations": "",
+        "description": ""
+      },
+      "collections": {
+        "title": "",
+        "description": ""
+      },
+      "highlights": {
         "description": "",
-        "share": "",
-        "title": "",
-        "failedLoadMore": ""
+        "title": ""
+      },
+      "socialDiscovery": {
+        "description": "",
+        "title": ""
+      },
+      "tagsSearch": {
+        "description": "",
+        "title": ""
+      },
+      "bookmarks": {
+        "description": "",
+        "title": ""
+      },
+      "subtitle": ""
     },
-    "about": {
-        "protocol": {
-            "point2": "",
-            "point3": "",
-            "descriptionPre": "",
-            "title": "",
-            "point1": "",
-            "point0": "",
-            "badge": "",
-            "descriptionPost": ""
+    "cta": {
+      "viewTangled": "",
+      "signIn": "",
+      "title": "",
+      "description": "",
+      "viewGitHub": ""
+    },
+    "hero": {
+      "descriptionPost": "",
+      "openApp": "",
+      "descriptionPre": "",
+      "headline": "",
+      "installFor": "",
+      "openSource": "",
+      "headlineAccent": "",
+      "getStarted": "",
+      "atProtocol": ""
+    },
+    "extension": {
+      "features": {
+        "sidePanel": {
+          "description": "",
+          "title": ""
         },
-        "nav": {
-            "install": "",
-            "getExtension": ""
+        "keyboard": {
+          "title": "",
+          "description": ""
         },
-        "features": {
-            "title": "",
-            "annotations": {
-                "title": "",
-                "description": ""
-            },
-            "collections": {
-                "title": "",
-                "description": ""
-            },
-            "highlights": {
-                "description": "",
-                "title": ""
-            },
-            "socialDiscovery": {
-                "description": "",
-                "title": ""
-            },
-            "tagsSearch": {
-                "description": "",
-                "title": ""
-            },
-            "bookmarks": {
-                "description": "",
-                "title": ""
-            },
-            "subtitle": ""
+        "contextMenu": {
+          "title": "",
+          "description": ""
         },
-        "cta": {
-            "viewTangled": "",
-            "signIn": "",
-            "title": "",
-            "description": "",
-            "viewGitHub": ""
-        },
-        "hero": {
-            "descriptionPost": "",
-            "openApp": "",
-            "descriptionPre": "",
-            "headline": "",
-            "installFor": "",
-            "openSource": "",
-            "headlineAccent": "",
-            "getStarted": "",
-            "atProtocol": ""
-        },
-        "extension": {
-            "features": {
-                "sidePanel": {
-                    "description": "",
-                    "title": ""
-                },
-                "keyboard": {
-                    "title": "",
-                    "description": ""
-                },
-                "contextMenu": {
-                    "title": "",
-                    "description": ""
-                },
-                "inlineOverlay": {
-                    "description": "",
-                    "title": ""
-                }
-            },
-            "description": "",
-            "title": "",
-            "titleLine2": "",
-            "iosShortcut": "",
-            "badge": ""
-        },
-        "footer": {
-            "contact": "",
-            "terms": "",
-            "privacy": ""
+        "inlineOverlay": {
+          "description": "",
+          "title": ""
         }
+      },
+      "description": "",
+      "title": "",
+      "titleLine2": "",
+      "iosShortcut": "",
+      "badge": ""
     },
-    "adminModeration": {
-        "reasons": {
-            "spam": "",
-            "rude": "",
-            "misleading": "",
-            "other": "",
-            "violation": "",
-            "sexual": ""
-        },
-        "actions": {
-            "applyWarningDesc": "",
-            "applyWarning": "",
-            "labelApplied": "",
-            "contentUriOptional": "",
-            "applyLabel": "",
-            "accountDid": "",
-            "contentUri": "",
-            "labelType": ""
-        },
-        "reports": {
-            "empty": "",
-            "reportedUser": "",
-            "details": "",
-            "contentUri": "",
-            "emptyFiltered": "",
-            "takedown": "",
-            "reporter": "",
-            "acknowledge": "",
-            "emptyPending": "",
-            "dismiss": ""
-        },
-        "accessDeniedMessage": "",
-        "labels": {
-            "empty": "",
-            "accountLevel": "",
-            "removeConfirm": "",
-            "removeTitle": "",
-            "emptyMessage": ""
-        },
-        "accessDenied": "",
-        "tabs": {
-            "actions": "",
-            "labels": "",
-            "reports": ""
-        },
-        "filters": {
-            "pending": "",
-            "resolved": "",
-            "dismissed": "",
-            "escalated": "",
-            "all": ""
-        },
-        "stats": "",
-        "title": ""
-    },
-    "new": {
-        "composeTitle": "",
-        "needsAccount": "",
-        "composeTagline": "",
-        "urlLabel": "",
-        "signInRequired": "",
-        "signInButton": "",
-        "urlPlaceholder": ""
-    },
-    "report": {
-        "reasons": {
-            "spam": "",
-            "rudeOrHarassing": "",
-            "ruleViolation": "",
-            "inappropriateContent": "",
-            "misleading": "",
-            "other": ""
-        },
-        "submittedMessage": "",
-        "reportingContent": "",
-        "detailsPlaceholder": "",
-        "titleGeneric": "",
-        "titleUser": "",
-        "submitted": "",
-        "cancel": "",
-        "submit": "",
-        "submitting": "",
-        "issueLabel": ""
-    },
-    "editProfile": {
-        "uploadButton": "",
-        "bioLabel": "",
-        "addLinkPlaceholder": "",
-        "avatarUploadError": "",
-        "displayNameLabel": "",
-        "cancel": "",
-        "avatarTypeError": "",
-        "title": "",
-        "uploading": "",
-        "avatarLabel": "",
-        "avatarSizeError": "",
-        "linksLabel": "",
-        "save": "",
-        "websiteLabel": "",
-        "saving": ""
-    },
-    "userUrlPage": {
-        "noUrl": "",
-        "noItemsMessage": "",
-        "loadingAnnotations": "",
-        "loadMore": "",
-        "noAnnotations": "",
-        "on": "",
-        "failedLoadMore": "",
-        "noHighlights": "",
-        "noUrlMessage": "",
-        "loading": "",
-        "noItems": ""
-    },
-    "common": {
-        "loadMore": "",
-        "save": "",
-        "error": "",
-        "retry": "",
-        "cancel": "",
-        "back": "",
-        "new": "",
-        "continue": "",
-        "loading": "",
-        "close": ""
-    },
-    "highlightImporter": {
-        "complete": "",
-        "moreErrors": "",
-        "row": "",
-        "noHighlights": "",
-        "downloadTemplate": "",
-        "requiredColumns": "",
-        "success": "",
-        "importProgress": "",
-        "csvMustHaveText": "",
-        "csvMustHaveUrl": "",
-        "processing": "",
-        "importing": "",
-        "errorsTitle": "",
-        "importAnother": "",
-        "failed_one": "",
-        "failed_many": "",
-        "failed_other": "",
-        "clickToUpload": "",
-        "errorParsing": ""
-    },
-    "editHistory": {
-        "close": "",
-        "failedLoad": "",
-        "currentVersion": "",
-        "previousVersion": "",
-        "title": "",
-        "editedAgo": "",
-        "noHistory": "",
-        "timeAgo": "",
-        "postedAgo": ""
-    },
-    "externalLink": {
-        "cancel": "",
-        "alwaysAllow": "",
-        "message": "",
-        "open": "",
-        "title": ""
+    "footer": {
+      "contact": "",
+      "terms": "",
+      "privacy": ""
     }
+  },
+  "adminModeration": {
+    "reasons": {
+      "spam": "",
+      "rude": "",
+      "misleading": "",
+      "other": "",
+      "violation": "",
+      "sexual": ""
+    },
+    "actions": {
+      "applyWarningDesc": "",
+      "applyWarning": "",
+      "labelApplied": "",
+      "contentUriOptional": "",
+      "applyLabel": "",
+      "accountDid": "",
+      "contentUri": "",
+      "labelType": ""
+    },
+    "reports": {
+      "empty": "",
+      "reportedUser": "",
+      "details": "",
+      "contentUri": "",
+      "emptyFiltered": "",
+      "takedown": "",
+      "reporter": "",
+      "acknowledge": "",
+      "emptyPending": "",
+      "dismiss": ""
+    },
+    "accessDeniedMessage": "",
+    "labels": {
+      "empty": "",
+      "accountLevel": "",
+      "removeConfirm": "",
+      "removeTitle": "",
+      "emptyMessage": ""
+    },
+    "accessDenied": "",
+    "tabs": {
+      "actions": "",
+      "labels": "",
+      "reports": ""
+    },
+    "filters": {
+      "pending": "",
+      "resolved": "",
+      "dismissed": "",
+      "escalated": "",
+      "all": ""
+    },
+    "stats": "",
+    "title": ""
+  },
+  "new": {
+    "composeTitle": "",
+    "needsAccount": "",
+    "composeTagline": "",
+    "urlLabel": "",
+    "signInRequired": "",
+    "signInButton": "",
+    "urlPlaceholder": ""
+  },
+  "report": {
+    "reasons": {
+      "spam": "",
+      "rudeOrHarassing": "",
+      "ruleViolation": "",
+      "inappropriateContent": "",
+      "misleading": "",
+      "other": ""
+    },
+    "submittedMessage": "",
+    "reportingContent": "",
+    "detailsPlaceholder": "",
+    "titleGeneric": "",
+    "titleUser": "",
+    "submitted": "",
+    "cancel": "",
+    "submit": "",
+    "submitting": "",
+    "issueLabel": ""
+  },
+  "editProfile": {
+    "uploadButton": "",
+    "bioLabel": "",
+    "addLinkPlaceholder": "",
+    "avatarUploadError": "",
+    "displayNameLabel": "",
+    "cancel": "",
+    "avatarTypeError": "",
+    "title": "",
+    "uploading": "",
+    "avatarLabel": "",
+    "avatarSizeError": "",
+    "linksLabel": "",
+    "save": "",
+    "websiteLabel": "",
+    "saving": ""
+  },
+  "userUrlPage": {
+    "noUrl": "",
+    "noItemsMessage": "",
+    "loadingAnnotations": "",
+    "loadMore": "",
+    "noAnnotations": "",
+    "on": "",
+    "failedLoadMore": "",
+    "noHighlights": "",
+    "noUrlMessage": "",
+    "loading": "",
+    "noItems": ""
+  },
+  "common": {
+    "loadMore": "",
+    "save": "",
+    "error": "",
+    "retry": "",
+    "cancel": "",
+    "back": "",
+    "new": "",
+    "continue": "",
+    "loading": "",
+    "close": ""
+  },
+  "highlightImporter": {
+    "complete": "",
+    "moreErrors": "",
+    "row": "",
+    "noHighlights": "",
+    "downloadTemplate": "",
+    "requiredColumns": "",
+    "success": "",
+    "importProgress": "",
+    "csvMustHaveText": "",
+    "csvMustHaveUrl": "",
+    "processing": "",
+    "importing": "",
+    "errorsTitle": "",
+    "importAnother": "",
+    "failed_one": "",
+    "failed_many": "",
+    "failed_other": "",
+    "clickToUpload": "",
+    "errorParsing": ""
+  },
+  "editHistory": {
+    "close": "",
+    "failedLoad": "",
+    "currentVersion": "",
+    "previousVersion": "",
+    "title": "",
+    "editedAgo": "",
+    "noHistory": "",
+    "timeAgo": "",
+    "postedAgo": ""
+  },
+  "externalLink": {
+    "cancel": "",
+    "alwaysAllow": "",
+    "message": "",
+    "open": "",
+    "title": ""
+  }
 }

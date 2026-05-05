@@ -1,771 +1,811 @@
 {
-    "appTitle": "Margin",
-    "nav": {
-        "feed": "Feed",
-        "discover": "Discover",
-        "annotations": "Annotations",
-        "highlights": "Highlights",
-        "bookmarks": "Bookmarks",
-        "collections": "Collections",
-        "activity": "Activity",
-        "settings": "Settings",
-        "new": "New",
-        "signIn": "Sign in",
-        "logOut": "Log out",
-        "themeLight": "Light",
-        "themeDark": "Dark",
-        "themeSystem": "System"
+  "appTitle": "Margin",
+  "nav": {
+    "feed": "Feed",
+    "discover": "Discover",
+    "annotations": "Annotations",
+    "highlights": "Highlights",
+    "bookmarks": "Bookmarks",
+    "collections": "Collections",
+    "activity": "Activity",
+    "settings": "Settings",
+    "new": "New",
+    "signIn": "Sign in",
+    "logOut": "Log out",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeSystem": "System"
+  },
+  "pageTitles": {
+    "home": "Home — Margin",
+    "bookmarks": "Bookmarks — Margin",
+    "highlights": "Highlights — Margin",
+    "annotations": "Annotations — Margin",
+    "discover": "Discover — Margin",
+    "search": "Search — Margin",
+    "notifications": "Notifications — Margin",
+    "new": "New Annotation — Margin",
+    "settings": "Settings — Margin",
+    "collections": "Collections — Margin",
+    "admin": "Admin — Margin"
+  },
+  "sidebar": {
+    "getExtension": "Get the Extension",
+    "extensionTagline": "Highlight, annotate, and bookmark from any page.",
+    "downloadForFirefox": "Download for Firefox",
+    "downloadForEdge": "Download for Edge",
+    "downloadForChrome": "Download for Chrome",
+    "trending": "Trending",
+    "nothingTrending": "Nothing trending right now.",
+    "searchPlaceholder": "Search people, tags, URLs…",
+    "copyright": "© 2026 Padding Labs LLC",
+    "postCount_one": "{{count}} post",
+    "postCount_other": "{{count}} posts"
+  },
+  "mobileNav": {
+    "iosShortcut": "iOS Shortcut"
+  },
+  "feed": {
+    "welcome": "Welcome to Margin",
+    "welcomeTagline": "A quiet place to annotate, highlight, and save what you read on the web.",
+    "getStarted": "Get started",
+    "learnMore": "Learn more",
+    "tabs": {
+      "recent": "Recent",
+      "popular": "Popular",
+      "shelved": "Shelved",
+      "margin": "Margin",
+      "semble": "Semble"
     },
-    "pageTitles": {
-        "home": "Home — Margin",
-        "bookmarks": "Bookmarks — Margin",
-        "highlights": "Highlights — Margin",
-        "annotations": "Annotations — Margin",
-        "discover": "Discover — Margin",
-        "search": "Search — Margin",
-        "notifications": "Notifications — Margin",
-        "new": "New Annotation — Margin",
-        "settings": "Settings — Margin",
-        "collections": "Collections — Margin",
-        "admin": "Admin — Margin"
+    "filters": {
+      "all": "All",
+      "annotations": "Annotations",
+      "highlights": "Highlights",
+      "bookmarks": "Bookmarks"
     },
-    "sidebar": {
-        "getExtension": "Get the Extension",
-        "extensionTagline": "Highlight, annotate, and bookmark from any page.",
-        "downloadForFirefox": "Download for Firefox",
-        "downloadForEdge": "Download for Edge",
-        "downloadForChrome": "Download for Chrome",
-        "trending": "Trending",
-        "nothingTrending": "Nothing trending right now.",
-        "searchPlaceholder": "Search people, tags, URLs…",
-        "copyright": "© 2026 Padding Labs LLC",
-        "postCount_one": "{{count}} post",
-        "postCount_other": "{{count}} posts"
+    "itemsWithTag": "Items with tag:",
+    "clearFilter": "Clear filter",
+    "everyone": "Everyone",
+    "mine": "Mine",
+    "defaultEmptyMessage": "Nothing here yet — annotations from you and people you follow will show up here.",
+    "nothingHereYet": "Nothing here yet",
+    "loading": "Loading…"
+  },
+  "discover": {
+    "tabs": {
+      "new": "New",
+      "popular": "Popular",
+      "forYou": "For You"
     },
-    "mobileNav": {
-        "iosShortcut": "iOS Shortcut"
+    "comingSoon": "Coming soon",
+    "forYouNotAvailable": "Personalized recommendations aren't available on this server yet.",
+    "noDocumentsYet": "No documents have been discovered yet. Check back soon!",
+    "startAnnotating": "Start annotating and highlighting to get personalized recommendations.",
+    "loadMore": "Load more"
+  },
+  "search": {
+    "placeholder": "Search annotations, highlights, bookmarks…",
+    "noResults": "No results found",
+    "noResultsMessage": "Nothing matched \"{{query}}\". Try different keywords.",
+    "emptyTitle": "Search your library",
+    "emptyMessage": "Find annotations, highlights, and bookmarks by keyword, URL, or tag.",
+    "filters": {
+      "all": "All",
+      "annotations": "Annotations",
+      "highlights": "Highlights",
+      "bookmarks": "Bookmarks",
+      "mine": "Mine"
     },
-    "feed": {
-        "welcome": "Welcome to Margin",
-        "welcomeTagline": "A quiet place to annotate, highlight, and save what you read on the web.",
-        "getStarted": "Get started",
-        "learnMore": "Learn more",
-        "tabs": {
-            "recent": "Recent",
-            "popular": "Popular",
-            "shelved": "Shelved",
-            "margin": "Margin",
-            "semble": "Semble"
-        },
-        "filters": {
-            "all": "All",
-            "annotations": "Annotations",
-            "highlights": "Highlights",
-            "bookmarks": "Bookmarks"
-        },
-        "itemsWithTag": "Items with tag:",
-        "clearFilter": "Clear filter",
-        "everyone": "Everyone",
-        "mine": "Mine",
-        "defaultEmptyMessage": "Nothing here yet — annotations from you and people you follow will show up here.",
-        "nothingHereYet": "Nothing here yet",
-        "loading": "Loading…"
+    "resultCount": "{{count}}{{hasMore}} results for \"{{query}}\"",
+    "loadMore": "Load more"
+  },
+  "notifications": {
+    "title": "Activity",
+    "noActivity": "No activity yet",
+    "noActivityMessage": "Interactions with your content will appear here.",
+    "likedAnnotation": "liked your annotation",
+    "likedHighlight": "liked your highlight",
+    "likedBookmark": "liked your bookmark",
+    "likedReply": "liked your reply",
+    "likedPost": "liked your post",
+    "repliedToReply": "replied to your reply",
+    "repliedToAnnotation": "replied to your annotation",
+    "mentionedInAnnotation": "mentioned you in an annotation",
+    "followedYou": "followed you",
+    "highlightedPage": "highlighted your page",
+    "inReplyTo": "in reply to",
+    "aReply": "a reply",
+    "anAnnotation": "an annotation"
+  },
+  "collections": {
+    "title": "Collections",
+    "subtitle": "Organize your annotations and highlights",
+    "none": "No collections yet",
+    "noneMessage": "Create a collection to organize your highlights and annotations.",
+    "createButton": "Create collection",
+    "newTitle": "New Collection",
+    "editTitle": "Edit Collection",
+    "namePlaceholder": "My Collection",
+    "namePlaceholderEdit": "Collection name",
+    "nameLabel": "Name",
+    "iconLabel": "Icon",
+    "iconsTab": "Icons",
+    "emojisTab": "Emojis",
+    "selectedIcon": "Selected:",
+    "descriptionLabel": "Description (optional)",
+    "descriptionPlaceholder": "What's this collection for?",
+    "descriptionPlaceholderEdit": "What's this collection about?",
+    "cancel": "Cancel",
+    "create": "Create Collection",
+    "creating": "Creating…",
+    "save": "Save Changes",
+    "saving": "Saving…",
+    "deleteConfirm": "Delete this collection?",
+    "failedUpdate": "Failed to update collection",
+    "errorUpdating": "An error occurred while updating",
+    "itemCount_one": "{{count}} item",
+    "itemCount_other": "{{count}} items"
+  },
+  "collectionDetail": {
+    "backLink": "Collections",
+    "by": "by",
+    "edit": "Edit collection",
+    "delete": "Delete collection",
+    "removeFromCollection": "Remove from collection",
+    "viewInSemble": "View in Semble",
+    "empty": "Collection is empty",
+    "notFound": "Collection not found",
+    "failedToLoad": "Failed to load collection",
+    "deleteConfirm": "Delete this collection?",
+    "removeConfirm": "Remove from collection?"
+  },
+  "profile": {
+    "notFound": "User not found",
+    "notFoundMessage": "This profile doesn't exist or couldn't be loaded.",
+    "edit": "Edit",
+    "viewInBluesky": "View profile in Bluesky",
+    "unblock": "Unblock @{{handle}}",
+    "block": "Block @{{handle}}",
+    "unmute": "Unmute @{{handle}}",
+    "mute": "Mute @{{handle}}",
+    "report": "Report",
+    "accountLabeled": "Account labeled: {{description}}",
+    "labelApplied": "This label was applied by a moderation service you subscribe to.",
+    "show": "Show",
+    "hide": "Hide",
+    "blockedBanner": "You have blocked @{{handle}}",
+    "blockedMessage": "Their content is hidden from your feeds.",
+    "mutedBanner": "You have muted @{{handle}}",
+    "mutedMessage": "Their content is hidden from your feeds.",
+    "blockedByBanner": "@{{handle}} has blocked you. You cannot interact with their content.",
+    "unblock_action": "Unblock",
+    "unmute_action": "Unmute",
+    "emptyCollectionsOwn": "You haven't created any collections yet.",
+    "emptyCollectionsOther": "No collections",
+    "itemCount_one": "{{count}} item",
+    "itemCount_other": "{{count}} items",
+    "emptyTabOwn": "Your {{tab}} will show up here.",
+    "emptyTabOther": "Nothing to see here yet."
+  },
+  "login": {
+    "signInWith": "Sign in with your",
+    "handleSuffix": "handle",
+    "handlePlaceholder": "handle.margin.cafe",
+    "connecting": "Connecting…",
+    "continue": "Continue",
+    "createAccount": "Create New Account",
+    "or": "or",
+    "termsPrefix": "By signing in, you agree to our",
+    "termsLink": "Terms of Service",
+    "termsAnd": "and",
+    "privacyLink": "Privacy Policy",
+    "bannedTitle": "Your account has been suspended",
+    "bannedMessage": "This account has been suspended from Margin and is no longer able to sign in.",
+    "bannedAppeal": "If you believe this is a mistake, you can appeal by emailing",
+    "bannedSignOut": "Sign out"
+  },
+  "signUp": {
+    "title": "Create your account",
+    "subtitle": "Margin adheres to the",
+    "atProtocol": "AT Protocol",
+    "subtitleSuffix": ". Choose a provider to host your account.",
+    "customPdsTitle": "Use a custom PDS",
+    "customPdsSubtitle": "Enter the address of the PDS hosting your account.",
+    "pdsAddressLabel": "PDS address",
+    "pdsAddressPlaceholder": "pds.example.com",
+    "connecting": "Connecting…",
+    "back": "Back",
+    "continue": "Continue",
+    "invite": "Invite",
+    "moreOptions": "More options",
+    "atmosphereNote": "Already have an atmosphere account? Just sign in!",
+    "providerError": "Could not connect to this provider. Please try again.",
+    "customPdsError": "Couldn't connect to that PDS. Double-check the address.",
+    "providers": {
+      "margin": {
+        "name": "Margin",
+        "description": "The easiest way to get started"
+      },
+      "bluesky": {
+        "name": "Bluesky",
+        "description": "The largest Atmosphere community"
+      },
+      "blacksky": {
+        "name": "Blacksky",
+        "description": "A Black-owned community"
+      },
+      "eurosky": {
+        "name": "Eurosky",
+        "description": "Your European home on the Atmosphere"
+      },
+      "selfhostedSocial": {
+        "name": "selfhosted.social",
+        "description": "A home for builders, tinkerers, and the curious"
+      },
+      "northsky": {
+        "name": "Northsky",
+        "description": "A Canadian queer-owned instance"
+      },
+      "tophhie": {
+        "name": "Tophhie",
+        "description": "A British community"
+      },
+      "customPds": {
+        "name": "Use a custom PDS",
+        "description": "Already have a PDS? Enter its address."
+      }
+    }
+  },
+  "composer": {
+    "newHighlight": "New highlight",
+    "newAnnotation": "New annotation",
+    "newNote": "New note",
+    "saveHighlight": "Save highlight",
+    "postAnnotation": "Post annotation",
+    "postNote": "Post note",
+    "highlightHint": "Saving a passage without a comment. Add text below to turn it into an annotation.",
+    "addQuote": "+ Add a quote from the page",
+    "quotePlaceholder": "Paste or type the text you're annotating…",
+    "removeQuote": "Remove Quote",
+    "thoughtsPlaceholder": "Add your thoughts on this passage…",
+    "mindPlaceholder": "What's on your mind?",
+    "tagsPlaceholder": "Add tags…",
+    "contentWarning": "Content Warning",
+    "contentWarningCount": "Content Warning ({{count}})",
+    "cancel": "Cancel",
+    "failedToPost": "Failed to post",
+    "labels": {
+      "sexual": "Sexual",
+      "nudity": "Nudity",
+      "violence": "Violence",
+      "gore": "Gore",
+      "spam": "Spam",
+      "misleading": "Misleading"
+    }
+  },
+  "card": {
+    "addedTo": "Added to",
+    "addedToLower": "added to",
+    "and": "and",
+    "communityBookmark": "Community bookmark",
+    "lichenBookmark": "Lichen bookmark",
+    "openInSemble": "Open in Semble",
+    "deleteConfirm": "Delete this item?",
+    "hideContent": "Hide Content",
+    "show": "Show",
+    "edited": "(edited)",
+    "annotate": "Annotate",
+    "untitledBookmark": "Untitled Bookmark",
+    "addNotePlaceholder": "Add your note to convert this highlight into an annotation…",
+    "addToCollectionTitle": "Add to Collection",
+    "annotateTitle": "Annotate this highlight",
+    "editTitle": "Edit",
+    "deleteTitle": "Delete",
+    "report": "Report",
+    "muteUser": "Mute @{{handle}}",
+    "blockUser": "Block @{{handle}}",
+    "convertToAnnotation": "Convert to annotation",
+    "justNow": "just now",
+    "labelDescriptions": {
+      "sexual": "Sexual Content",
+      "nudity": "Nudity",
+      "violence": "Violence",
+      "gore": "Graphic Content",
+      "spam": "Spam",
+      "misleading": "Misleading"
+    }
+  },
+  "profileHoverCard": {
+    "viewProfile": "View Profile",
+    "notFound": "Profile not found"
+  },
+  "replyList": {
+    "noReplies": "No replies yet"
+  },
+  "shareMenu": {
+    "sembleIntegration": "Semble Integration",
+    "openOnSemble": "Open on Semble",
+    "copySembleLink": "Copy Semble Link",
+    "copyLink": "Copy Link",
+    "shareViaApp": "Share via App",
+    "copyUniversalLink": "Copy Universal Link",
+    "moreOptions": "More Options…",
+    "copied": "Copied!"
+  },
+  "addToCollection": {
+    "title": "Add to Collection",
+    "loading": "Loading collections…",
+    "collectionNameLabel": "Collection name",
+    "namePlaceholder": "My Collection",
+    "descriptionLabel": "Description (optional)",
+    "descriptionPlaceholder": "What's this collection about?",
+    "iconLabel": "Icon",
+    "iconsTab": "Icons",
+    "emojisTab": "Emojis",
+    "selected": "Selected:",
+    "back": "Back",
+    "create": "Create",
+    "creating": "Creating…",
+    "newCollectionButton": "New Collection",
+    "createNewDescription": "Create a new collection",
+    "none": "No collections yet",
+    "done": "Done",
+    "failedLoad": "Failed to load collections",
+    "failedAdd": "Failed to add to collection",
+    "failedCreate": "Failed to create collection"
+  },
+  "editItem": {
+    "editAnnotation": "Edit Annotation",
+    "editHighlight": "Edit Highlight",
+    "editBookmark": "Edit Bookmark",
+    "textLabel": "Text",
+    "textPlaceholder": "Write your annotation…",
+    "colorLabel": "Color",
+    "tagsLabel": "Tags",
+    "tagPlaceholder": "Add a tag…",
+    "contentWarning": "Content Warning",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saving": "Saving…",
+    "failedSave": "Failed to save changes. Please try again.",
+    "titleLabel": "Title",
+    "titlePlaceholder": "Bookmark title",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "Optional description…"
+  },
+  "editCollection": {
+    "title": "Edit Collection",
+    "nameLabel": "Collection name",
+    "namePlaceholder": "My Collection",
+    "descriptionLabel": "Description (optional)",
+    "descriptionPlaceholder": "What's this collection about?",
+    "iconLabel": "Icon",
+    "iconsTab": "Icons",
+    "emojisTab": "Emojis",
+    "selected": "Selected:",
+    "cancel": "Cancel",
+    "save": "Save Changes",
+    "saving": "Saving…",
+    "failedUpdate": "Failed to update collection",
+    "errorUpdating": "An error occurred while updating"
+  },
+  "externalLink": {
+    "title": "Leaving Margin",
+    "message": "You're about to visit an external site.",
+    "alwaysAllow": "Always allow links to {{hostname}}",
+    "cancel": "Cancel",
+    "open": "Open Link"
+  },
+  "report": {
+    "submitted": "Report submitted",
+    "submittedMessage": "Thank you. We'll review this shortly.",
+    "titleUser": "Report @{{handle}}",
+    "titleGeneric": "Report user",
+    "reportingContent": "Reporting specific content",
+    "issueLabel": "What's the issue?",
+    "cancel": "Cancel",
+    "submit": "Submit Report",
+    "submitting": "Submitting…",
+    "detailsPlaceholder": "Additional details (optional)",
+    "reasons": {
+      "spam": "Spam",
+      "ruleViolation": "Rule violation",
+      "misleading": "Misleading",
+      "rudeOrHarassing": "Rude or harassing",
+      "inappropriateContent": "Inappropriate content",
+      "other": "Other"
+    }
+  },
+  "editProfile": {
+    "title": "Edit Profile",
+    "avatarLabel": "Avatar",
+    "uploadButton": "Upload",
+    "uploading": "Uploading…",
+    "displayNameLabel": "Display Name",
+    "bioLabel": "Bio",
+    "websiteLabel": "Website",
+    "linksLabel": "Links",
+    "addLinkPlaceholder": "Add a link…",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saving": "Saving…",
+    "avatarTypeError": "Please select a JPEG or PNG image",
+    "avatarSizeError": "Image must be under 2MB",
+    "avatarUploadError": "Failed to upload: {{message}}"
+  },
+  "iosShortcut": {
+    "title": "Save from iOS Safari",
+    "howTo": "How to use the shortcut",
+    "step1Title": "Install the shortcut",
+    "step1Link": "Get iOS Shortcut",
+    "step2Title": "Generate an API Key",
+    "step2Description": "Create a new key on this settings page and copy it.",
+    "step3Title": "Configure the shortcut",
+    "step3Description": "In the Shortcuts app, click the menu on the Save to Margin shortcut, and paste your API key in the Text action right below the setup comment.",
+    "step4Title": "To Bookmark a page",
+    "step4Description": "Don't select any text. Click the menu in Safari, press Share, and select Save to Margin.",
+    "step5Title": "To Highlight text",
+    "step5Description": "Select text on the page, click the menu, press Share, and select Save to Margin. Leave the Note field empty.",
+    "step6Title": "To Add an Annotation",
+    "step6Description": "Select text, share to Save to Margin (via the menu), enter your custom note in the Note field, and press Done!",
+    "gotIt": "Got it"
+  },
+  "editHistory": {
+    "title": "Edit History",
+    "noHistory": "No edit history found.",
+    "currentVersion": "Current Version",
+    "previousVersion": "Previous Version",
+    "editedAgo": "Edited {{time}} ago",
+    "postedAgo": "Posted {{time}} ago",
+    "timeAgo": "{{time}} ago",
+    "close": "Close",
+    "failedLoad": "Failed to load edit history"
+  },
+  "settings": {
+    "title": "Settings",
+    "sections": {
+      "profile": "Profile",
+      "appearance": "Appearance",
+      "language": "Language",
+      "batchImport": "Batch Import Highlights",
+      "apiKeys": "API Keys",
+      "moderation": "Moderation",
+      "contentFiltering": "Content Filtering",
+      "iosShortcut": "iOS Shortcut"
     },
-    "discover": {
-        "tabs": {
-            "new": "New",
-            "popular": "Popular",
-            "forYou": "For You"
-        },
-        "comingSoon": "Coming soon",
-        "forYouNotAvailable": "Personalized recommendations aren't available on this server yet.",
-        "noDocumentsYet": "No documents have been discovered yet. Check back soon!",
-        "startAnnotating": "Start annotating and highlighting to get personalized recommendations.",
-        "loadMore": "Load more"
+    "language": {
+      "label": "Interface Language",
+      "description": "Choose the language for the Margin interface."
     },
-    "search": {
-        "placeholder": "Search annotations, highlights, bookmarks…",
-        "noResults": "No results found",
-        "noResultsMessage": "Nothing matched \"{{query}}\". Try different keywords.",
-        "emptyTitle": "Search your library",
-        "emptyMessage": "Find annotations, highlights, and bookmarks by keyword, URL, or tag.",
-        "filters": {
-            "all": "All",
-            "annotations": "Annotations",
-            "highlights": "Highlights",
-            "bookmarks": "Bookmarks",
-            "mine": "Mine"
-        },
-        "resultCount": "{{count}}{{hasMore}} results for \"{{query}}\"",
-        "loadMore": "Load more"
+    "appearance": {
+      "disableExternalLinkWarning": "Disable external link warning",
+      "disableExternalLinkWarningDesc": "Don't ask for confirmation when opening external links",
+      "communityBookmarks": "Share bookmarks to community feed",
+      "communityBookmarksDesc": "Your saved bookmarks will appear in the community bookmarks feed"
     },
-    "notifications": {
-        "title": "Activity",
-        "noActivity": "No activity yet",
-        "noActivityMessage": "Interactions with your content will appear here.",
-        "likedAnnotation": "liked your annotation",
-        "likedHighlight": "liked your highlight",
-        "likedBookmark": "liked your bookmark",
-        "likedReply": "liked your reply",
-        "likedPost": "liked your post",
-        "repliedToReply": "replied to your reply",
-        "repliedToAnnotation": "replied to your annotation",
-        "mentionedInAnnotation": "mentioned you in an annotation",
-        "followedYou": "followed you",
-        "highlightedPage": "highlighted your page",
-        "inReplyTo": "in reply to",
-        "aReply": "a reply",
-        "anAnnotation": "an annotation"
+    "batchImport": {
+      "description": "Upload highlights from CSV. Required: url, text. Optional: title, tags, color, created_at"
     },
-    "collections": {
-        "title": "Collections",
-        "subtitle": "Organize your annotations and highlights",
-        "none": "No collections yet",
-        "noneMessage": "Create a collection to organize your highlights and annotations.",
-        "createButton": "Create collection",
-        "newTitle": "New Collection",
-        "editTitle": "Edit Collection",
-        "namePlaceholder": "My Collection",
-        "namePlaceholderEdit": "Collection name",
-        "nameLabel": "Name",
-        "iconLabel": "Icon",
-        "iconsTab": "Icons",
-        "emojisTab": "Emojis",
-        "selectedIcon": "Selected:",
-        "descriptionLabel": "Description (optional)",
-        "descriptionPlaceholder": "What's this collection for?",
-        "descriptionPlaceholderEdit": "What's this collection about?",
-        "cancel": "Cancel",
-        "create": "Create Collection",
-        "creating": "Creating…",
-        "save": "Save Changes",
-        "saving": "Saving…",
-        "deleteConfirm": "Delete this collection?",
-        "failedUpdate": "Failed to update collection",
-        "errorUpdating": "An error occurred while updating",
-        "itemCount_one": "{{count}} item",
-        "itemCount_other": "{{count}} items"
+    "apiKeys": {
+      "description": "For the iOS shortcut and other apps",
+      "keyNamePlaceholder": "Key name, e.g. iOS Shortcut",
+      "generate": "Generate",
+      "copyNow": "Copy now - you won't see this again!",
+      "empty": "No API keys yet. Create one to use with the browser extension.",
+      "created": "Created {{date}}",
+      "revokeConfirm": "Revoke this key? Apps using it will stop working."
     },
-    "collectionDetail": {
-        "backLink": "Collections",
-        "by": "by",
-        "edit": "Edit collection",
-        "delete": "Delete collection",
-        "removeFromCollection": "Remove from collection",
-        "viewInSemble": "View in Semble",
-        "empty": "Collection is empty",
-        "notFound": "Collection not found",
-        "failedToLoad": "Failed to load collection",
-        "deleteConfirm": "Delete this collection?",
-        "removeConfirm": "Remove from collection?"
+    "moderation": {
+      "description": "Manage blocked and muted accounts",
+      "blockedAccounts": "Blocked accounts ({{count}})",
+      "noBlocked": "No blocked accounts",
+      "unblock": "Unblock",
+      "mutedAccounts": "Muted accounts ({{count}})",
+      "noMuted": "No muted accounts",
+      "unmute": "Unmute"
     },
-    "profile": {
-        "notFound": "User not found",
-        "notFoundMessage": "This profile doesn't exist or couldn't be loaded.",
-        "edit": "Edit",
-        "viewInBluesky": "View profile in Bluesky",
-        "unblock": "Unblock @{{handle}}",
-        "block": "Block @{{handle}}",
-        "unmute": "Unmute @{{handle}}",
-        "mute": "Mute @{{handle}}",
-        "report": "Report",
-        "accountLabeled": "Account labeled: {{description}}",
-        "labelApplied": "This label was applied by a moderation service you subscribe to.",
-        "show": "Show",
-        "hide": "Hide",
-        "blockedBanner": "You have blocked @{{handle}}",
-        "blockedMessage": "Their content is hidden from your feeds.",
-        "mutedBanner": "You have muted @{{handle}}",
-        "mutedMessage": "Their content is hidden from your feeds.",
-        "blockedByBanner": "@{{handle}} has blocked you. You cannot interact with their content.",
-        "unblock_action": "Unblock",
-        "unmute_action": "Unmute",
-        "emptyCollectionsOwn": "You haven't created any collections yet.",
-        "emptyCollectionsOther": "No collections",
-        "itemCount_one": "{{count}} item",
-        "itemCount_other": "{{count}} items",
-        "emptyTabOwn": "Your {{tab}} will show up here.",
-        "emptyTabOther": "Nothing to see here yet."
-    },
-    "login": {
-        "signInWith": "Sign in with your",
-        "handleSuffix": "handle",
-        "handlePlaceholder": "handle.margin.cafe",
-        "connecting": "Connecting…",
-        "continue": "Continue",
-        "createAccount": "Create New Account",
-        "or": "or",
-        "termsPrefix": "By signing in, you agree to our",
-        "termsLink": "Terms of Service",
-        "termsAnd": "and",
-        "privacyLink": "Privacy Policy",
-        "bannedTitle": "Your account has been suspended",
-        "bannedMessage": "This account has been suspended from Margin and is no longer able to sign in.",
-        "bannedAppeal": "If you believe this is a mistake, you can appeal by emailing",
-        "bannedSignOut": "Sign out"
-    },
-    "signUp": {
-        "title": "Create your account",
-        "subtitle": "Margin adheres to the",
-        "atProtocol": "AT Protocol",
-        "subtitleSuffix": ". Choose a provider to host your account.",
-        "customPdsTitle": "Use a custom PDS",
-        "customPdsSubtitle": "Enter the address of the PDS hosting your account.",
-        "pdsAddressLabel": "PDS address",
-        "pdsAddressPlaceholder": "pds.example.com",
-        "connecting": "Connecting…",
-        "back": "Back",
-        "continue": "Continue",
-        "invite": "Invite",
-        "moreOptions": "More options",
-        "atmosphereNote": "Already have an atmosphere account? Just sign in!",
-        "providerError": "Could not connect to this provider. Please try again.",
-        "customPdsError": "Couldn't connect to that PDS. Double-check the address.",
-        "providers": {
-            "margin": {
-                "name": "Margin",
-                "description": "The easiest way to get started"
-            },
-            "bluesky": {
-                "name": "Bluesky",
-                "description": "The largest Atmosphere community"
-            },
-            "blacksky": {
-                "name": "Blacksky",
-                "description": "A Black-owned community"
-            },
-            "eurosky": {
-                "name": "Eurosky",
-                "description": "Your European home on the Atmosphere"
-            },
-            "selfhostedSocial": {
-                "name": "selfhosted.social",
-                "description": "A home for builders, tinkerers, and the curious"
-            },
-            "northsky": {
-                "name": "Northsky",
-                "description": "A Canadian queer-owned instance"
-            },
-            "tophhie": {
-                "name": "Tophhie",
-                "description": "A British community"
-            },
-            "customPds": {
-                "name": "Use a custom PDS",
-                "description": "Already have a PDS? Enter its address."
-            }
-        }
-    },
-    "composer": {
-        "newHighlight": "New highlight",
-        "newAnnotation": "New annotation",
-        "newNote": "New note",
-        "saveHighlight": "Save highlight",
-        "postAnnotation": "Post annotation",
-        "postNote": "Post note",
-        "highlightHint": "Saving a passage without a comment. Add text below to turn it into an annotation.",
-        "addQuote": "+ Add a quote from the page",
-        "quotePlaceholder": "Paste or type the text you're annotating…",
-        "removeQuote": "Remove Quote",
-        "thoughtsPlaceholder": "Add your thoughts on this passage…",
-        "mindPlaceholder": "What's on your mind?",
-        "tagsPlaceholder": "Add tags…",
-        "contentWarning": "Content Warning",
-        "contentWarningCount": "Content Warning ({{count}})",
-        "cancel": "Cancel",
-        "failedToPost": "Failed to post",
-        "labels": {
-            "sexual": "Sexual",
-            "nudity": "Nudity",
-            "violence": "Violence",
-            "gore": "Gore",
-            "spam": "Spam",
-            "misleading": "Misleading"
-        }
-    },
-    "card": {
-        "addedTo": "Added to",
-        "addedToLower": "added to",
-        "and": "and",
-        "communityBookmark": "Community bookmark",
-        "lichenBookmark": "Lichen bookmark",
-        "openInSemble": "Open in Semble",
-        "deleteConfirm": "Delete this item?",
-        "hideContent": "Hide Content",
-        "show": "Show",
-        "edited": "(edited)",
-        "annotate": "Annotate",
-        "untitledBookmark": "Untitled Bookmark",
-        "addNotePlaceholder": "Add your note to convert this highlight into an annotation…",
-        "addToCollectionTitle": "Add to Collection",
-        "annotateTitle": "Annotate this highlight",
-        "editTitle": "Edit",
-        "deleteTitle": "Delete",
-        "report": "Report",
-        "muteUser": "Mute @{{handle}}",
-        "blockUser": "Block @{{handle}}",
-        "convertToAnnotation": "Convert to annotation",
-        "justNow": "just now",
-        "labelDescriptions": {
-            "sexual": "Sexual Content",
-            "nudity": "Nudity",
-            "violence": "Violence",
-            "gore": "Graphic Content",
-            "spam": "Spam",
-            "misleading": "Misleading"
-        }
-    },
-    "profileHoverCard": {
-        "viewProfile": "View Profile",
-        "notFound": "Profile not found"
-    },
-    "replyList": {
-        "noReplies": "No replies yet"
-    },
-    "shareMenu": {
-        "sembleIntegration": "Semble Integration",
-        "openOnSemble": "Open on Semble",
-        "copySembleLink": "Copy Semble Link",
-        "copyLink": "Copy Link",
-        "shareViaApp": "Share via App",
-        "copyUniversalLink": "Copy Universal Link",
-        "moreOptions": "More Options…",
-        "copied": "Copied!"
-    },
-    "addToCollection": {
-        "title": "Add to Collection",
-        "loading": "Loading collections…",
-        "collectionNameLabel": "Collection name",
-        "namePlaceholder": "My Collection",
-        "descriptionLabel": "Description (optional)",
-        "descriptionPlaceholder": "What's this collection about?",
-        "iconLabel": "Icon",
-        "iconsTab": "Icons",
-        "emojisTab": "Emojis",
-        "selected": "Selected:",
-        "back": "Back",
-        "create": "Create",
-        "creating": "Creating…",
-        "newCollectionButton": "New Collection",
-        "createNewDescription": "Create a new collection",
-        "none": "No collections yet",
-        "done": "Done",
-        "failedLoad": "Failed to load collections",
-        "failedAdd": "Failed to add to collection",
-        "failedCreate": "Failed to create collection"
-    },
-    "editItem": {
-        "editAnnotation": "Edit Annotation",
-        "editHighlight": "Edit Highlight",
-        "editBookmark": "Edit Bookmark",
-        "textLabel": "Text",
-        "textPlaceholder": "Write your annotation…",
-        "colorLabel": "Color",
-        "tagsLabel": "Tags",
-        "tagPlaceholder": "Add a tag…",
-        "contentWarning": "Content Warning",
-        "cancel": "Cancel",
-        "save": "Save",
-        "saving": "Saving…",
-        "failedSave": "Failed to save changes. Please try again.",
-        "titleLabel": "Title",
-        "titlePlaceholder": "Bookmark title",
-        "descriptionLabel": "Description",
-        "descriptionPlaceholder": "Optional description…"
-    },
-    "editCollection": {
-        "title": "Edit Collection",
-        "nameLabel": "Collection name",
-        "namePlaceholder": "My Collection",
-        "descriptionLabel": "Description (optional)",
-        "descriptionPlaceholder": "What's this collection about?",
-        "iconLabel": "Icon",
-        "iconsTab": "Icons",
-        "emojisTab": "Emojis",
-        "selected": "Selected:",
-        "cancel": "Cancel",
-        "save": "Save Changes",
-        "saving": "Saving…",
-        "failedUpdate": "Failed to update collection",
-        "errorUpdating": "An error occurred while updating"
-    },
-    "externalLink": {
-        "title": "Leaving Margin",
-        "message": "You're about to visit an external site.",
-        "alwaysAllow": "Always allow links to {{hostname}}",
-        "cancel": "Cancel",
-        "open": "Open Link"
-    },
-    "report": {
-        "submitted": "Report submitted",
-        "submittedMessage": "Thank you. We'll review this shortly.",
-        "titleUser": "Report @{{handle}}",
-        "titleGeneric": "Report user",
-        "reportingContent": "Reporting specific content",
-        "issueLabel": "What's the issue?",
-        "cancel": "Cancel",
-        "submit": "Submit Report",
-        "submitting": "Submitting…",
-        "detailsPlaceholder": "Additional details (optional)",
-        "reasons": {
-            "spam": "Spam",
-            "ruleViolation": "Rule violation",
-            "misleading": "Misleading",
-            "rudeOrHarassing": "Rude or harassing",
-            "inappropriateContent": "Inappropriate content",
-            "other": "Other"
-        }
-    },
-    "editProfile": {
-        "title": "Edit Profile",
-        "avatarLabel": "Avatar",
-        "uploadButton": "Upload",
-        "uploading": "Uploading…",
-        "displayNameLabel": "Display Name",
-        "bioLabel": "Bio",
-        "websiteLabel": "Website",
-        "linksLabel": "Links",
-        "addLinkPlaceholder": "Add a link…",
-        "cancel": "Cancel",
-        "save": "Save",
-        "saving": "Saving…",
-        "avatarTypeError": "Please select a JPEG or PNG image",
-        "avatarSizeError": "Image must be under 2MB",
-        "avatarUploadError": "Failed to upload: {{message}}"
+    "contentFiltering": {
+      "description": "Subscribe to labelers and configure how labeled content appears",
+      "subscribedLabelers": "Subscribed Labelers",
+      "noLabelers": "No labelers subscribed",
+      "labelerDidPlaceholder": "did:plc:… (labeler DID)",
+      "remove": "Remove",
+      "add": "Add",
+      "labelVisibility": "Label Visibility",
+      "labelVisibilityDesc": "Choose how to handle each label type: Warn shows a blur overlay, Hide removes content entirely, Ignore shows content normally.",
+      "warn": "Warn",
+      "hide": "Hide",
+      "ignore": "Ignore"
     },
     "iosShortcut": {
-        "title": "Save from iOS Safari",
-        "howTo": "How to use the shortcut",
-        "step1Title": "Install the shortcut",
-        "step1Link": "Get iOS Shortcut",
-        "step2Title": "Generate an API Key",
-        "step2Description": "Create a new key on this settings page and copy it.",
-        "step3Title": "Configure the shortcut",
-        "step3Description": "In the Shortcuts app, click the menu on the Save to Margin shortcut, and paste your API key in the Text action right below the setup comment.",
-        "step4Title": "To Bookmark a page",
-        "step4Description": "Don't select any text. Click the menu in Safari, press Share, and select Save to Margin.",
-        "step5Title": "To Highlight text",
-        "step5Description": "Select text on the page, click the menu, press Share, and select Save to Margin. Leave the Note field empty.",
-        "step6Title": "To Add an Annotation",
-        "step6Description": "Select text, share to Save to Margin (via the menu), enter your custom note in the Note field, and press Done!",
-        "gotIt": "Got it"
+      "description": "Save pages to Margin from Safari on iPhone and iPad",
+      "setupButton": "Setup iOS Shortcut"
     },
-    "editHistory": {
-        "title": "Edit History",
-        "noHistory": "No edit history found.",
-        "currentVersion": "Current Version",
-        "previousVersion": "Previous Version",
-        "editedAgo": "Edited {{time}} ago",
-        "postedAgo": "Posted {{time}} ago",
-        "timeAgo": "{{time}} ago",
-        "close": "Close",
-        "failedLoad": "Failed to load edit history"
+    "logout": "Log out"
+  },
+  "new": {
+    "signInRequired": "Sign in to create",
+    "needsAccount": "You need a Bluesky account",
+    "signInButton": "Sign in with Bluesky",
+    "composeTitle": "Compose",
+    "composeTagline": "Highlight a passage, leave a note, or annotate a page — all from here.",
+    "urlLabel": "URL to annotate",
+    "urlPlaceholder": "https://example.com/article"
+  },
+  "annotationDetail": {
+    "back": "Back",
+    "replies": "Replies ({{count}})",
+    "replyingTo": "Replying to",
+    "replyPlaceholder": "Write a reply…",
+    "reply": "Reply",
+    "signInToReply": "Sign in to reply",
+    "logIn": "Log in",
+    "notFound": "Not found",
+    "mayBeDeleted": "This may have been deleted.",
+    "backToFeed": "Back to Feed",
+    "deleteReplyConfirm": "Delete this reply?",
+    "failedReply": "Failed to post reply: {{message}}",
+    "failedDelete": "Failed to delete: {{message}}",
+    "failedResolve": "Failed to resolve handle: {{message}}"
+  },
+  "urlPage": {
+    "title": "URL Annotations",
+    "description": "Enter a URL to see all public annotations and highlights from the Margin community.",
+    "urlPlaceholder": "https://example.com/article",
+    "view": "View",
+    "myAnnotations": "My Annotations",
+    "share": "Share",
+    "copied": "Copied!",
+    "contributor_one": "{{count}} contributor",
+    "contributor_other": "{{count}} contributors",
+    "loadingAnnotations": "Loading annotations…",
+    "blankCanvas": "This page is a blank canvas",
+    "blankCanvasMessage": "No one's left notes here yet. Want to be the first? Grab the Margin extension and share what you're thinking.",
+    "tabs": {
+      "all": "All",
+      "annotations": "Annotations",
+      "highlights": "Highlights",
+      "bookmarks": "Bookmarks",
+      "collections": "Collections"
     },
-    "settings": {
-        "title": "Settings",
-        "sections": {
-            "profile": "Profile",
-            "appearance": "Appearance",
-            "language": "Language",
-            "batchImport": "Batch Import Highlights",
-            "apiKeys": "API Keys",
-            "moderation": "Moderation",
-            "contentFiltering": "Content Filtering",
-            "iosShortcut": "iOS Shortcut"
-        },
-        "language": {
-            "label": "Interface Language",
-            "description": "Choose the language for the Margin interface."
-        },
-        "appearance": {
-            "disableExternalLinkWarning": "Disable external link warning",
-            "disableExternalLinkWarningDesc": "Don't ask for confirmation when opening external links",
-            "communityBookmarks": "Share bookmarks to community feed",
-            "communityBookmarksDesc": "Your saved bookmarks will appear in the community bookmarks feed"
-        },
-        "batchImport": {
-            "description": "Upload highlights from CSV. Required: url, text. Optional: title, tags, color, created_at"
-        },
-        "apiKeys": {
-            "description": "For the iOS shortcut and other apps",
-            "keyNamePlaceholder": "Key name, e.g. iOS Shortcut",
-            "generate": "Generate",
-            "copyNow": "Copy now - you won't see this again!",
-            "empty": "No API keys yet. Create one to use with the browser extension.",
-            "created": "Created {{date}}",
-            "revokeConfirm": "Revoke this key? Apps using it will stop working."
-        },
-        "moderation": {
-            "description": "Manage blocked and muted accounts",
-            "blockedAccounts": "Blocked accounts ({{count}})",
-            "noBlocked": "No blocked accounts",
-            "unblock": "Unblock",
-            "mutedAccounts": "Muted accounts ({{count}})",
-            "noMuted": "No muted accounts",
-            "unmute": "Unmute"
-        },
-        "contentFiltering": {
-            "description": "Subscribe to labelers and configure how labeled content appears",
-            "subscribedLabelers": "Subscribed Labelers",
-            "noLabelers": "No labelers subscribed",
-            "labelerDidPlaceholder": "did:plc:… (labeler DID)",
-            "remove": "Remove",
-            "add": "Add",
-            "labelVisibility": "Label Visibility",
-            "labelVisibilityDesc": "Choose how to handle each label type: Warn shows a blur overlay, Hide removes content entirely, Ignore shows content normally.",
-            "warn": "Warn",
-            "hide": "Hide",
-            "ignore": "Ignore"
-        },
-        "iosShortcut": {
-            "description": "Save pages to Margin from Safari on iPhone and iPad",
-            "setupButton": "Setup iOS Shortcut"
-        },
-        "logout": "Log out"
+    "noAnnotationsYet": "No annotations yet",
+    "noAnnotationsMessage": "Nobody has left a written note on this page.",
+    "noHighlightsYet": "No highlights yet",
+    "noHighlightsMessage": "Nobody has highlighted a passage from this page.",
+    "loadMore": "Load more",
+    "loading": "Loading…",
+    "failedLoadMore": "Failed to load more: {{message}}"
+  },
+  "userUrlPage": {
+    "on": "on",
+    "loadingAnnotations": "Loading annotations…",
+    "noUrl": "No URL specified",
+    "noUrlMessage": "Please provide a URL to view annotations.",
+    "noItems": "No items found",
+    "noItemsMessage": "{{name}} hasn't annotated this page yet.",
+    "noAnnotations": "No annotations",
+    "noHighlights": "No highlights",
+    "loadMore": "Load more",
+    "loading": "Loading…",
+    "failedLoadMore": "Failed to load more: {{message}}"
+  },
+  "adminModeration": {
+    "accessDenied": "Access Denied",
+    "accessDeniedMessage": "You don't have permission to access the moderation dashboard.",
+    "title": "Moderation",
+    "stats": "{{pending}} pending · {{total}} total reports",
+    "tabs": {
+      "reports": "Reports",
+      "actions": "Actions",
+      "labels": "Labels"
     },
-    "new": {
-        "signInRequired": "Sign in to create",
-        "needsAccount": "You need a Bluesky account",
-        "signInButton": "Sign in with Bluesky",
-        "composeTitle": "Compose",
-        "composeTagline": "Highlight a passage, leave a note, or annotate a page — all from here.",
-        "urlLabel": "URL to annotate",
-        "urlPlaceholder": "https://example.com/article"
+    "filters": {
+      "all": "All",
+      "pending": "Pending",
+      "resolved": "Resolved",
+      "dismissed": "Dismissed",
+      "escalated": "Escalated"
     },
-    "annotationDetail": {
-        "back": "Back",
-        "replies": "Replies ({{count}})",
-        "replyingTo": "Replying to",
-        "replyPlaceholder": "Write a reply…",
-        "reply": "Reply",
-        "signInToReply": "Sign in to reply",
-        "logIn": "Log in",
-        "notFound": "Not found",
-        "mayBeDeleted": "This may have been deleted.",
-        "backToFeed": "Back to Feed",
-        "deleteReplyConfirm": "Delete this reply?",
-        "failedReply": "Failed to post reply: {{message}}",
-        "failedDelete": "Failed to delete: {{message}}",
-        "failedResolve": "Failed to resolve handle: {{message}}"
+    "reports": {
+      "empty": "No reports",
+      "emptyPending": "No pending reports to review.",
+      "emptyFiltered": "No {{status}} reports found.",
+      "reportedUser": "Reported User",
+      "reporter": "Reporter",
+      "details": "Details",
+      "contentUri": "Content URI",
+      "acknowledge": "Acknowledge",
+      "dismiss": "Dismiss",
+      "takedown": "Takedown"
     },
-    "urlPage": {
-        "title": "URL Annotations",
-        "description": "Enter a URL to see all public annotations and highlights from the Margin community.",
-        "urlPlaceholder": "https://example.com/article",
-        "view": "View",
-        "myAnnotations": "My Annotations",
-        "share": "Share",
-        "copied": "Copied!",
-        "contributor_one": "{{count}} contributor",
-        "contributor_other": "{{count}} contributors",
-        "loadingAnnotations": "Loading annotations…",
-        "blankCanvas": "This page is a blank canvas",
-        "blankCanvasMessage": "No one's left notes here yet. Want to be the first? Grab the Margin extension and share what you're thinking.",
-        "tabs": {
-            "all": "All",
-            "annotations": "Annotations",
-            "highlights": "Highlights",
-            "bookmarks": "Bookmarks",
-            "collections": "Collections"
-        },
-        "noAnnotationsYet": "No annotations yet",
-        "noAnnotationsMessage": "Nobody has left a written note on this page.",
-        "noHighlightsYet": "No highlights yet",
-        "noHighlightsMessage": "Nobody has highlighted a passage from this page.",
-        "loadMore": "Load more",
-        "loading": "Loading…",
-        "failedLoadMore": "Failed to load more: {{message}}"
+    "reasons": {
+      "spam": "Spam",
+      "violation": "Rule Violation",
+      "misleading": "Misleading",
+      "sexual": "Inappropriate",
+      "rude": "Rude / Harassing",
+      "other": "Other"
     },
-    "userUrlPage": {
-        "on": "on",
-        "loadingAnnotations": "Loading annotations…",
-        "noUrl": "No URL specified",
-        "noUrlMessage": "Please provide a URL to view annotations.",
-        "noItems": "No items found",
-        "noItemsMessage": "{{name}} hasn't annotated this page yet.",
-        "noAnnotations": "No annotations",
-        "noHighlights": "No highlights",
-        "loadMore": "Load more",
-        "loading": "Loading…",
-        "failedLoadMore": "Failed to load more: {{message}}"
+    "actions": {
+      "applyWarning": "Apply Content Warning",
+      "applyWarningDesc": "Add a content warning label to a specific post or account. Users will see a blur overlay with the option to reveal.",
+      "accountDid": "Account DID",
+      "contentUri": "Content URI",
+      "contentUriOptional": "optional — leave empty for account-level label",
+      "labelType": "Label Type",
+      "applyLabel": "Apply Label",
+      "labelApplied": "Label applied"
     },
-    "adminModeration": {
-        "accessDenied": "Access Denied",
-        "accessDeniedMessage": "You don't have permission to access the moderation dashboard.",
-        "title": "Moderation",
-        "stats": "{{pending}} pending · {{total}} total reports",
-        "tabs": {
-            "reports": "Reports",
-            "actions": "Actions",
-            "labels": "Labels"
-        },
-        "filters": {
-            "all": "All",
-            "pending": "Pending",
-            "resolved": "Resolved",
-            "dismissed": "Dismissed",
-            "escalated": "Escalated"
-        },
-        "reports": {
-            "empty": "No reports",
-            "emptyPending": "No pending reports to review.",
-            "emptyFiltered": "No {{status}} reports found.",
-            "reportedUser": "Reported User",
-            "reporter": "Reporter",
-            "details": "Details",
-            "contentUri": "Content URI",
-            "acknowledge": "Acknowledge",
-            "dismiss": "Dismiss",
-            "takedown": "Takedown"
-        },
-        "reasons": {
-            "spam": "Spam",
-            "violation": "Rule Violation",
-            "misleading": "Misleading",
-            "sexual": "Inappropriate",
-            "rude": "Rude / Harassing",
-            "other": "Other"
-        },
-        "actions": {
-            "applyWarning": "Apply Content Warning",
-            "applyWarningDesc": "Add a content warning label to a specific post or account. Users will see a blur overlay with the option to reveal.",
-            "accountDid": "Account DID",
-            "contentUri": "Content URI",
-            "contentUriOptional": "optional — leave empty for account-level label",
-            "labelType": "Label Type",
-            "applyLabel": "Apply Label",
-            "labelApplied": "Label applied"
-        },
-        "labels": {
-            "empty": "No labels",
-            "emptyMessage": "No content labels have been applied yet.",
-            "accountLevel": "Account-level label",
-            "removeConfirm": "Remove this label?",
-            "removeTitle": "Remove label"
-        }
-    },
-    "highlightImporter": {
-        "clickToUpload": "Click to upload CSV",
-        "processing": "Processing…",
-        "requiredColumns": "Required columns: url, text | Optional: title, tags, color, created_at",
-        "downloadTemplate": "Download Template",
-        "importProgress": "Import Progress",
-        "complete": "{{rate}}% complete",
-        "failed_one": "{{count}} failed",
-        "failed_other": "{{count}} failed",
-        "importing": "Importing highlights…",
-        "success": "Successfully imported {{count}} highlights!",
-        "errorsTitle": "{{count}} errors during import",
-        "row": "Row {{row}}: {{error}}",
-        "moreErrors": "+{{count}} more errors",
-        "importAnother": "Import Another File",
-        "noHighlights": "No valid highlights found in CSV",
-        "csvMustHaveUrl": "CSV must have a 'url' column",
-        "csvMustHaveText": "CSV must have a 'text' column (also matches: highlight, excerpt)",
-        "errorParsing": "Error parsing CSV: {{message}}"
-    },
-    "common": {
-        "loading": "Loading…",
-        "cancel": "Cancel",
-        "save": "Save",
-        "close": "Close",
-        "back": "Back",
-        "continue": "Continue",
-        "error": "Error",
-        "retry": "Retry",
-        "loadMore": "Load more",
-        "new": "New"
-    },
-    "about": {
-        "nav": {
-            "getExtension": "Get Extension",
-            "install": "Install"
-        },
-        "hero": {
-            "openSource": "Fully open source",
-            "headline": "Write on the margins",
-            "headlineAccent": "of the internet.",
-            "descriptionPre": "Margin is an open annotation layer for the internet. Highlight text, leave notes, and bookmark pages, all stored on your decentralized identity with the",
-            "atProtocol": "AT Protocol",
-            "descriptionPost": ". Not locked in a silo.",
-            "openApp": "Open App",
-            "getStarted": "Get Started",
-            "installFor": "Install for {{browser}}"
-        },
-        "features": {
-            "title": "Everything you need to engage with the web",
-            "subtitle": "More than bookmarks. A full toolkit for reading, thinking, and sharing on the open web.",
-            "annotations": {
-                "title": "Annotations",
-                "description": "Leave notes on any web page. Start discussions, share insights, or just jot down your thoughts for later."
-            },
-            "highlights": {
-                "title": "Highlights",
-                "description": "Select and highlight text on any page with customizable colors. Your highlights are rendered inline with the CSS Highlights API."
-            },
-            "bookmarks": {
-                "title": "Bookmarks",
-                "description": "Save pages with one click or a keyboard shortcut. All your bookmarks are synced to your AT Protocol identity."
-            },
-            "collections": {
-                "title": "Collections",
-                "description": "Organize your annotations, highlights, and bookmarks into themed collections. Share them publicly or keep them private."
-            },
-            "socialDiscovery": {
-                "title": "Social Discovery",
-                "description": "See what others are saying about the pages you visit. Discover annotations, trending tags, and connect with other readers."
-            },
-            "tagsSearch": {
-                "title": "Tags & Search",
-                "description": "Tag your annotations for easy retrieval. Search by URL, tag, or content to find exactly what you're looking for."
-            }
-        },
-        "extension": {
-            "badge": "Browser Extension",
-            "title": "Your annotation toolkit,",
-            "titleLine2": "right in the browser",
-            "description": "The Margin extension brings the full annotation experience directly into every page you visit. Just select, annotate, and go.",
-            "iosShortcut": "iOS Shortcut",
-            "features": {
-                "inlineOverlay": {
-                    "title": "Inline Overlay",
-                    "description": "See annotations and highlights rendered directly on the page. Uses the CSS Highlights API for beautiful, native-feeling text underlines."
-                },
-                "contextMenu": {
-                    "title": "Context Menu & Selection",
-                    "description": "Right-click any selected text to annotate, highlight, or quote it. Or just right-click the page to bookmark it instantly."
-                },
-                "keyboard": {
-                    "title": "Keyboard Shortcuts",
-                    "description": "Toggle the overlay, bookmark the current page, or annotate selected text without reaching for the mouse."
-                },
-                "sidePanel": {
-                    "title": "Side Panel",
-                    "description": "Open the Margin side panel to browse annotations, bookmarks, and collections without leaving the page you're reading."
-                }
-            }
-        },
-        "protocol": {
-            "badge": "Decentralized",
-            "title": "Your data, your identity",
-            "descriptionPre": "Margin is built on the",
-            "descriptionPost": ", the open protocol that powers apps like Bluesky. Your annotations, highlights, and bookmarks are stored in your personal data repository, not locked in a silo.",
-            "point0": "Sign in with your AT Protocol handle, no new account needed",
-            "point1": "Your data lives in your PDS, portable and under your control",
-            "point2": "Custom Lexicon schemas for annotations, highlights, collections & more",
-            "point3": "Fully open source, check out the code and contribute"
-        },
-        "cta": {
-            "title": "Start writing on the margins",
-            "description": "Join the open annotation layer. Sign in with your AT Protocol identity and install the extension to get started.",
-            "signIn": "Sign in",
-            "viewGitHub": "View on GitHub",
-            "viewTangled": "View on Tangled"
-        },
-        "footer": {
-            "privacy": "Privacy",
-            "terms": "Terms",
-            "contact": "Contact"
-        }
+    "labels": {
+      "empty": "No labels",
+      "emptyMessage": "No content labels have been applied yet.",
+      "accountLevel": "Account-level label",
+      "removeConfirm": "Remove this label?",
+      "removeTitle": "Remove label"
     }
+  },
+  "highlightImporter": {
+    "clickToUpload": "Click to upload CSV",
+    "processing": "Processing…",
+    "requiredColumns": "Required columns: url, text | Optional: title, tags, color, created_at",
+    "downloadTemplate": "Download Template",
+    "importProgress": "Import Progress",
+    "complete": "{{rate}}% complete",
+    "failed_one": "{{count}} failed",
+    "failed_other": "{{count}} failed",
+    "importing": "Importing highlights…",
+    "success": "Successfully imported {{count}} highlights!",
+    "errorsTitle": "{{count}} errors during import",
+    "row": "Row {{row}}: {{error}}",
+    "moreErrors": "+{{count}} more errors",
+    "importAnother": "Import Another File",
+    "noHighlights": "No valid highlights found in CSV",
+    "csvMustHaveUrl": "CSV must have a 'url' column",
+    "csvMustHaveText": "CSV must have a 'text' column (also matches: highlight, excerpt)",
+    "errorParsing": "Error parsing CSV: {{message}}"
+  },
+  "common": {
+    "loading": "Loading…",
+    "cancel": "Cancel",
+    "save": "Save",
+    "close": "Close",
+    "back": "Back",
+    "continue": "Continue",
+    "error": "Error",
+    "retry": "Retry",
+    "loadMore": "Load more",
+    "new": "New"
+  },
+  "about": {
+    "nav": {
+      "getExtension": "Get Extension",
+      "install": "Install"
+    },
+    "hero": {
+      "openSource": "Fully open source",
+      "headline": "Write on the margins",
+      "headlineAccent": "of the internet.",
+      "descriptionPre": "Margin is an open annotation layer for the internet. Highlight text, leave notes, and bookmark pages, all stored on your decentralized identity with the",
+      "atProtocol": "AT Protocol",
+      "descriptionPost": ". Not locked in a silo.",
+      "openApp": "Open App",
+      "getStarted": "Get Started",
+      "installFor": "Install for {{browser}}"
+    },
+    "features": {
+      "title": "Everything you need to engage with the web",
+      "subtitle": "More than bookmarks. A full toolkit for reading, thinking, and sharing on the open web.",
+      "annotations": {
+        "title": "Annotations",
+        "description": "Leave notes on any web page. Start discussions, share insights, or just jot down your thoughts for later."
+      },
+      "highlights": {
+        "title": "Highlights",
+        "description": "Select and highlight text on any page with customizable colors. Your highlights are rendered inline with the CSS Highlights API."
+      },
+      "bookmarks": {
+        "title": "Bookmarks",
+        "description": "Save pages with one click or a keyboard shortcut. All your bookmarks are synced to your AT Protocol identity."
+      },
+      "collections": {
+        "title": "Collections",
+        "description": "Organize your annotations, highlights, and bookmarks into themed collections. Share them publicly or keep them private."
+      },
+      "socialDiscovery": {
+        "title": "Social Discovery",
+        "description": "See what others are saying about the pages you visit. Discover annotations, trending tags, and connect with other readers."
+      },
+      "tagsSearch": {
+        "title": "Tags & Search",
+        "description": "Tag your annotations for easy retrieval. Search by URL, tag, or content to find exactly what you're looking for."
+      }
+    },
+    "extension": {
+      "badge": "Browser Extension",
+      "title": "Your annotation toolkit,",
+      "titleLine2": "right in the browser",
+      "description": "The Margin extension brings the full annotation experience directly into every page you visit. Just select, annotate, and go.",
+      "iosShortcut": "iOS Shortcut",
+      "features": {
+        "inlineOverlay": {
+          "title": "Inline Overlay",
+          "description": "See annotations and highlights rendered directly on the page. Uses the CSS Highlights API for beautiful, native-feeling text underlines."
+        },
+        "contextMenu": {
+          "title": "Context Menu & Selection",
+          "description": "Right-click any selected text to annotate or highlight it. Or just right-click the page to bookmark it instantly."
+        },
+        "keyboard": {
+          "title": "Keyboard Shortcuts",
+          "description": "Toggle the overlay, bookmark the current page, or annotate selected text without reaching for the mouse."
+        },
+        "sidePanel": {
+          "title": "Side Panel",
+          "description": "Open the Margin side panel to browse annotations, bookmarks, and collections without leaving the page you're reading."
+        }
+      }
+    },
+    "protocol": {
+      "badge": "Decentralized",
+      "title": "Your data, your identity",
+      "descriptionPre": "Margin is built on the",
+      "descriptionPost": ", the open protocol that powers apps like Bluesky. Your annotations, highlights, and bookmarks are stored in your personal data repository, not locked in a silo.",
+      "point0": "Sign in with your AT Protocol handle, no new account needed",
+      "point1": "Your data lives in your PDS, portable and under your control",
+      "point2": "Custom Lexicon schemas for annotations, highlights, collections & more",
+      "point3": "Fully open source, check out the code and contribute"
+    },
+    "cta": {
+      "title": "Start writing on the margins",
+      "description": "Join the open annotation layer. Sign in with your AT Protocol identity and install the extension to get started.",
+      "signIn": "Sign in",
+      "viewGitHub": "View on GitHub",
+      "viewTangled": "View on Tangled"
+    },
+    "footer": {
+      "privacy": "Privacy",
+      "terms": "Terms",
+      "contact": "Contact"
+    },
+    "landing": {
+      "hero": {
+        "headPart1": "Write on the",
+        "headMargins": "margins",
+        "headPart2": "of the",
+        "headInternet": "internet",
+        "headEnd": ".",
+        "lede": "Margin is an open annotation layer for the web. Highlight, leave notes, and bookmark any page; everything stored on your own AT Protocol identity, not in someone else's database."
+      },
+      "demo": {
+        "eyebrow": "How it feels",
+        "card1Caption": "Highlight, in your color of choice. Underlines render inline via the CSS Highlights API; nothing rewrites the page's DOM.",
+        "card1Sample": "Margin makes the web's ephemeral readers leave a trace.",
+        "card1Mark": "ephemeral readers",
+        "card2Caption": "Pin a note to the selection. It anchors to the exact text, not a brittle character offset, so it survives layout changes.",
+        "card2Sample": "A note in the margin is a conversation with the future you.",
+        "card2Mark": "conversation with the future you",
+        "card3Caption": "Bookmark with a keystroke or a right-click. Synced to your AT Protocol repository alongside everything else.",
+        "card3Url": "essays.example.com/marginalia",
+        "card3Saved": "Saved"
+      },
+      "capabilities": {
+        "heading": "What's in it",
+        "subheading": "The full set of moves Margin gives you on any page."
+      },
+      "protocol": {
+        "heading": "Built on a protocol, not a platform",
+        "lede": "Margin runs on the AT Protocol, the same network that powers Bluesky. Your annotations live in your Personal Data Server as public records, and any app that speaks the lexicon can read or build on them.",
+        "viewLexicon": "View the lexicon"
+      },
+      "install": {
+        "lede": "Install for",
+        "or": "or get the"
+      },
+      "closer": {
+        "line": "The web reads better with notes in the margin.",
+        "signIn": "Sign in with your handle",
+        "open": "Open Margin"
+      }
+    }
+  }
 }
