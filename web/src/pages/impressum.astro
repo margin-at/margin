@@ -1,0 +1,140 @@
+---
+import BaseLayout from '../layouts/StaticLayout.astro';
+
+const sections = [
+	{ id: 'operator', title: 'Betreiber' },
+	{ id: 'register', title: 'Registrierung' },
+	{ id: 'vertretung', title: 'Vertretung' },
+	{ id: 'kontakt', title: 'Kontakt' },
+	{ id: 'odr', title: 'Online-Streitbeilegung' },
+	{ id: 'haftung', title: 'Haftungsausschluss' },
+];
+---
+
+<BaseLayout title="Impressum - Margin" description="Impressum von Margin">
+	<div class="min-h-screen bg-surface-100 dark:bg-surface-900">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 pt-10 md:pt-14 pb-20">
+			<a href="/home" class="inline-flex items-center gap-1.5 text-sm font-medium text-surface-500 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white transition-colors mb-8">
+				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+				Back
+			</a>
+
+			<div class="lg:grid lg:grid-cols-[minmax(0,1fr)_200px] lg:gap-12">
+				<div class="bg-white dark:bg-surface-800 rounded-2xl px-5 sm:px-8 lg:px-12 py-10 md:py-14 lg:min-w-0">
+					<header class="mb-12">
+						<p class="text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider mb-3">Legal</p>
+						<h1 class="font-display font-bold text-3xl md:text-4xl text-surface-900 dark:text-white tracking-tight mb-2">Impressum</h1>
+						<p class="text-sm text-surface-500 dark:text-surface-400">Angaben gemäß § 5 E-Commerce-Gesetz (ECG)</p>
+					</header>
+
+					<details class="lg:hidden mb-10 rounded-xl border border-surface-200 dark:border-surface-700/60 overflow-hidden">
+						<summary class="cursor-pointer px-4 py-3 text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider bg-surface-50 dark:bg-surface-900/40">On this page</summary>
+						<ol class="px-4 py-3 space-y-0.5 text-sm">
+							{sections.map((s) => (
+								<li><a href={`#${s.id}`} class="block py-1 text-surface-600 dark:text-surface-400">{s.title}</a></li>
+							))}
+						</ol>
+					</details>
+
+					<div class="space-y-12">
+						<section id="operator" data-toc-section class="scroll-mt-6">
+							<h2 class="font-display font-bold text-xl text-surface-900 dark:text-white tracking-tight mb-2">Betreiber / Dienstanbieter</h2>
+							<address class="not-italic text-[15px] text-surface-700 dark:text-surface-300 leading-relaxed">
+								<strong class="text-surface-900 dark:text-white">Padding Labs LLC</strong><br />
+								30 N Gould St Ste N<br />
+								Sheridan, WY 82801<br />
+								United States
+							</address>
+						</section>
+
+						<section id="register" data-toc-section class="scroll-mt-6">
+							<h2 class="font-display font-bold text-xl text-surface-900 dark:text-white tracking-tight mb-2">Unternehmensform & Registrierung</h2>
+							<p class="text-[15px] text-surface-700 dark:text-surface-300 leading-relaxed">
+								Limited Liability Company (LLC)<br />
+								Registerstaat: Wyoming, USA
+							</p>
+						</section>
+
+						<section id="vertretung" data-toc-section class="scroll-mt-6">
+							<h2 class="font-display font-bold text-xl text-surface-900 dark:text-white tracking-tight mb-2">Vertretung</h2>
+							<p class="text-[15px] text-surface-700 dark:text-surface-300 leading-relaxed">
+								Vertreten durch die Geschäftsführung der Padding Labs LLC
+							</p>
+						</section>
+
+						<section id="kontakt" data-toc-section class="scroll-mt-6">
+							<h2 class="font-display font-bold text-xl text-surface-900 dark:text-white tracking-tight mb-2">Kontakt</h2>
+							<p class="text-[15px] text-surface-700 dark:text-surface-300 leading-relaxed">
+								E-Mail: <a href="mailto:hello@margin.at" class="text-primary-600 dark:text-primary-400 hover:underline font-medium">hello@margin.at</a>
+							</p>
+						</section>
+
+						<section id="odr" data-toc-section class="scroll-mt-6">
+							<h2 class="font-display font-bold text-xl text-surface-900 dark:text-white tracking-tight mb-2">Online-Streitbeilegung</h2>
+							<div class="space-y-3 text-[15px] text-surface-700 dark:text-surface-300 leading-relaxed">
+								<p>Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit: <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener noreferrer" class="text-primary-600 dark:text-primary-400 hover:underline font-medium">ec.europa.eu/consumers/odr</a>.</p>
+								<p>Wir sind nicht verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen, und nehmen derzeit an solchen Verfahren nicht teil.</p>
+							</div>
+						</section>
+
+						<section id="haftung" data-toc-section class="scroll-mt-6">
+							<h2 class="font-display font-bold text-xl text-surface-900 dark:text-white tracking-tight mb-2">Haftungsausschluss</h2>
+							<p class="text-[15px] text-surface-700 dark:text-surface-300 leading-relaxed">
+								Trotz sorgfältiger inhaltlicher Kontrolle übernehmen wir keine Haftung für die Inhalte externer Links. Für den Inhalt der verlinkten Seiten sind ausschließlich deren Betreiber verantwortlich.
+							</p>
+						</section>
+					</div>
+				</div>
+
+				<aside class="hidden lg:block">
+					<details class="sticky top-6 group" open>
+						<summary class="cursor-pointer list-none flex items-center gap-1.5 py-2 text-[11px] font-semibold text-surface-400 dark:text-surface-500 uppercase tracking-[0.12em] hover:text-surface-700 dark:hover:text-surface-200 transition-colors">
+							<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="transition-transform group-open:rotate-90"><path d="m9 18 6-6-6-6"/></svg>
+							On this page
+						</summary>
+						<ol class="mt-3 space-y-0.5 text-[13px]">
+							{sections.map((s) => (
+								<li>
+									<a href={`#${s.id}`} data-toc-link={s.id} class="toc-link block py-1 text-surface-500 dark:text-surface-500 hover:text-surface-900 dark:hover:text-white transition-colors leading-snug">{s.title}</a>
+								</li>
+							))}
+						</ol>
+					</details>
+				</aside>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		const links = document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]');
+		const sections = document.querySelectorAll<HTMLElement>('[data-toc-section]');
+		if (links.length && sections.length) {
+			const setActive = (id: string) => {
+				links.forEach((l) => {
+					if (l.dataset.tocLink === id) {
+						l.classList.add('text-primary-600', 'dark:text-primary-400', 'font-medium');
+						l.classList.remove('text-surface-500', 'dark:text-surface-500');
+					} else {
+						l.classList.remove('text-primary-600', 'dark:text-primary-400', 'font-medium');
+						l.classList.add('text-surface-500', 'dark:text-surface-500');
+					}
+				});
+			};
+			let current = sections[0].id;
+			setActive(current);
+			const obs = new IntersectionObserver(
+				(entries) => {
+					const visible = entries
+						.filter((e) => e.isIntersecting)
+						.sort((a, b) => (a.target as HTMLElement).offsetTop - (b.target as HTMLElement).offsetTop);
+					if (visible.length > 0) {
+						current = visible[0].target.id;
+						setActive(current);
+					}
+				},
+				{ rootMargin: '-15% 0px -70% 0px', threshold: 0 }
+			);
+			sections.forEach((s) => obs.observe(s));
+		}
+	</script>
+</BaseLayout>

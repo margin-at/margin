@@ -755,6 +755,12 @@ export default function About() {
               Brand
             </a>
             <a
+              href="/impressum"
+              className="hover:text-surface-900 dark:hover:text-white transition-colors"
+            >
+              Impressum
+            </a>
+            <a
               href="mailto:hello@margin.at"
               className="hover:text-surface-900 dark:hover:text-white transition-colors"
             >
