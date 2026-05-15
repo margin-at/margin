@@ -1,1 +1,53 @@
-{}
+{
+    "pageTitles": {
+        "highlights": "Markierungen — Margin",
+        "home": "Startseite — Margin",
+        "bookmarks": "Lesezeichen — Margin",
+        "annotations": "Anmerkungen — Margin",
+        "discover": "Entdecken — Margin",
+        "search": "Suche — Margin",
+        "notifications": "Benachrichtigungen — Margin",
+        "new": "Neue Anmerkung — Margin",
+        "settings": "Einstellungen — Margin",
+        "collections": "Sammlungen — Margin",
+        "admin": "Admin — Margin"
+    },
+    "appTitle": "Margin",
+    "nav": {
+        "feed": "Feed",
+        "highlights": "Highlights",
+        "discover": "Entdecken",
+        "annotations": "Anmerkungen",
+        "bookmarks": "Lesezeichen",
+        "collections": "Sammlungen",
+        "activity": "Aktivität",
+        "settings": "Einstellungen",
+        "new": "Neu",
+        "signIn": "Anmelden",
+        "logOut": "Abmelden",
+        "themeLight": "Hell",
+        "themeDark": "Dunkel",
+        "themeSystem": "System"
+    },
+    "sidebar": {
+        "downloadForFirefox": "Für Firefox herunterladen",
+        "downloadForEdge": "Für Edge herunterladen",
+        "downloadForChrome": "Für Chrome herunterladen",
+        "getExtension": "Hol dir die Erweiterung",
+        "trending": "Im Trend",
+        "nothingTrending": "Gerade trendet nichts.",
+        "searchPlaceholder": "Suche nach Leuten, Schlagworten, URLs …",
+        "copyright": "© 2026 Padding Labs LLC",
+        "postCount_one": "{{count}} Post",
+        "postCount_other": "{{count}} Posts"
+    },
+    "mobileNav": {
+        "iosShortcut": "iOS Kurzbefehl"
+    },
+    "feed": {
+        "welcome": "Willkommen bei Margin",
+        "welcomeTagline": "Ein ruhiger Ort, um zu kommentieren, zu markieren und zu speichern, was du im Web liest.",
+        "getStarted": "Fang an",
+        "learnMore": "Erfahre mehr"
+    }
+}
