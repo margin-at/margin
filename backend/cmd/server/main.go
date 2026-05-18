@@ -48,14 +48,18 @@ func main() {
 		ticker := time.NewTicker(1 * time.Hour)
 		defer ticker.Stop()
 
-		if err := database.DeleteExpiredSessions(); err != nil {
-			logger.Error("Failed to run initial cleanup of expired sessions: %v", err)
+		runCleanup := func() {
+			_, err := database.TryAdvisoryLock(context.Background(), db.LockSessionCleanup, func() error {
+				return database.DeleteExpiredSessions()
+			})
+			if err != nil {
+				logger.Error("Failed to run cleanup of expired sessions: %v", err)
+			}
 		}
 
+		runCleanup()
 		for range ticker.C {
-			if err := database.DeleteExpiredSessions(); err != nil {
-				logger.Error("Failed to delete expired sessions: %v", err)
-			}
+			runCleanup()
 		}
 	}()
 
@@ -92,32 +96,35 @@ func main() {
 					return
 				default:
 				}
-				logger.Info("Starting recommendation backfill...")
-				if err := recService.BackfillDocumentEmbeddings(200); err != nil {
-					logger.Error("Document embedding backfill error: %v", err)
-				}
-				if backfillCtx.Err() != nil {
-					return
-				}
-				annCount, err := recService.BackfillAnnotationEmbeddings(200)
-				if err != nil {
-					logger.Error("Annotation embedding backfill error: %v", err)
-				}
-				if backfillCtx.Err() != nil {
-					return
-				}
-				hlCount, err := recService.BackfillHighlightEmbeddings(200)
-				if err != nil {
-					logger.Error("Highlight embedding backfill error: %v", err)
-				}
-				if backfillCtx.Err() != nil {
-					return
-				}
-				profileCount, err := recService.RebuildAllProfiles()
-				if err != nil {
-					logger.Error("Profile rebuild error: %v", err)
-				}
-				logger.Info("Recommendation backfill complete (annotations: %d, highlights: %d, profiles: %d)", annCount, hlCount, profileCount)
+				database.TryAdvisoryLock(backfillCtx, db.LockBackfill, func() error { //nolint:errcheck
+					logger.Info("Starting recommendation backfill...")
+					if err := recService.BackfillDocumentEmbeddings(200); err != nil {
+						logger.Error("Document embedding backfill error: %v", err)
+					}
+					if backfillCtx.Err() != nil {
+						return nil
+					}
+					annCount, err := recService.BackfillAnnotationEmbeddings(200)
+					if err != nil {
+						logger.Error("Annotation embedding backfill error: %v", err)
+					}
+					if backfillCtx.Err() != nil {
+						return nil
+					}
+					hlCount, err := recService.BackfillHighlightEmbeddings(200)
+					if err != nil {
+						logger.Error("Highlight embedding backfill error: %v", err)
+					}
+					if backfillCtx.Err() != nil {
+						return nil
+					}
+					profileCount, err := recService.RebuildAllProfiles()
+					if err != nil {
+						logger.Error("Profile rebuild error: %v", err)
+					}
+					logger.Info("Recommendation backfill complete (annotations: %d, highlights: %d, profiles: %d)", annCount, hlCount, profileCount)
+					return nil
+				})
 			}()
 		} else {
 			logger.Info("Recommendation backfill disabled (DISABLE_BACKFILL is set)")
@@ -125,7 +132,10 @@ func main() {
 	}
 
 	go func() {
-		if err := ingester.Start(context.Background()); err != nil {
+		_, err := database.TryAdvisoryLock(context.Background(), db.LockFirehose, func() error {
+			return ingester.Start(context.Background())
+		})
+		if err != nil {
 			logger.Error("Firehose ingester error: %v", err)
 		}
 	}()

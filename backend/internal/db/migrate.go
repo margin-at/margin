@@ -1,6 +1,7 @@
 package db
 
 import (
+	"context"
 	"database/sql"
 	"embed"
 	"time"
@@ -11,14 +12,31 @@ import (
 //go:embed migrations
 var migrationsFS embed.FS
 
-func (db *DB) Migrate() error {
-	goose.SetBaseFS(migrationsFS)
+const (
+	LockMigrate        int64 = 0x6D617267696E
+	LockFirehose       int64 = 0x6669726568736F65
+	LockSessionCleanup int64 = 0x73657373696F6E
+	LockBackfill       int64 = 0x6261636B66696C6C
+)
 
-	if err := goose.SetDialect("postgres"); err != nil {
+func (db *DB) Migrate() error {
+	ctx := context.Background()
+
+	acquired, err := db.TryAdvisoryLock(ctx, LockMigrate, func() error {
+		goose.SetBaseFS(migrationsFS)
+		if err := goose.SetDialect("postgres"); err != nil {
+			return err
+		}
+		return goose.Up(db.DB, "migrations")
+	})
+	if err != nil {
 		return err
 	}
-
-	return goose.Up(db.DB, "migrations")
+	if !acquired {
+		_, err = db.AdvisoryLock(ctx, LockMigrate, func() error { return nil })
+		return err
+	}
+	return nil
 }
 
 func (db *DB) GetCursor(id string) (int64, error) {

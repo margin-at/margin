@@ -1,6 +1,7 @@
 package db
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"fmt"
@@ -59,6 +60,40 @@ func New(dsn string) (*DB, error) {
 }
 
 func (db *DB) Close() error { return db.DB.Close() }
+
+func (db *DB) AdvisoryLock(ctx context.Context, key int64, fn func() error) (bool, error) {
+	conn, err := db.Conn(ctx)
+	if err != nil {
+		return false, fmt.Errorf("advisory lock: acquire conn: %w", err)
+	}
+	defer conn.Close()
+
+	if _, err := conn.ExecContext(ctx, "SELECT pg_advisory_lock($1)", key); err != nil {
+		return false, fmt.Errorf("advisory lock: acquire: %w", err)
+	}
+	defer conn.ExecContext(ctx, "SELECT pg_advisory_unlock($1)", key) //nolint:errcheck
+
+	return true, fn()
+}
+
+func (db *DB) TryAdvisoryLock(ctx context.Context, key int64, fn func() error) (bool, error) {
+	conn, err := db.Conn(ctx)
+	if err != nil {
+		return false, fmt.Errorf("try advisory lock: acquire conn: %w", err)
+	}
+	defer conn.Close()
+
+	var acquired bool
+	if err := conn.QueryRowContext(ctx, "SELECT pg_try_advisory_lock($1)", key).Scan(&acquired); err != nil {
+		return false, fmt.Errorf("try advisory lock: %w", err)
+	}
+	if !acquired {
+		return false, nil
+	}
+	defer conn.ExecContext(ctx, "SELECT pg_advisory_unlock($1)", key) //nolint:errcheck
+
+	return true, fn()
+}
 
 func ParseSelector(selectorJSON *string) (*Selector, error) {
 	if selectorJSON == nil || *selectorJSON == "" {

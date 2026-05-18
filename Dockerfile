@@ -1,4 +1,4 @@
-FROM oven/bun:1 AS frontend-builder
+FROM --platform=$BUILDPLATFORM oven/bun:1 AS frontend-builder
 
 WORKDIR /app/web
 COPY web/package.json web/bun.lock ./
@@ -6,16 +6,31 @@ RUN bun install
 COPY web/ ./
 RUN bun run build
 
-FROM golang:1.25-alpine AS backend-builder
+FROM --platform=$BUILDPLATFORM golang:1.25-alpine AS backend-builder
 
-RUN apk add --no-cache gcc musl-dev
+ARG BUILDPLATFORM
+ARG TARGETPLATFORM
+ARG TARGETOS
+ARG TARGETARCH
+
+RUN apk add --no-cache gcc musl-dev \
+    && if [ "$TARGETARCH" = "arm64" ] && [ "$BUILDPLATFORM" != "$TARGETPLATFORM" ]; then \
+         apk add --no-cache aarch64-linux-musl-cross; \
+       fi
 
 WORKDIR /app
 COPY backend/go.mod backend/go.sum ./
 RUN go mod download
 
 COPY backend/ ./
-RUN CGO_ENABLED=1 GOOS=linux go build -a -ldflags '-linkmode external -extldflags "-static"' -o margin-server ./cmd/server
+RUN if [ "$TARGETARCH" = "arm64" ] && [ "$BUILDPLATFORM" != "$TARGETPLATFORM" ]; then \
+      CC=aarch64-linux-musl-gcc \
+      CGO_ENABLED=1 GOOS=$TARGETOS GOARCH=$TARGETARCH \
+      go build -a -ldflags '-linkmode external -extldflags "-static"' -o margin-server ./cmd/server; \
+    else \
+      CGO_ENABLED=1 GOOS=$TARGETOS GOARCH=$TARGETARCH \
+      go build -a -ldflags '-linkmode external -extldflags "-static"' -o margin-server ./cmd/server; \
+    fi
 
 FROM node:20-alpine
 
