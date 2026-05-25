@@ -48,6 +48,88 @@
     "welcome": "Willkommen bei Margin",
     "welcomeTagline": "Ein ruhiger Ort, um zu kommentieren, zu markieren und zu speichern, was du im Web liest.",
     "getStarted": "Fang an",
-    "learnMore": "Erfahre mehr"
+    "learnMore": "Erfahre mehr",
+        "tabs": {
+            "recent": "Aktuell",
+            "popular": "Beliebt",
+            "shelved": "Zurückgestellt",
+            "margin": "Margin",
+            "semble": "Semble"
+        },
+        "filters": {
+            "all": "Alle",
+            "annotations": "Anmerkungen",
+            "highlights": "Markierungen",
+            "bookmarks": "Lesezeichen"
+        },
+        "itemsWithTag": "Elemente mit Schlagwort:",
+        "clearFilter": "Filter löschen",
+        "everyone": "Jede:r",
+        "mine": "Meine",
+        "defaultEmptyMessage": "Noch nichts hier – deine Anmerkungen und die von Personen, denen du folgst, werden hier angezeigt.",
+        "nothingHereYet": "Noch nichts hier",
+        "loading": "Laden …"
+    },
+    "discover": {
+        "tabs": {
+            "new": "Neu",
+            "popular": "Beliebt",
+            "forYou": "Für dich"
+        },
+        "comingSoon": "In Kürze",
+        "forYouNotAvailable": "Persönliche Empfehlungen sind auf diesem Server noch nicht verfügbar.",
+        "noDocumentsYet": "Bisher wurden keine Dokumente entdeckt. Komm bald wieder!",
+        "startAnnotating": "Beginn mit dem Kommentieren und Markieren, um personalisierte Empfehlungen zu erhalten.",
+        "loadMore": "Mehr laden"
+    },
+    "search": {
+        "placeholder": "Suche Anmerkungen, Markierungen, Lesezeichen …",
+        "noResults": "Keine Ergebnisse gefunden",
+        "noResultsMessage": "Keine Übereinstimmungen für „{{query}}“. Versuch andere Suchbegriffe.",
+        "emptyTitle": "Durchsuche deine Bibliothek",
+        "emptyMessage": "Finde Anmerkungen, Markierungen und Lesezeichen nach Suchbegriff, URL oder Schlagwort.",
+        "filters": {
+            "all": "Alle",
+            "annotations": "Anmerkungen",
+            "highlights": "Markierungen",
+            "bookmarks": "Lesezeichen",
+            "mine": "Meine"
+        },
+        "resultCount": "{{count}}{{hasMore}} Ergebnisse für „{{query}}“",
+        "loadMore": "Mehr laden"
+    },
+    "notifications": {
+        "title": "Aktivität",
+        "noActivity": "Noch keine Aktivität",
+        "noActivityMessage": "Interaktionen mit deinen Inhalten werden hier angezeigt.",
+        "likedAnnotation": "gefällt deine Anmerkung",
+        "likedHighlight": "gefällt deine Markierung",
+        "likedBookmark": "gefällt dein Lesezeichen",
+        "likedReply": "gefällt deine Antwort",
+        "likedPost": "gefällt dein Post",
+        "repliedToReply": "hat deine Antwort beantwortet",
+        "repliedToAnnotation": "hat deine Anmerkung beantwortet",
+        "mentionedInAnnotation": "hat dich in einer Anmerkung erwähnt",
+        "followedYou": "folgt dir",
+        "highlightedPage": "hat auf deiner Seite markiert",
+        "inReplyTo": "als Antwort auf",
+        "aReply": "eine Antwort",
+        "anAnnotation": "eine Anmerkung"
+    },
+    "collections": {
+        "title": "Sammlungen",
+        "subtitle": "Organisiere deine Anmerkungen und Markierungen",
+        "none": "Noch keine Sammlungen",
+        "noneMessage": "Erstelle eine Sammlung, um deine Markierungen und Anmerkungen zu organisieren.",
+        "createButton": "Sammlung erstellen",
+        "newTitle": "Neue Sammlung",
+        "editTitle": "Sammlung bearbeiten",
+        "namePlaceholder": "Meine Sammlung",
+        "namePlaceholderEdit": "Sammlungsname",
+        "iconLabel": "Symbol",
+        "iconsTab": "Symbole",
+        "emojisTab": "Emojis",
+        "selectedIcon": "Ausgewählt:",
+        "descriptionLabel": "Beschreibung (optional)"
   }
 }
