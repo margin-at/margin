@@ -13,7 +13,6 @@ import (
 	"net/url"
 	"os"
 	"strings"
-	"sync"
 	"time"
 
 	"margin.at/internal/analytics"
@@ -27,8 +26,6 @@ type Handler struct {
 	db                *db.DB
 	configuredBaseURL string
 	privateKey        *ecdsa.PrivateKey
-	pending           map[string]*PendingAuth
-	pendingMu         sync.RWMutex
 	syncService       *internal_sync.Service
 	analytics         *analytics.Client
 }
@@ -46,7 +43,6 @@ func NewHandler(database *db.DB, syncService *internal_sync.Service, ac *analyti
 		db:                database,
 		configuredBaseURL: configuredBaseURL,
 		privateKey:        privateKey,
-		pending:           make(map[string]*PendingAuth),
 		syncService:       syncService,
 		analytics:         ac,
 	}, nil
@@ -159,21 +155,18 @@ func (h *Handler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pending := &PendingAuth{
-		State:        state,
-		DID:          did,
-		PDS:          pds,
-		AuthServer:   meta.TokenEndpoint,
-		Issuer:       meta.Issuer,
-		PKCEVerifier: pkceVerifier,
-		DPoPKey:      dpopKey,
-		DPoPNonce:    dpopNonce,
-		CreatedAt:    time.Now(),
+	dpopKeyBytes, err := x509.MarshalECPrivateKey(dpopKey)
+	if err != nil {
+		http.Error(w, "Failed to marshal DPoP key", http.StatusInternalServerError)
+		return
 	}
+	dpopKeyPem := string(pem.EncodeToMemory(&pem.Block{Type: "EC PRIVATE KEY", Bytes: dpopKeyBytes}))
 
-	h.pendingMu.Lock()
-	h.pending[state] = pending
-	h.pendingMu.Unlock()
+	err = h.db.SavePendingAuth(state, did, handle, pds, meta.TokenEndpoint, meta.Issuer, pkceVerifier, dpopKeyPem, dpopNonce, time.Now())
+	if err != nil {
+		http.Error(w, "Failed to save pending auth", http.StatusInternalServerError)
+		return
+	}
 
 	authURL, _ := url.Parse(meta.AuthorizationEndpoint)
 	q := authURL.Query()
@@ -250,22 +243,22 @@ func (h *Handler) HandleStart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pending := &PendingAuth{
-		State:        state,
-		DID:          did,
-		Handle:       req.Handle,
-		PDS:          pds,
-		AuthServer:   meta.TokenEndpoint,
-		Issuer:       meta.Issuer,
-		PKCEVerifier: pkceVerifier,
-		DPoPKey:      dpopKey,
-		DPoPNonce:    dpopNonce,
-		CreatedAt:    time.Now(),
+	dpopKeyBytes, err := x509.MarshalECPrivateKey(dpopKey)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Failed to marshal DPoP key"})
+		return
 	}
+	dpopKeyPem := string(pem.EncodeToMemory(&pem.Block{Type: "EC PRIVATE KEY", Bytes: dpopKeyBytes}))
 
-	h.pendingMu.Lock()
-	h.pending[state] = pending
-	h.pendingMu.Unlock()
+	err = h.db.SavePendingAuth(state, did, req.Handle, pds, meta.TokenEndpoint, meta.Issuer, pkceVerifier, dpopKeyPem, dpopNonce, time.Now())
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Failed to save pending auth"})
+		return
+	}
 
 	authURL, _ := url.Parse(meta.AuthorizationEndpoint)
 	q := authURL.Query()
@@ -337,22 +330,22 @@ func (h *Handler) HandleSignup(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	pending := &PendingAuth{
-		State:        state,
-		DID:          "",
-		Handle:       "",
-		PDS:          req.PdsURL,
-		AuthServer:   meta.TokenEndpoint,
-		Issuer:       meta.Issuer,
-		PKCEVerifier: pkceVerifier,
-		DPoPKey:      dpopKey,
-		DPoPNonce:    dpopNonce,
-		CreatedAt:    time.Now(),
+	dpopKeyBytes, err := x509.MarshalECPrivateKey(dpopKey)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Failed to marshal DPoP key"})
+		return
 	}
+	dpopKeyPem := string(pem.EncodeToMemory(&pem.Block{Type: "EC PRIVATE KEY", Bytes: dpopKeyBytes}))
 
-	h.pendingMu.Lock()
-	h.pending[state] = pending
-	h.pendingMu.Unlock()
+	err = h.db.SavePendingAuth(state, "", "", req.PdsURL, meta.TokenEndpoint, meta.Issuer, pkceVerifier, dpopKeyPem, dpopNonce, time.Now())
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Failed to save pending auth"})
+		return
+	}
 
 	authURL, _ := url.Parse(meta.AuthorizationEndpoint)
 	q := authURL.Query()
@@ -374,9 +367,7 @@ func (h *Handler) HandleCallback(w http.ResponseWriter, r *http.Request) {
 		logger.Error("OAuth callback error: %s - %s", oauthErr, errDesc)
 
 		if state := r.URL.Query().Get("state"); state != "" {
-			h.pendingMu.Lock()
-			delete(h.pending, state)
-			h.pendingMu.Unlock()
+			h.db.DeletePendingAuth(state)
 		}
 
 		http.Redirect(w, r, "/login?error="+url.QueryEscape(errDesc), http.StatusFound)
@@ -392,21 +383,40 @@ func (h *Handler) HandleCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.pendingMu.Lock()
-	pending, ok := h.pending[state]
-	if ok {
-		delete(h.pending, state)
-	}
-	h.pendingMu.Unlock()
-
-	if !ok {
+	did, handle, pds, authServer, issuer, pkceVerifier, dpopKeyPem, dpopNonce, createdAt, err := h.db.GetPendingAuth(state)
+	if err != nil {
 		http.Error(w, "Invalid or expired state", http.StatusBadRequest)
 		return
 	}
+	h.db.DeletePendingAuth(state)
 
-	if time.Since(pending.CreatedAt) > 10*time.Minute {
+	if time.Since(createdAt) > 10*time.Minute {
 		http.Error(w, "Authentication request expired", http.StatusBadRequest)
 		return
+	}
+
+	block, _ := pem.Decode([]byte(dpopKeyPem))
+	if block == nil {
+		http.Error(w, "Failed to decode DPoP key", http.StatusInternalServerError)
+		return
+	}
+	dpopKey, err := x509.ParseECPrivateKey(block.Bytes)
+	if err != nil {
+		http.Error(w, "Failed to parse DPoP key", http.StatusInternalServerError)
+		return
+	}
+
+	pending := &PendingAuth{
+		State:        state,
+		DID:          did,
+		Handle:       handle,
+		PDS:          pds,
+		AuthServer:   authServer,
+		Issuer:       issuer,
+		PKCEVerifier: pkceVerifier,
+		DPoPKey:      dpopKey,
+		DPoPNonce:    dpopNonce,
+		CreatedAt:    createdAt,
 	}
 
 	if iss != "" && iss != pending.Issuer {
