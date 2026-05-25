@@ -42,5 +42,17 @@ backend/vendor/
 NOTES.md
 extension.zip
 
+# Xcode
+extension/safari-xcode/
+xcuserdata/
+*.xccheckout
+*.moved-aside
+DerivedData/
+*.hmap
+*.ipa
+*.xcarchive
+*.dSYM.zip
+*.dSYM
+
 # PDF.js build exception
 !extension/public/pdfjs/build/

@@ -7,7 +7,11 @@ export default defineContentScript({
   cssInjectionMode: 'ui',
 
   async main(ctx) {
-    if (window.location.href.includes('/pdfjs/web/viewer.html')) return;
+    if (
+      import.meta.env.BROWSER !== 'safari' &&
+      window.location.href.includes('/pdfjs/web/viewer.html')
+    )
+      return;
 
     await initContentScript(ctx);
   },

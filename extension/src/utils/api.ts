@@ -1,6 +1,28 @@
 import type { MarginSession, TextSelector, Annotation } from './types';
 import { apiUrlItem } from './storage';
 
+async function safariFetch(url: string, options: RequestInit = {}): Promise<Response> {
+  try {
+    const tabs = await browser.tabs.query({ url: 'https://margin.at/*' });
+    const tab = tabs[0];
+    if (!tab?.id) return new Response('{}', { status: 401 });
+
+    const result = (await browser.tabs.sendMessage(tab.id, {
+      type: 'SAFARI_FETCH',
+      url,
+      options: {
+        method: options.method || 'GET',
+        headers: options.headers || {},
+        body: options.body,
+      },
+    })) as { ok: boolean; status: number; body: string };
+
+    return new Response(result.body, { status: result.status });
+  } catch {
+    return new Response('{}', { status: 500 });
+  }
+}
+
 async function getApiUrl(): Promise<string> {
   return await apiUrlItem.getValue();
 }
@@ -18,31 +40,33 @@ async function getSessionCookie(): Promise<string | null> {
       return cookie?.value || null;
     };
 
-    let activeStoreId: string | undefined;
-    try {
-      const [activeTab] = await browser.tabs.query({ active: true, currentWindow: true });
-      activeStoreId = (activeTab as { cookieStoreId?: string } | undefined)?.cookieStoreId;
-    } catch {
-      // ignore: tabs.query can fail in some contexts
-    }
-
-    if (activeStoreId) {
-      const value = await readFrom(activeStoreId);
-      if (value) return value;
-    }
-
     const defaultValue = await readFrom();
     if (defaultValue) return defaultValue;
 
-    try {
-      const stores = await browser.cookies.getAllCookieStores();
-      for (const store of stores) {
-        if (store.id === activeStoreId) continue;
-        const value = await readFrom(store.id);
+    if (import.meta.env.BROWSER !== 'safari') {
+      let activeStoreId: string | undefined;
+      try {
+        const [activeTab] = await browser.tabs.query({ active: true, currentWindow: true });
+        activeStoreId = (activeTab as { cookieStoreId?: string } | undefined)?.cookieStoreId;
+      } catch {
+        // ignore: tabs.query can fail in some contexts
+      }
+
+      if (activeStoreId) {
+        const value = await readFrom(activeStoreId);
         if (value) return value;
       }
-    } catch {
-      // ignore: getAllCookieStores may not be supported everywhere
+
+      try {
+        const stores = await browser.cookies.getAllCookieStores();
+        for (const store of stores) {
+          if (store.id === activeStoreId) continue;
+          const value = await readFrom(store.id);
+          if (value) return value;
+        }
+      } catch {
+        // ignore: getAllCookieStores may not be supported everywhere
+      }
     }
 
     return null;
@@ -55,6 +79,21 @@ async function getSessionCookie(): Promise<string | null> {
 export async function checkSession(): Promise<MarginSession> {
   try {
     const apiUrl = await getApiUrl();
+
+    if (import.meta.env.BROWSER === 'safari') {
+      const res = await safariFetch(`${apiUrl}/auth/session`);
+      if (!res.ok) return { authenticated: false };
+      const sessionData = await res.json();
+      if (!sessionData.did || !sessionData.handle) return { authenticated: false };
+      return {
+        authenticated: true,
+        did: sessionData.did,
+        handle: sessionData.handle,
+        accessJwt: sessionData.accessJwt,
+        refreshJwt: sessionData.refreshJwt,
+      };
+    }
+
     const cookie = await getSessionCookie();
 
     if (!cookie) return { authenticated: false };
@@ -83,6 +122,16 @@ export async function checkSession(): Promise<MarginSession> {
 
 async function apiRequest(path: string, options: RequestInit = {}): Promise<Response> {
   const apiUrl = await getApiUrl();
+  const apiPath = path.startsWith('/api') ? path : `/api${path}`;
+
+  if (import.meta.env.BROWSER === 'safari') {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      ...(options.headers as Record<string, string>),
+    };
+    return safariFetch(`${apiUrl}${apiPath}`, { ...options, headers });
+  }
+
   const cookie = await getSessionCookie();
 
   const headers: Record<string, string> = {
@@ -94,15 +143,11 @@ async function apiRequest(path: string, options: RequestInit = {}): Promise<Resp
     headers['X-Session-Token'] = cookie;
   }
 
-  const apiPath = path.startsWith('/api') ? path : `/api${path}`;
-
-  const response = await fetch(`${apiUrl}${apiPath}`, {
+  return fetch(`${apiUrl}${apiPath}`, {
     ...options,
     headers,
     credentials: 'include',
   });
-
-  return response;
 }
 
 async function hashUrl(rawUrl: string): Promise<string> {

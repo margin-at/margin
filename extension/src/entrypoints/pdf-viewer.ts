@@ -1,6 +1,8 @@
 import { initContentScript } from '@/utils/overlay';
 
 export default defineUnlistedScript(async () => {
+  if (import.meta.env.BROWSER === 'safari') return;
+
   await waitForPdfTextLayer();
 
   await initContentScript({

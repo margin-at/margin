@@ -78,6 +78,7 @@ export default defineBackground(() => {
   });
 
   onMessage('activateOnPdf', async ({ data }) => {
+    if (import.meta.env.BROWSER === 'safari') return { redirected: false };
     const { tabId, url } = data;
     const viewerUrl = getPDFViewerURL(url);
     await browser.tabs.update(tabId, { url: viewerUrl });
@@ -253,6 +254,10 @@ export default defineBackground(() => {
         version: manifest.version,
         browser: import.meta.env.BROWSER ?? 'unknown',
       });
+      if (import.meta.env.BROWSER === 'safari') {
+        const apiUrl = await apiUrlItem.getValue();
+        browser.tabs.create({ url: `${apiUrl}/safari-welcome` });
+      }
     } else if (details.reason === 'update' && details.previousVersion) {
       const manifest = browser.runtime.getManifest();
       analytics.capture('extension_updated', {
@@ -268,15 +273,17 @@ export default defineBackground(() => {
 
   browser.contextMenus.onClicked.addListener((info, tab) => {
     if (info.menuItemId === 'margin-open-sidebar') {
-      const browserAny = browser as any;
-      if (browserAny.sidePanel && tab?.windowId) {
-        browserAny.sidePanel.open({ windowId: tab.windowId }).catch((err: Error) => {
-          console.error('Could not open side panel:', err);
-        });
-      } else if (browserAny.sidebarAction) {
-        browserAny.sidebarAction.open().catch((err: Error) => {
-          console.warn('Could not open Firefox sidebar:', err);
-        });
+      if (import.meta.env.BROWSER !== 'safari') {
+        const browserAny = browser as any;
+        if (browserAny.sidePanel && tab?.windowId) {
+          browserAny.sidePanel.open({ windowId: tab.windowId }).catch((err: Error) => {
+            console.error('Could not open side panel:', err);
+          });
+        } else if (browserAny.sidebarAction) {
+          browserAny.sidebarAction.open().catch((err: Error) => {
+            console.warn('Could not open Firefox sidebar:', err);
+          });
+        }
       }
       return;
     }
@@ -393,6 +400,7 @@ export default defineBackground(() => {
   }
 
   function showNotification(title: string, message: string) {
+    if (import.meta.env.BROWSER === 'safari') return;
     const browserAny = browser as any;
     if (browserAny.notifications) {
       browserAny.notifications.create({
@@ -406,17 +414,19 @@ export default defineBackground(() => {
 
   let sidePanelOpen = false;
 
-  browser.runtime.onConnect.addListener((port) => {
-    if (port.name === 'sidepanel') {
-      sidePanelOpen = true;
-      port.onDisconnect.addListener(() => {
-        sidePanelOpen = false;
-      });
-    }
-  });
+  if (import.meta.env.BROWSER !== 'safari') {
+    browser.runtime.onConnect.addListener((port) => {
+      if (port.name === 'sidepanel') {
+        sidePanelOpen = true;
+        port.onDisconnect.addListener(() => {
+          sidePanelOpen = false;
+        });
+      }
+    });
+  }
 
   browser.commands?.onCommand.addListener((command) => {
-    if (command === 'toggle-sidebar') {
+    if (command === 'toggle-sidebar' && import.meta.env.BROWSER !== 'safari') {
       const browserAny = browser as any;
       if (browserAny.sidePanel) {
         browser.windows.getCurrent().then((win: { id?: number }) => {
