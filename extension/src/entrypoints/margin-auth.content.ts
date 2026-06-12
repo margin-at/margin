@@ -1,4 +1,5 @@
 import { defineContentScript } from 'wxt/sandbox';
+import { sendMessage } from '@/utils/messaging';
 
 export default defineContentScript({
   matches: ['https://margin.at/*'],
@@ -17,5 +18,7 @@ export default defineContentScript({
           .catch((err) => ({ ok: false, status: 0, body: String(err) }));
       }
     });
+
+    sendMessage('sessionPing', undefined).catch(() => {});
   },
 });

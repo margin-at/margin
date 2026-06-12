@@ -180,6 +180,42 @@ func (c *Client) ResolveDIDToPDS(ctx context.Context, did string) (string, error
 	return "", fmt.Errorf("no PDS found in DID document")
 }
 
+func (c *Client) ResolveDIDToHandle(ctx context.Context, did string) (string, error) {
+	var docURL string
+	if strings.HasPrefix(did, "did:plc:") {
+		docURL = config.Get().PLCResolveURL(did)
+	} else if strings.HasPrefix(did, "did:web:") {
+		domain := strings.TrimPrefix(did, "did:web:")
+		docURL = fmt.Sprintf("https://%s/.well-known/did.json", domain)
+	} else {
+		return "", fmt.Errorf("unsupported DID method: %s", did)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, docURL, nil)
+	if err != nil {
+		return "", err
+	}
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	var doc struct {
+		AlsoKnownAs []string `json:"alsoKnownAs"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&doc); err != nil {
+		return "", err
+	}
+
+	for _, aka := range doc.AlsoKnownAs {
+		if handle := strings.TrimPrefix(aka, "at://"); handle != aka {
+			return handle, nil
+		}
+	}
+	return "", fmt.Errorf("no handle found in DID document")
+}
+
 func (c *Client) GetAuthServerMetadata(ctx context.Context, pds string) (*AuthServerMetadata, error) {
 	resourceURL := fmt.Sprintf("%s/.well-known/oauth-protected-resource", strings.TrimSuffix(pds, "/"))
 	resp, err := http.Get(resourceURL)

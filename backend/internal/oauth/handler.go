@@ -446,6 +446,14 @@ func (h *Handler) HandleCallback(w http.ResponseWriter, r *http.Request) {
 
 	_ = newNonce
 
+	if pending.Handle == "" {
+		if resolved, herr := client.ResolveDIDToHandle(ctx, tokenResp.Sub); herr == nil {
+			pending.Handle = resolved
+		} else {
+			logger.Error("Failed to resolve handle for %s: %v", tokenResp.Sub, herr)
+		}
+	}
+
 	sessionID := generateSessionID()
 	expiresAt := time.Now().Add(7 * 24 * time.Hour)
 

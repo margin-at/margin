@@ -55,6 +55,10 @@ export default defineBackground(() => {
     return await checkSession();
   });
 
+  onMessage('sessionPing', async () => {
+    await checkSession();
+  });
+
   onMessage('getAnnotations', async ({ data, sender }) => {
     let citedUrls: string[] = data.citedUrls ?? [];
 

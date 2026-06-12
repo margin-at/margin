@@ -1,25 +1,41 @@
 import type { MarginSession, TextSelector, Annotation } from './types';
-import { apiUrlItem } from './storage';
+import { apiUrlItem, cachedSessionItem } from './storage';
 
-async function safariFetch(url: string, options: RequestInit = {}): Promise<Response> {
+async function safariProxyFetch(url: string, options: RequestInit = {}): Promise<Response | null> {
   try {
-    const tabs = await browser.tabs.query({ url: 'https://margin.at/*' });
-    const tab = tabs[0];
-    if (!tab?.id) return new Response('{}', { status: 401 });
+    const apiUrl = await getApiUrl();
+    const tabs = await browser.tabs.query({ url: `${new URL(apiUrl).origin}/*` });
 
-    const result = (await browser.tabs.sendMessage(tab.id, {
-      type: 'SAFARI_FETCH',
-      url,
-      options: {
-        method: options.method || 'GET',
-        headers: options.headers || {},
-        body: options.body,
-      },
-    })) as { ok: boolean; status: number; body: string };
+    for (const tab of tabs) {
+      if (!tab.id) continue;
+      try {
+        const result = (await browser.tabs.sendMessage(tab.id, {
+          type: 'SAFARI_FETCH',
+          url,
+          options: {
+            method: options.method || 'GET',
+            headers: options.headers || {},
+            body: options.body,
+          },
+        })) as { ok: boolean; status: number; body: string } | undefined;
 
-    return new Response(result.body, { status: result.status });
+        if (result) return new Response(result.body, { status: result.status });
+      } catch {
+        continue;
+      }
+    }
+    return null;
   } catch {
-    return new Response('{}', { status: 500 });
+    return null;
+  }
+}
+
+async function hasApiHostPermission(): Promise<boolean> {
+  try {
+    const apiUrl = await getApiUrl();
+    return await browser.permissions.contains({ origins: [`${new URL(apiUrl).origin}/*`] });
+  } catch {
+    return false;
   }
 }
 
@@ -76,44 +92,58 @@ async function getSessionCookie(): Promise<string | null> {
   }
 }
 
+async function sessionFromResponse(res: Response): Promise<MarginSession> {
+  if (!res.ok) {
+    await cachedSessionItem.setValue(null);
+    return { authenticated: false };
+  }
+
+  const sessionData = await res.json();
+  if (!sessionData.did || !sessionData.handle) {
+    await cachedSessionItem.setValue(null);
+    return { authenticated: false };
+  }
+
+  const session: MarginSession = {
+    authenticated: true,
+    did: sessionData.did,
+    handle: sessionData.handle,
+    accessJwt: sessionData.accessJwt,
+    refreshJwt: sessionData.refreshJwt,
+  };
+  await cachedSessionItem.setValue(session);
+  return session;
+}
+
 export async function checkSession(): Promise<MarginSession> {
   try {
     const apiUrl = await getApiUrl();
-
-    if (import.meta.env.BROWSER === 'safari') {
-      const res = await safariFetch(`${apiUrl}/auth/session`);
-      if (!res.ok) return { authenticated: false };
-      const sessionData = await res.json();
-      if (!sessionData.did || !sessionData.handle) return { authenticated: false };
-      return {
-        authenticated: true,
-        did: sessionData.did,
-        handle: sessionData.handle,
-        accessJwt: sessionData.accessJwt,
-        refreshJwt: sessionData.refreshJwt,
-      };
-    }
-
     const cookie = await getSessionCookie();
 
-    if (!cookie) return { authenticated: false };
+    if (cookie) {
+      try {
+        const res = await fetch(`${apiUrl}/auth/session`, {
+          headers: { 'X-Session-Token': cookie },
+        });
+        return await sessionFromResponse(res);
+      } catch (error) {
+        if (import.meta.env.BROWSER !== 'safari') throw error;
+      }
+    }
 
-    const res = await fetch(`${apiUrl}/auth/session`, {
-      headers: { 'X-Session-Token': cookie },
-    });
+    if (import.meta.env.BROWSER === 'safari') {
+      const res = await safariProxyFetch(`${apiUrl}/auth/session`);
+      if (res) return await sessionFromResponse(res);
 
-    if (!res.ok) return { authenticated: false };
+      if (!cookie && typeof browser.cookies?.get === 'function' && (await hasApiHostPermission())) {
+        await cachedSessionItem.setValue(null);
+        return { authenticated: false };
+      }
+      const cached = await cachedSessionItem.getValue();
+      if (cached?.authenticated) return cached;
+    }
 
-    const sessionData = await res.json();
-    if (!sessionData.did || !sessionData.handle) return { authenticated: false };
-
-    return {
-      authenticated: true,
-      did: sessionData.did,
-      handle: sessionData.handle,
-      accessJwt: sessionData.accessJwt,
-      refreshJwt: sessionData.refreshJwt,
-    };
+    return { authenticated: false };
   } catch (error) {
     console.error('Session check error:', error);
     return { authenticated: false };
@@ -123,14 +153,7 @@ export async function checkSession(): Promise<MarginSession> {
 async function apiRequest(path: string, options: RequestInit = {}): Promise<Response> {
   const apiUrl = await getApiUrl();
   const apiPath = path.startsWith('/api') ? path : `/api${path}`;
-
-  if (import.meta.env.BROWSER === 'safari') {
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-      ...(options.headers as Record<string, string>),
-    };
-    return safariFetch(`${apiUrl}${apiPath}`, { ...options, headers });
-  }
+  const url = `${apiUrl}${apiPath}`;
 
   const cookie = await getSessionCookie();
 
@@ -143,7 +166,23 @@ async function apiRequest(path: string, options: RequestInit = {}): Promise<Resp
     headers['X-Session-Token'] = cookie;
   }
 
-  return fetch(`${apiUrl}${apiPath}`, {
+  if (import.meta.env.BROWSER === 'safari') {
+    if (cookie) {
+      try {
+        return await fetch(url, { ...options, headers, credentials: 'include' });
+      } catch {
+        /* empty */
+      }
+    }
+    const res = await safariProxyFetch(url, { ...options, headers });
+    if (res) return res;
+    if (!cookie) {
+      return fetch(url, { ...options, headers, credentials: 'include' });
+    }
+    return new Response(JSON.stringify({ error: 'Could not reach margin.at' }), { status: 503 });
+  }
+
+  return fetch(url, {
     ...options,
     headers,
     credentials: 'include',

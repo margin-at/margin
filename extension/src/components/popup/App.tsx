@@ -171,6 +171,15 @@ export function App() {
     }
   }
 
+  async function handleSignIn() {
+    try {
+      await browser.permissions.request({ origins: [`${new URL(apiUrl).origin}/*`] });
+    } catch {
+      /* empty */
+    }
+    await browser.tabs.create({ url: `${apiUrl}/login` });
+  }
+
   async function loadCurrentTab() {
     const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
     if (tab?.url) {
@@ -474,7 +483,7 @@ export function App() {
             Annotate, highlight, and bookmark the web with your AT Protocol identity.
           </p>
           <button
-            onClick={() => browser.tabs.create({ url: `${apiUrl}/login` })}
+            onClick={handleSignIn}
             className="w-full max-w-[280px] px-6 py-2.5 bg-[var(--accent)] text-white rounded-xl text-sm font-semibold hover:bg-[var(--accent-hover)] transition-colors"
           >
             Sign In
