@@ -14,6 +14,7 @@ import (
 
 type DB struct {
 	*sql.DB
+	crypter fieldCrypter
 }
 
 type (

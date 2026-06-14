@@ -3,11 +3,8 @@ package oauth
 import (
 	"context"
 	"crypto/ecdsa"
-	"crypto/elliptic"
 	"crypto/rand"
-	"crypto/x509"
 	"encoding/json"
-	"encoding/pem"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -22,97 +19,56 @@ import (
 	"margin.at/internal/xrpc"
 )
 
+const oauthScope = "atproto blob:* blob:image/jpeg blob:image/png include:at.margin.authFull repo:community.lexicon.bookmarks.bookmark"
+
 type Handler struct {
 	db                *db.DB
 	configuredBaseURL string
-	privateKey        *ecdsa.PrivateKey
+	signingKey        *ecdsa.PrivateKey
 	syncService       *internal_sync.Service
 	analytics         *analytics.Client
 }
 
 func NewHandler(database *db.DB, syncService *internal_sync.Service, ac *analytics.Client) (*Handler, error) {
-
-	configuredBaseURL := os.Getenv("BASE_URL")
-
-	privateKey, err := loadOrGenerateKey()
+	signingKey, err := LoadSigningKey(database)
 	if err != nil {
-		return nil, fmt.Errorf("failed to load/generate key: %w", err)
+		return nil, fmt.Errorf("failed to load signing key: %w", err)
 	}
 
 	return &Handler{
 		db:                database,
-		configuredBaseURL: configuredBaseURL,
-		privateKey:        privateKey,
+		configuredBaseURL: getBaseURLEnv(),
+		signingKey:        signingKey,
 		syncService:       syncService,
 		analytics:         ac,
 	}, nil
 }
 
-func loadOrGenerateKey() (*ecdsa.PrivateKey, error) {
-	keyPath := os.Getenv("OAUTH_KEY_PATH")
-	if keyPath == "" {
-		keyPath = "./oauth_private_key.pem"
-	}
-
-	if data, err := os.ReadFile(keyPath); err == nil {
-		block, _ := pem.Decode(data)
-		if block != nil {
-			key, err := x509.ParseECPrivateKey(block.Bytes)
-			if err == nil {
-				return key, nil
-			}
-		}
-	}
-
-	key, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
-	if err != nil {
-		return nil, err
-	}
-
-	keyBytes, err := x509.MarshalECPrivateKey(key)
-	if err != nil {
-		return nil, err
-	}
-
-	block := &pem.Block{
-		Type:  "EC PRIVATE KEY",
-		Bytes: keyBytes,
-	}
-
-	if err := os.WriteFile(keyPath, pem.EncodeToMemory(block), 0600); err != nil {
-		logger.Error("Warning: could not save key to %s: %v", keyPath, err)
-	}
-
-	return key, nil
+func getBaseURLEnv() string {
+	return strings.TrimRight(strings.TrimSpace(os.Getenv("BASE_URL")), "/")
 }
 
-func (h *Handler) getDynamicClient(r *http.Request) *Client {
-	baseURL := h.configuredBaseURL
-	if baseURL == "" {
-		scheme := "http"
-		if r.TLS != nil || r.Header.Get("X-Forwarded-Proto") == "https" {
-			scheme = "https"
-		}
-		host := r.Header.Get("X-Forwarded-Host")
-		if host == "" {
-			host = r.Host
-		}
-		baseURL = fmt.Sprintf("%s://%s", scheme, host)
+func (h *Handler) baseURL(r *http.Request) string {
+	if h.configuredBaseURL != "" {
+		return h.configuredBaseURL
 	}
-
-	if len(baseURL) > 0 && baseURL[len(baseURL)-1] == '/' {
-		baseURL = baseURL[:len(baseURL)-1]
+	scheme := "http"
+	if r.TLS != nil || r.Header.Get("X-Forwarded-Proto") == "https" {
+		scheme = "https"
 	}
+	host := r.Header.Get("X-Forwarded-Host")
+	if host == "" {
+		host = r.Host
+	}
+	return strings.TrimRight(fmt.Sprintf("%s://%s", scheme, host), "/")
+}
 
-	clientID := baseURL + "/oauth-client-metadata.json"
-	redirectURI := baseURL + "/auth/callback"
-
-	return NewClient(clientID, redirectURI, h.privateKey)
+func (h *Handler) oauthClient(r *http.Request) *Client {
+	base := h.baseURL(r)
+	return NewClient(base+"/oauth-client-metadata.json", base+"/auth/callback", h.signingKey)
 }
 
 func (h *Handler) HandleLogin(w http.ResponseWriter, r *http.Request) {
-	client := h.getDynamicClient(r)
-
 	handle := r.URL.Query().Get("handle")
 	if handle == "" {
 		http.Redirect(w, r, "/login", http.StatusFound)
@@ -120,69 +76,49 @@ func (h *Handler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := r.Context()
+	client := h.oauthClient(r)
 
 	did, err := client.ResolveHandle(ctx, handle)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Failed to resolve handle: %v", err), http.StatusBadRequest)
 		return
 	}
-
-	pds, err := client.ResolveDIDToPDS(ctx, did)
+	pdsURL, err := client.ResolveDIDToPDS(ctx, did)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Failed to resolve PDS: %v", err), http.StatusBadRequest)
 		return
 	}
-
-	meta, err := client.GetAuthServerMetadata(ctx, pds)
+	meta, err := client.GetAuthServerMetadata(ctx, pdsURL)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Failed to get auth server metadata: %v", err), http.StatusBadRequest)
 		return
 	}
 
-	dpopKey, err := client.GenerateDPoPKey()
+	dpopKey, err := GenerateDPoPKey()
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Failed to generate DPoP key: %v", err), http.StatusInternalServerError)
+		http.Error(w, "Failed to generate DPoP key", http.StatusInternalServerError)
 		return
 	}
-
-	pkceVerifier, pkceChallenge := client.GeneratePKCE()
-
-	scope := "atproto blob:* blob:image/jpeg blob:image/png include:at.margin.authFull repo:community.lexicon.bookmarks.bookmark"
-
-	parResp, state, dpopNonce, err := client.SendPAR(meta, handle, scope, dpopKey, pkceChallenge)
+	verifier, challenge := GeneratePKCE()
+	par, state, nonce, err := client.SendPAR(ctx, meta, handle, oauthScope, dpopKey, challenge)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("PAR request failed: %v", err), http.StatusInternalServerError)
 		return
 	}
 
-	dpopKeyBytes, err := x509.MarshalECPrivateKey(dpopKey)
-	if err != nil {
-		http.Error(w, "Failed to marshal DPoP key", http.StatusInternalServerError)
-		return
-	}
-	dpopKeyPem := string(pem.EncodeToMemory(&pem.Block{Type: "EC PRIVATE KEY", Bytes: dpopKeyBytes}))
-
-	err = h.db.SavePendingAuth(state, did, handle, pds, meta.TokenEndpoint, meta.Issuer, pkceVerifier, dpopKeyPem, dpopNonce, time.Now())
-	if err != nil {
+	if err := h.savePending(state, did, handle, pdsURL, meta, verifier, dpopKey, nonce); err != nil {
 		http.Error(w, "Failed to save pending auth", http.StatusInternalServerError)
 		return
 	}
 
-	authURL, _ := url.Parse(meta.AuthorizationEndpoint)
-	q := authURL.Query()
-	q.Set("client_id", client.ClientID)
-	q.Set("request_uri", parResp.RequestURI)
-	authURL.RawQuery = q.Encode()
-
-	http.Redirect(w, r, authURL.String(), http.StatusFound)
+	http.Redirect(w, r, client.AuthorizeURL(meta, par.RequestURI), http.StatusFound)
 }
 
 func (h *Handler) HandleStart(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
+	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
-
 	var req struct {
 		Handle string `json:"handle"`
 	}
@@ -190,94 +126,57 @@ func (h *Handler) HandleStart(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
-
-	if req.Handle == "" {
-		http.Error(w, "Handle is required", http.StatusBadRequest)
+	handle := strings.TrimSpace(req.Handle)
+	if handle == "" {
+		writeJSONError(w, http.StatusBadRequest, "Handle is required")
 		return
 	}
 
-	client := h.getDynamicClient(r)
 	ctx := r.Context()
+	client := h.oauthClient(r)
 
-	did, err := client.ResolveHandle(ctx, req.Handle)
+	did, err := client.ResolveHandle(ctx, handle)
 	if err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"error": "Could not find that account. Please check the handle."})
+		writeJSONError(w, http.StatusBadRequest, "Could not find that account. Please check the handle.")
+		return
+	}
+	pdsURL, err := client.ResolveDIDToPDS(ctx, did)
+	if err != nil {
+		writeJSONError(w, http.StatusBadRequest, "Failed to resolve PDS")
+		return
+	}
+	meta, err := client.GetAuthServerMetadata(ctx, pdsURL)
+	if err != nil {
+		writeJSONError(w, http.StatusInternalServerError, "Failed to get auth server")
 		return
 	}
 
-	pds, err := client.ResolveDIDToPDS(ctx, did)
+	dpopKey, err := GenerateDPoPKey()
 	if err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"error": "Failed to resolve PDS"})
+		writeJSONError(w, http.StatusInternalServerError, "Internal error")
 		return
 	}
-
-	meta, err := client.GetAuthServerMetadata(ctx, pds)
-	if err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{"error": "Failed to get auth server"})
-		return
-	}
-
-	dpopKey, err := client.GenerateDPoPKey()
-	if err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{"error": "Internal error"})
-		return
-	}
-
-	pkceVerifier, pkceChallenge := client.GeneratePKCE()
-	scope := "atproto blob:* blob:image/jpeg blob:image/png include:at.margin.authFull repo:community.lexicon.bookmarks.bookmark"
-
-	parResp, state, dpopNonce, err := client.SendPAR(meta, req.Handle, scope, dpopKey, pkceChallenge)
+	verifier, challenge := GeneratePKCE()
+	par, state, nonce, err := client.SendPAR(ctx, meta, handle, oauthScope, dpopKey, challenge)
 	if err != nil {
 		logger.Error("PAR request failed: %v", err)
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{"error": "Failed to initiate authentication"})
+		writeJSONError(w, http.StatusInternalServerError, "Failed to initiate authentication")
 		return
 	}
 
-	dpopKeyBytes, err := x509.MarshalECPrivateKey(dpopKey)
-	if err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{"error": "Failed to marshal DPoP key"})
-		return
-	}
-	dpopKeyPem := string(pem.EncodeToMemory(&pem.Block{Type: "EC PRIVATE KEY", Bytes: dpopKeyBytes}))
-
-	err = h.db.SavePendingAuth(state, did, req.Handle, pds, meta.TokenEndpoint, meta.Issuer, pkceVerifier, dpopKeyPem, dpopNonce, time.Now())
-	if err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{"error": "Failed to save pending auth"})
+	if err := h.savePending(state, did, handle, pdsURL, meta, verifier, dpopKey, nonce); err != nil {
+		writeJSONError(w, http.StatusInternalServerError, "Failed to save pending auth")
 		return
 	}
 
-	authURL, _ := url.Parse(meta.AuthorizationEndpoint)
-	q := authURL.Query()
-	q.Set("client_id", client.ClientID)
-	q.Set("request_uri", parResp.RequestURI)
-	authURL.RawQuery = q.Encode()
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]string{
-		"authorizationUrl": authURL.String(),
-	})
+	writeJSON(w, http.StatusOK, map[string]any{"authorizationUrl": client.AuthorizeURL(meta, par.RequestURI)})
 }
 
 func (h *Handler) HandleSignup(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
+	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
-
 	var req struct {
 		PdsURL string `json:"pds_url"`
 	}
@@ -285,91 +184,72 @@ func (h *Handler) HandleSignup(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
-
-	if req.PdsURL == "" {
-		http.Error(w, "PDS URL is required", http.StatusBadRequest)
+	pdsURL := strings.TrimSpace(req.PdsURL)
+	if pdsURL == "" {
+		writeJSONError(w, http.StatusBadRequest, "PDS URL is required")
 		return
 	}
 
-	client := h.getDynamicClient(r)
 	ctx := r.Context()
+	client := h.oauthClient(r)
 
-	meta, err := client.GetAuthServerMetadataForSignup(ctx, req.PdsURL)
+	meta, err := client.GetAuthServerMetadataForSignup(ctx, pdsURL)
 	if err != nil {
-		logger.Error("Failed to get auth metadata for signup from %s: %v", req.PdsURL, err)
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"error": "Failed to connect to PDS"})
+		logger.Error("Failed to get auth metadata for signup from %s: %v", pdsURL, err)
+		writeJSONError(w, http.StatusBadRequest, "Failed to connect to PDS")
 		return
 	}
-
-	dpopKey, err := client.GenerateDPoPKey()
+	dpopKey, err := GenerateDPoPKey()
 	if err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{"error": "Internal error"})
+		writeJSONError(w, http.StatusInternalServerError, "Internal error")
 		return
 	}
-
-	pkceVerifier, pkceChallenge := client.GeneratePKCE()
-	scope := "atproto blob:* blob:image/jpeg blob:image/png include:at.margin.authFull repo:community.lexicon.bookmarks.bookmark"
-
-	parResp, state, dpopNonce, err := client.SendPARWithPrompt(meta, "", scope, dpopKey, pkceChallenge, "create")
+	verifier, challenge := GeneratePKCE()
+	par, state, nonce, err := client.SendPARWithPrompt(ctx, meta, "", oauthScope, dpopKey, challenge, "create")
 	if err != nil {
-		if strings.Contains(err.Error(), "prompt") || strings.Contains(err.Error(), "invalid_request") {
-			logger.Info("prompt=create not supported, falling back to standard flow")
-			pkceVerifier, pkceChallenge = client.GeneratePKCE()
-			parResp, state, dpopNonce, err = client.SendPAR(meta, "", scope, dpopKey, pkceChallenge)
-		}
+		verifier, challenge = GeneratePKCE()
+		par, state, nonce, err = client.SendPAR(ctx, meta, "", oauthScope, dpopKey, challenge)
 		if err != nil {
 			logger.Error("PAR request failed for signup: %v", err)
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusInternalServerError)
-			json.NewEncoder(w).Encode(map[string]string{"error": "Failed to initiate signup"})
+			writeJSONError(w, http.StatusInternalServerError, "Failed to initiate signup")
 			return
 		}
 	}
 
-	dpopKeyBytes, err := x509.MarshalECPrivateKey(dpopKey)
-	if err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{"error": "Failed to marshal DPoP key"})
-		return
-	}
-	dpopKeyPem := string(pem.EncodeToMemory(&pem.Block{Type: "EC PRIVATE KEY", Bytes: dpopKeyBytes}))
-
-	err = h.db.SavePendingAuth(state, "", "", req.PdsURL, meta.TokenEndpoint, meta.Issuer, pkceVerifier, dpopKeyPem, dpopNonce, time.Now())
-	if err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{"error": "Failed to save pending auth"})
+	if err := h.savePending(state, "", "", pdsURL, meta, verifier, dpopKey, nonce); err != nil {
+		writeJSONError(w, http.StatusInternalServerError, "Failed to save pending auth")
 		return
 	}
 
-	authURL, _ := url.Parse(meta.AuthorizationEndpoint)
-	q := authURL.Query()
-	q.Set("client_id", client.ClientID)
-	q.Set("request_uri", parResp.RequestURI)
-	authURL.RawQuery = q.Encode()
+	writeJSON(w, http.StatusOK, map[string]any{"authorizationUrl": client.AuthorizeURL(meta, par.RequestURI)})
+}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]string{
-		"authorizationUrl": authURL.String(),
+func (h *Handler) savePending(state, did, handle, pdsURL string, meta *AuthServerMetadata, verifier string, dpopKey *ecdsa.PrivateKey, nonce string) error {
+	jwk := PrivateJWK(dpopKey)
+	return h.db.SavePendingAuthOAuth(db.PendingAuth{
+		State:         state,
+		DID:           did,
+		Handle:        handle,
+		PDS:           pdsURL,
+		Issuer:        meta.Issuer,
+		TokenEndpoint: meta.TokenEndpoint,
+		PKCEVerifier:  verifier,
+		DPoP:          db.DPoPKey{Crv: jwk.Crv, D: jwk.D, X: jwk.X, Y: jwk.Y},
+		DPoPNonce:     nonce,
+		CreatedAt:     time.Now(),
 	})
 }
 
 func (h *Handler) HandleCallback(w http.ResponseWriter, r *http.Request) {
-	client := h.getDynamicClient(r)
+	ctx := r.Context()
+	client := h.oauthClient(r)
 
 	if oauthErr := r.URL.Query().Get("error"); oauthErr != "" {
 		errDesc := r.URL.Query().Get("error_description")
 		logger.Error("OAuth callback error: %s - %s", oauthErr, errDesc)
-
 		if state := r.URL.Query().Get("state"); state != "" {
-			h.db.DeletePendingAuth(state)
+			h.db.DeletePendingAuthOAuth(state)
 		}
-
 		http.Redirect(w, r, "/login?error="+url.QueryEscape(errDesc), http.StatusFound)
 		return
 	}
@@ -377,107 +257,92 @@ func (h *Handler) HandleCallback(w http.ResponseWriter, r *http.Request) {
 	state := r.URL.Query().Get("state")
 	code := r.URL.Query().Get("code")
 	iss := r.URL.Query().Get("iss")
-
 	if state == "" || code == "" {
 		http.Error(w, "Missing state or code parameter", http.StatusBadRequest)
 		return
 	}
 
-	did, handle, pds, authServer, issuer, pkceVerifier, dpopKeyPem, dpopNonce, createdAt, err := h.db.GetPendingAuth(state)
+	pending, err := h.db.GetPendingAuthOAuth(state)
 	if err != nil {
 		http.Error(w, "Invalid or expired state", http.StatusBadRequest)
 		return
 	}
-	h.db.DeletePendingAuth(state)
+	h.db.DeletePendingAuthOAuth(state)
 
-	if time.Since(createdAt) > 10*time.Minute {
+	if time.Since(pending.CreatedAt) > 10*time.Minute {
 		http.Error(w, "Authentication request expired", http.StatusBadRequest)
 		return
 	}
-
-	block, _ := pem.Decode([]byte(dpopKeyPem))
-	if block == nil {
-		http.Error(w, "Failed to decode DPoP key", http.StatusInternalServerError)
-		return
-	}
-	dpopKey, err := x509.ParseECPrivateKey(block.Bytes)
-	if err != nil {
-		http.Error(w, "Failed to parse DPoP key", http.StatusInternalServerError)
-		return
-	}
-
-	pending := &PendingAuth{
-		State:        state,
-		DID:          did,
-		Handle:       handle,
-		PDS:          pds,
-		AuthServer:   authServer,
-		Issuer:       issuer,
-		PKCEVerifier: pkceVerifier,
-		DPoPKey:      dpopKey,
-		DPoPNonce:    dpopNonce,
-		CreatedAt:    createdAt,
-	}
-
 	if iss != "" && iss != pending.Issuer {
 		http.Error(w, "Issuer mismatch", http.StatusBadRequest)
 		return
 	}
 
-	ctx := r.Context()
-	meta, err := client.GetAuthServerMetadataForSignup(ctx, pending.PDS)
+	dpopKey, err := ParsePrivateJWK(pending.DPoP.Crv, pending.DPoP.D, pending.DPoP.X, pending.DPoP.Y)
 	if err != nil {
-		logger.Error("Failed to get auth metadata in callback for %s: %v", pending.PDS, err)
-		http.Error(w, fmt.Sprintf("Failed to get auth metadata: %v", err), http.StatusInternalServerError)
+		http.Error(w, "Failed to parse DPoP key", http.StatusInternalServerError)
 		return
 	}
 
-	tokenResp, newNonce, err := client.ExchangeCode(meta, code, pending.PKCEVerifier, pending.DPoPKey, pending.DPoPNonce)
+	meta := &AuthServerMetadata{Issuer: pending.Issuer, TokenEndpoint: pending.TokenEndpoint}
+	tok, err := client.ExchangeCode(ctx, meta, code, pending.PKCEVerifier, dpopKey, pending.DPoPNonce)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Token exchange failed: %v", err), http.StatusInternalServerError)
 		return
 	}
-
-	if pending.DID != "" && tokenResp.Sub != pending.DID {
-		logger.Error("Security: OAuth sub mismatch, expected %s, got %s", pending.DID, tokenResp.Sub)
+	if tok.Sub == "" {
+		http.Error(w, "Token response missing sub", http.StatusInternalServerError)
+		return
+	}
+	if pending.DID != "" && tok.Sub != pending.DID {
+		logger.Error("Security: OAuth sub mismatch, expected %s, got %s", pending.DID, tok.Sub)
 		http.Error(w, "Account identity mismatch, authorization returned different account", http.StatusBadRequest)
 		return
 	}
 
-	_ = newNonce
+	did := tok.Sub
+	pdsURL := pending.PDS
+	if resolved, rerr := client.ResolveDIDToPDS(ctx, did); rerr == nil && resolved != "" {
+		pdsURL = resolved
+	}
 
-	if pending.Handle == "" {
-		if resolved, herr := client.ResolveDIDToHandle(ctx, tokenResp.Sub); herr == nil {
-			pending.Handle = resolved
+	handle := pending.Handle
+	if handle == "" {
+		if resolved, herr := client.ResolveDIDToHandle(ctx, did); herr == nil {
+			handle = resolved
 		} else {
-			logger.Error("Failed to resolve handle for %s: %v", tokenResp.Sub, herr)
+			logger.Error("Failed to resolve handle for %s: %v", did, herr)
 		}
+	}
+	if handle == "" {
+		handle = did
+	}
+
+	if banned, berr := h.db.IsBanned(did); berr == nil && banned {
+		http.Redirect(w, r, "/login?error=banned", http.StatusFound)
+		return
 	}
 
 	sessionID := generateSessionID()
-	expiresAt := time.Now().Add(7 * 24 * time.Hour)
-
-	dpopKeyBytes, err := x509.MarshalECPrivateKey(pending.DPoPKey)
-	if err != nil {
-		http.Error(w, "Failed to marshal DPoP key", http.StatusInternalServerError)
-		return
+	atExpiry := time.Now().Add(time.Hour)
+	if tok.ExpiresIn > 0 {
+		atExpiry = time.Now().Add(time.Duration(tok.ExpiresIn) * time.Second)
 	}
-	dpopKeyPEM := pem.EncodeToMemory(&pem.Block{Type: "EC PRIVATE KEY", Bytes: dpopKeyBytes})
+	sessionExpiry := time.Now().Add(7 * 24 * time.Hour)
 
-	err = h.db.SaveSession(
-		sessionID,
-		tokenResp.Sub,
-		pending.Handle,
-		tokenResp.AccessToken,
-		tokenResp.RefreshToken,
-		string(dpopKeyPEM),
-		expiresAt,
-	)
-	if err != nil {
-		if err == db.ErrAccountBanned {
-			http.Redirect(w, r, "/login?error=banned", http.StatusFound)
-			return
-		}
+	if err := h.db.CreateOAuthSession(db.OAuthSessionRow{
+		ID:                   sessionID,
+		DID:                  did,
+		Handle:               handle,
+		PDS:                  pdsURL,
+		AccessToken:          tok.AccessToken,
+		RefreshToken:         tok.RefreshToken,
+		TokenEndpoint:        pending.TokenEndpoint,
+		Issuer:               pending.Issuer,
+		DPoP:                 db.DPoPKey{Crv: pending.DPoP.Crv, D: pending.DPoP.D, X: pending.DPoP.X, Y: pending.DPoP.Y},
+		AccessTokenExpiresAt: atExpiry,
+		ExpiresAt:            sessionExpiry,
+	}); err != nil {
 		http.Error(w, "Failed to save session", http.StatusInternalServerError)
 		return
 	}
@@ -492,17 +357,16 @@ func (h *Handler) HandleCallback(w http.ResponseWriter, r *http.Request) {
 		MaxAge:   86400 * 7,
 	})
 
-	go h.cleanupOrphanedReplies(tokenResp.Sub, tokenResp.AccessToken, string(dpopKeyPEM), pending.PDS)
+	go h.cleanupOrphanedReplies(did, tok.AccessToken, dpopKey, pdsURL)
 	go func() {
-		logger.Info("Starting background sync for %s...", tokenResp.Sub)
-		_, err := h.syncService.PerformSync(context.Background(), tokenResp.Sub, func(ctx context.Context, did string) (*xrpc.Client, error) {
-			return xrpc.NewClient(pending.PDS, tokenResp.AccessToken, pending.DPoPKey), nil
+		logger.Info("Starting background sync for %s...", did)
+		_, err := h.syncService.PerformSync(context.Background(), did, func(ctx context.Context, did string) (*xrpc.Client, error) {
+			return xrpc.NewClient(pdsURL, tok.AccessToken, dpopKey), nil
 		})
-
 		if err != nil {
-			logger.Error("Background sync failed for %s: %v", tokenResp.Sub, err)
+			logger.Error("Background sync failed for %s: %v", did, err)
 		} else {
-			logger.Info("Background sync completed for %s", tokenResp.Sub)
+			logger.Info("Background sync completed for %s", did)
 		}
 	}()
 
@@ -512,54 +376,29 @@ func (h *Handler) HandleCallback(w http.ResponseWriter, r *http.Request) {
 		if h.analytics == nil {
 			return
 		}
-		existingCount, _ := h.db.CountSessionsByDID(tokenResp.Sub)
+		existingCount, _ := h.db.CountOAuthSessionsByDID(did)
 		if existingCount <= 1 {
-			h.analytics.Capture(tokenResp.Sub, "account_created", map[string]interface{}{
-				"pds": pending.PDS,
-			})
+			h.analytics.Capture(did, "account_created", map[string]interface{}{"pds": pdsURL})
 		} else {
-			h.analytics.Capture(tokenResp.Sub, "login_success", map[string]interface{}{
-				"handle": pending.Handle,
-				"pds":    pending.PDS,
-			})
+			h.analytics.Capture(did, "login_success", map[string]interface{}{"handle": handle, "pds": pdsURL})
 		}
 	}()
 }
 
-func (h *Handler) cleanupOrphanedReplies(did, accessToken, dpopKeyPEM, pds string) {
+func (h *Handler) cleanupOrphanedReplies(did, accessToken string, dpopKey *ecdsa.PrivateKey, pds string) {
 	orphans, err := h.db.GetOrphanedRepliesByAuthor(did)
 	if err != nil || len(orphans) == 0 {
 		return
 	}
-
-	block, _ := pem.Decode([]byte(dpopKeyPEM))
-	if block == nil {
-		return
-	}
-	dpopKey, err := x509.ParseECPrivateKey(block.Bytes)
-	if err != nil {
-		return
-	}
-
 	for _, reply := range orphans {
-
-		parts := url.PathEscape(reply.URI)
-		_ = parts
-		uriParts := splitURI(reply.URI)
+		uriParts := splitBySlash(reply.URI)
 		if len(uriParts) < 2 {
 			continue
 		}
 		rkey := uriParts[len(uriParts)-1]
-
 		deleteFromPDS(pds, accessToken, dpopKey, "at.margin.reply", did, rkey)
-
 		h.db.DeleteReply(reply.URI)
 	}
-}
-
-func splitURI(uri string) []string {
-
-	return splitBySlash(uri)
 }
 
 func splitBySlash(s string) []string {
@@ -582,10 +421,8 @@ func splitBySlash(s string) []string {
 }
 
 func deleteFromPDS(pds, accessToken string, dpopKey *ecdsa.PrivateKey, collection, did, rkey string) {
-
 	client := xrpc.NewClient(pds, accessToken, dpopKey)
-	err := client.DeleteRecord(context.Background(), did, collection, rkey)
-	if err != nil {
+	if err := client.DeleteRecord(context.Background(), did, collection, rkey); err != nil {
 		logger.Error("Failed to delete orphaned reply from PDS: %v", err)
 	} else {
 		logger.Info("Cleaned up orphaned reply %s/%s from PDS", collection, rkey)
@@ -593,11 +430,9 @@ func deleteFromPDS(pds, accessToken string, dpopKey *ecdsa.PrivateKey, collectio
 }
 
 func (h *Handler) HandleLogout(w http.ResponseWriter, r *http.Request) {
-	cookie, err := r.Cookie("margin_session")
-	if err == nil {
-		h.db.DeleteSession(cookie.Value)
+	if cookie, err := r.Cookie("margin_session"); err == nil {
+		h.db.DeleteOAuthSession(cookie.Value)
 	}
-
 	for _, secure := range []bool{true, false} {
 		http.SetCookie(w, &http.Cookie{
 			Name:     "margin_session",
@@ -609,77 +444,75 @@ func (h *Handler) HandleLogout(w http.ResponseWriter, r *http.Request) {
 			MaxAge:   -1,
 		})
 	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]bool{"success": true})
+	writeJSON(w, http.StatusOK, map[string]bool{"success": true})
 }
 
 func (h *Handler) HandleSession(w http.ResponseWriter, r *http.Request) {
 	sessionID := ""
-	cookie, err := r.Cookie("margin_session")
-	if err == nil {
+	if cookie, err := r.Cookie("margin_session"); err == nil {
 		sessionID = cookie.Value
 	} else {
 		sessionID = r.Header.Get("X-Session-Token")
 	}
-
 	if sessionID == "" {
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]interface{}{"authenticated": false})
+		writeJSON(w, http.StatusOK, map[string]any{"authenticated": false})
 		return
 	}
 
-	did, handle, _, _, _, err := h.db.GetSession(sessionID)
+	sess, err := h.db.GetOAuthSessionByID(sessionID)
 	if err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]interface{}{"authenticated": false})
+		writeJSON(w, http.StatusOK, map[string]any{"authenticated": false})
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]interface{}{
+	writeJSON(w, http.StatusOK, map[string]any{
 		"authenticated": true,
-		"did":           did,
-		"handle":        handle,
+		"did":           sess.DID,
+		"handle":        sess.Handle,
 	})
 }
 
 func (h *Handler) HandleClientMetadata(w http.ResponseWriter, r *http.Request) {
-	client := h.getDynamicClient(r)
-	baseURL := client.ClientID[:len(client.ClientID)-len("/oauth-client-metadata.json")]
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]interface{}{
-		"client_id":                       client.ClientID,
+	base := h.baseURL(r)
+	writeJSON(w, http.StatusOK, map[string]any{
+		"client_id":                       base + "/oauth-client-metadata.json",
 		"client_name":                     "Margin",
-		"client_uri":                      baseURL,
-		"logo_uri":                        baseURL + "/logo.svg",
-		"tos_uri":                         baseURL + "/terms",
-		"policy_uri":                      baseURL + "/privacy",
-		"redirect_uris":                   []string{client.RedirectURI},
+		"client_uri":                      base,
+		"logo_uri":                        base + "/logo.svg",
+		"tos_uri":                         base + "/terms",
+		"policy_uri":                      base + "/privacy",
+		"redirect_uris":                   []string{base + "/auth/callback"},
 		"grant_types":                     []string{"authorization_code", "refresh_token"},
 		"response_types":                  []string{"code"},
-		"scope":                           "atproto blob:* blob:image/jpeg blob:image/png include:at.margin.authFull repo:community.lexicon.bookmarks.bookmark",
+		"scope":                           oauthScope,
 		"token_endpoint_auth_method":      "private_key_jwt",
 		"token_endpoint_auth_signing_alg": "ES256",
 		"dpop_bound_access_tokens":        true,
-		"jwks_uri":                        baseURL + "/jwks.json",
+		"jwks_uri":                        base + "/jwks.json",
 		"application_type":                "web",
 	})
 }
 
 func (h *Handler) HandleJWKS(w http.ResponseWriter, r *http.Request) {
-	client := h.getDynamicClient(r)
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(client.GetPublicJWKS())
+	writeJSON(w, http.StatusOK, h.oauthClient(r).PublicJWKS())
 }
 
-func (h *Handler) GetPrivateKey() *ecdsa.PrivateKey {
-	return h.privateKey
+func (h *Handler) GetSigningKey() *ecdsa.PrivateKey {
+	return h.signingKey
 }
 
 func generateSessionID() string {
 	b := make([]byte, 32)
 	rand.Read(b)
 	return fmt.Sprintf("%x", b)
+}
+
+func writeJSON(w http.ResponseWriter, status int, v any) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	json.NewEncoder(w).Encode(v)
+}
+
+func writeJSONError(w http.ResponseWriter, status int, msg string) {
+	writeJSON(w, status, map[string]string{"error": msg})
 }

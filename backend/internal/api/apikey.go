@@ -579,14 +579,14 @@ func (h *APIKeyHandler) GetMe(w http.ResponseWriter, r *http.Request) {
 		WriteUnauthorized(w, "Unauthorized")
 		return
 	}
-	did, handle, _, _, _, err := h.db.GetSession(token)
+	sess, err := h.db.GetOAuthSessionByID(token)
 	if err != nil {
 		WriteUnauthorized(w, "Invalid session")
 		return
 	}
 	WriteSuccess(w, map[string]string{
-		"did":    did,
-		"handle": handle,
+		"did":    sess.DID,
+		"handle": sess.Handle,
 	})
 }
 

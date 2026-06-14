@@ -243,11 +243,13 @@ export default defineBackground(() => {
       contexts: ['page'],
     });
 
-    browser.contextMenus.create({
-      id: 'margin-open-sidebar',
-      title: 'Open Margin Sidebar',
-      contexts: ['page', 'selection', 'link'],
-    });
+    if (import.meta.env.BROWSER !== 'safari') {
+      browser.contextMenus.create({
+        id: 'margin-open-sidebar',
+        title: 'Open Margin Sidebar',
+        contexts: ['page', 'selection', 'link'],
+      });
+    }
   }
 
   browser.runtime.onInstalled.addListener(async (details) => {

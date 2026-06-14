@@ -8,11 +8,9 @@ services:
       - API_URL=http://localhost:8081
       - DATABASE_URL=postgres://margin:margin@margin-db:5432/margin?sslmode=disable
       - HOST=0.0.0.0
-      - OAUTH_KEY_PATH=/data/oauth_private_key.pem
+      - TOKEN_ENCRYPTION_KEY=${TOKEN_ENCRYPTION_KEY}
     env_file:
       - .env
-    volumes:
-      - margin-data:/data
     depends_on:
       db:
         condition: service_healthy
@@ -36,4 +34,3 @@ services:
 
 volumes:
   db-data:
-  margin-data:

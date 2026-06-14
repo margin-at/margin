@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"encoding/base64"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
@@ -26,6 +28,21 @@ import (
 	"margin.at/internal/sync"
 )
 
+func decodedTokenEncryptionKey() ([]byte, error) {
+	raw := os.Getenv("TOKEN_ENCRYPTION_KEY")
+	if raw == "" {
+		return nil, nil
+	}
+	key, err := base64.StdEncoding.DecodeString(raw)
+	if err != nil {
+		return nil, fmt.Errorf("TOKEN_ENCRYPTION_KEY: invalid base64: %w", err)
+	}
+	if len(key) != 32 {
+		return nil, fmt.Errorf("TOKEN_ENCRYPTION_KEY must decode to 32 bytes, got %d", len(key))
+	}
+	return key, nil
+}
+
 func main() {
 	godotenv.Load("../.env", ".env")
 
@@ -39,6 +56,15 @@ func main() {
 	}
 	defer database.Close()
 
+	if key, kerr := decodedTokenEncryptionKey(); kerr != nil {
+		logger.Fatal("config: %v", kerr)
+	} else if key != nil {
+		if err := database.SetEncryptionKey(key); err != nil {
+			logger.Fatal("store: set encryption key: %v", err)
+		}
+		logger.Info("store: at-rest encryption of OAuth secrets enabled")
+	}
+
 	if err := database.Migrate(); err != nil {
 		logger.Fatal("Failed to run migrations: %v", err)
 	}
@@ -50,7 +76,10 @@ func main() {
 
 		runCleanup := func() {
 			_, err := database.TryAdvisoryLock(context.Background(), db.LockSessionCleanup, func() error {
-				return database.DeleteExpiredSessions()
+				if err := database.DeleteExpiredOAuthSessions(); err != nil {
+					return err
+				}
+				return database.DeleteExpiredPendingAuthsOAuth()
 			})
 			if err != nil {
 				logger.Error("Failed to run cleanup of expired sessions: %v", err)
@@ -168,7 +197,7 @@ func main() {
 		MaxAge:           300,
 	}))
 
-	tokenRefresher := api.NewTokenRefresher(database, oauthHandler.GetPrivateKey())
+	tokenRefresher := api.NewTokenRefresher(database, oauthHandler.GetSigningKey())
 	noteWriteSvc := api.NewNoteWriteService(database, tokenRefresher)
 
 	handler := api.NewHandler(database, noteWriteSvc, tokenRefresher, syncSvc, recService, analyticsCl)

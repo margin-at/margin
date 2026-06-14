@@ -2,7 +2,6 @@ package oauth
 
 import (
 	"context"
-	"crypto"
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/rand"
@@ -11,32 +10,28 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math/big"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
-
-	"github.com/go-jose/go-jose/v4"
-	"github.com/go-jose/go-jose/v4/jwt"
-	"margin.at/internal/config"
-	"margin.at/internal/slingshot"
 )
 
-type Client struct {
-	ClientID    string
-	RedirectURI string
-	PrivateKey  *ecdsa.PrivateKey
-	PublicJWK   jose.JSONWebKey
+const clientAssertionType = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
+
+type JWK struct {
+	Crv string `json:"crv"`
+	Kty string `json:"kty"`
+	D   string `json:"d,omitempty"`
+	X   string `json:"x"`
+	Y   string `json:"y"`
 }
 
 type AuthServerMetadata struct {
-	Issuer                             string   `json:"issuer"`
-	AuthorizationEndpoint              string   `json:"authorization_endpoint"`
-	TokenEndpoint                      string   `json:"token_endpoint"`
-	PushedAuthorizationRequestEndpoint string   `json:"pushed_authorization_request_endpoint"`
-	ScopesSupported                    []string `json:"scopes_supported"`
-	ResponseTypesSupported             []string `json:"response_types_supported"`
-	DPoPSigningAlgValuesSupported      []string `json:"dpop_signing_alg_values_supported"`
+	Issuer                             string `json:"issuer"`
+	AuthorizationEndpoint              string `json:"authorization_endpoint"`
+	TokenEndpoint                      string `json:"token_endpoint"`
+	PushedAuthorizationRequestEndpoint string `json:"pushed_authorization_request_endpoint"`
 }
 
 type PARResponse struct {
@@ -53,249 +48,135 @@ type TokenResponse struct {
 	Sub          string `json:"sub"`
 }
 
-type PendingAuth struct {
-	State        string
-	DID          string
-	Handle       string
-	PDS          string
-	AuthServer   string
-	Issuer       string
-	PKCEVerifier string
-	DPoPKey      *ecdsa.PrivateKey
-	DPoPNonce    string
-	CreatedAt    time.Time
+type Client struct {
+	ClientID    string
+	RedirectURI string
+
+	signingKey *ecdsa.PrivateKey
+	signingKid string
+	http       *http.Client
 }
 
-func NewClient(clientID, redirectURI string, privateKey *ecdsa.PrivateKey) *Client {
-	publicJWK := jose.JSONWebKey{
-		Key:       &privateKey.PublicKey,
-		Algorithm: string(jose.ES256),
-		Use:       "sig",
-	}
-	thumbprint, _ := publicJWK.Thumbprint(crypto.SHA256)
-	publicJWK.KeyID = base64.RawURLEncoding.EncodeToString(thumbprint)
-
+func NewClient(clientID, redirectURI string, signingKey *ecdsa.PrivateKey) *Client {
 	return &Client{
 		ClientID:    clientID,
 		RedirectURI: redirectURI,
-		PrivateKey:  privateKey,
-		PublicJWK:   publicJWK,
+		signingKey:  signingKey,
+		signingKid:  jwkThumbprintP256(&signingKey.PublicKey),
+		http:        &http.Client{Timeout: 15 * time.Second, CheckRedirect: checkRedirect},
 	}
 }
 
-func GenerateKey() (*ecdsa.PrivateKey, error) {
+func b64u(b []byte) string { return base64.RawURLEncoding.EncodeToString(b) }
+
+func coord(i *big.Int) string { return b64u(i.FillBytes(make([]byte, 32))) }
+
+func GenerateDPoPKey() (*ecdsa.PrivateKey, error) {
 	return ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 }
 
-func (c *Client) ResolveHandle(ctx context.Context, handle string) (string, error) {
-	slingshotClient := slingshot.NewClient()
-	if identity, err := slingshotClient.ResolveIdentity(ctx, handle); err == nil && identity.DID != "" {
-		return identity.DID, nil
-	}
-
-	did, err := c.resolveHandleAt(ctx, handle, config.Get().BskyPublicAPI)
-	if err == nil {
-		return did, nil
-	}
-
-	parts := strings.Split(handle, ".")
-	if len(parts) >= 2 {
-		if len(parts) > 2 {
-			domain := strings.Join(parts[1:], ".")
-			did, err := c.resolveHandleAt(ctx, handle, fmt.Sprintf("https://%s", domain))
-			if err == nil {
-				return did, nil
-			}
-		}
-
-		did, err := c.resolveHandleAt(ctx, handle, fmt.Sprintf("https://%s", handle))
-		if err == nil {
-			return did, nil
-		}
-	}
-
-	return "", fmt.Errorf("failed to resolve handle %s: %v", handle, err)
-}
-
-func (c *Client) resolveHandleAt(ctx context.Context, handle, service string) (string, error) {
-	endpoint := fmt.Sprintf("%s/xrpc/com.atproto.identity.resolveHandle?handle=%s", strings.TrimSuffix(service, "/"), url.QueryEscape(handle))
-
-	req, err := http.NewRequestWithContext(ctx, "GET", endpoint, nil)
-	if err != nil {
-		return "", err
-	}
-
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != 200 {
-		return "", fmt.Errorf("status %d from %s", resp.StatusCode, service)
-	}
-
-	var result struct {
-		DID string `json:"did"`
-	}
-	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return "", err
-	}
-	return result.DID, nil
-}
-
-func (c *Client) ResolveDIDToPDS(ctx context.Context, did string) (string, error) {
-	var docURL string
-	if strings.HasPrefix(did, "did:plc:") {
-		docURL = config.Get().PLCResolveURL(did)
-	} else if strings.HasPrefix(did, "did:web:") {
-		domain := strings.TrimPrefix(did, "did:web:")
-		docURL = fmt.Sprintf("https://%s/.well-known/did.json", domain)
-	} else {
-		return "", fmt.Errorf("unsupported DID method: %s", did)
-	}
-
-	resp, err := http.Get(docURL)
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-
-	var doc struct {
-		Service []struct {
-			ID              string `json:"id"`
-			Type            string `json:"type"`
-			ServiceEndpoint string `json:"serviceEndpoint"`
-		} `json:"service"`
-	}
-	if err := json.NewDecoder(resp.Body).Decode(&doc); err != nil {
-		return "", err
-	}
-
-	for _, svc := range doc.Service {
-		if svc.Type == "AtprotoPersonalDataServer" {
-			return svc.ServiceEndpoint, nil
-		}
-	}
-	return "", fmt.Errorf("no PDS found in DID document")
-}
-
-func (c *Client) ResolveDIDToHandle(ctx context.Context, did string) (string, error) {
-	var docURL string
-	if strings.HasPrefix(did, "did:plc:") {
-		docURL = config.Get().PLCResolveURL(did)
-	} else if strings.HasPrefix(did, "did:web:") {
-		domain := strings.TrimPrefix(did, "did:web:")
-		docURL = fmt.Sprintf("https://%s/.well-known/did.json", domain)
-	} else {
-		return "", fmt.Errorf("unsupported DID method: %s", did)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, docURL, nil)
-	if err != nil {
-		return "", err
-	}
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-
-	var doc struct {
-		AlsoKnownAs []string `json:"alsoKnownAs"`
-	}
-	if err := json.NewDecoder(resp.Body).Decode(&doc); err != nil {
-		return "", err
-	}
-
-	for _, aka := range doc.AlsoKnownAs {
-		if handle := strings.TrimPrefix(aka, "at://"); handle != aka {
-			return handle, nil
-		}
-	}
-	return "", fmt.Errorf("no handle found in DID document")
-}
-
-func (c *Client) GetAuthServerMetadata(ctx context.Context, pds string) (*AuthServerMetadata, error) {
-	resourceURL := fmt.Sprintf("%s/.well-known/oauth-protected-resource", strings.TrimSuffix(pds, "/"))
-	resp, err := http.Get(resourceURL)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	var resource struct {
-		AuthorizationServers []string `json:"authorization_servers"`
-	}
-	if err := json.NewDecoder(resp.Body).Decode(&resource); err != nil {
-		return nil, err
-	}
-
-	if len(resource.AuthorizationServers) == 0 {
-		return nil, fmt.Errorf("no authorization servers found")
-	}
-
-	authServerURL := resource.AuthorizationServers[0]
-	metaURL := fmt.Sprintf("%s/.well-known/oauth-authorization-server", strings.TrimSuffix(authServerURL, "/"))
-
-	metaResp, err := http.Get(metaURL)
-	if err != nil {
-		return nil, err
-	}
-	defer metaResp.Body.Close()
-
-	var meta AuthServerMetadata
-	if err := json.NewDecoder(metaResp.Body).Decode(&meta); err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-func (c *Client) GetAuthServerMetadataForSignup(ctx context.Context, url string) (*AuthServerMetadata, error) {
-	url = strings.TrimSuffix(url, "/")
-
-	metaURL := fmt.Sprintf("%s/.well-known/oauth-authorization-server", url)
-	metaResp, err := http.Get(metaURL)
-	if err == nil && metaResp.StatusCode == 200 {
-		defer metaResp.Body.Close()
-		var meta AuthServerMetadata
-		if err := json.NewDecoder(metaResp.Body).Decode(&meta); err == nil && meta.Issuer != "" {
-			return &meta, nil
-		}
-	}
-	if metaResp != nil {
-		metaResp.Body.Close()
-	}
-
-	return c.GetAuthServerMetadata(ctx, url)
-}
-
-func (c *Client) GeneratePKCE() (verifier, challenge string) {
-	b := make([]byte, 32)
-	rand.Read(b)
-	verifier = base64.RawURLEncoding.EncodeToString(b)
-
-	h := sha256.Sum256([]byte(verifier))
-	challenge = base64.RawURLEncoding.EncodeToString(h[:])
-	return
-}
-
-func (c *Client) GenerateDPoPKey() (*ecdsa.PrivateKey, error) {
+func GenerateSigningKey() (*ecdsa.PrivateKey, error) {
 	return ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 }
 
-func (c *Client) CreateDPoPProof(dpopKey *ecdsa.PrivateKey, method, uri, nonce, ath string) (string, error) {
+const SigningKeyKV = "oauth_signing_key"
+
+type KVStore interface {
+	GetOrCreateEncryptedKV(key, value string) (string, error)
+}
+
+func LoadSigningKey(kv KVStore) (*ecdsa.PrivateKey, error) {
+	candidate, err := GenerateSigningKey()
+	if err != nil {
+		return nil, err
+	}
+	raw, err := json.Marshal(PrivateJWK(candidate))
+	if err != nil {
+		return nil, err
+	}
+	stored, err := kv.GetOrCreateEncryptedKV(SigningKeyKV, string(raw))
+	if err != nil {
+		return nil, err
+	}
+	var j JWK
+	if err := json.Unmarshal([]byte(stored), &j); err != nil {
+		return nil, err
+	}
+	return ParsePrivateJWK(j.Crv, j.D, j.X, j.Y)
+}
+
+func publicJWK(pub *ecdsa.PublicKey) JWK {
+	return JWK{Crv: "P-256", Kty: "EC", X: coord(pub.X), Y: coord(pub.Y)}
+}
+
+func PrivateJWK(priv *ecdsa.PrivateKey) JWK {
+	j := publicJWK(&priv.PublicKey)
+	j.D = coord(priv.D)
+	return j
+}
+
+func ParsePrivateJWK(crv, d, x, y string) (*ecdsa.PrivateKey, error) {
+	if crv != "" && crv != "P-256" {
+		return nil, fmt.Errorf("unsupported curve %q", crv)
+	}
+	db, err := base64.RawURLEncoding.DecodeString(d)
+	if err != nil {
+		return nil, fmt.Errorf("decode d: %w", err)
+	}
+	xb, err := base64.RawURLEncoding.DecodeString(x)
+	if err != nil {
+		return nil, fmt.Errorf("decode x: %w", err)
+	}
+	yb, err := base64.RawURLEncoding.DecodeString(y)
+	if err != nil {
+		return nil, fmt.Errorf("decode y: %w", err)
+	}
+	return &ecdsa.PrivateKey{
+		PublicKey: ecdsa.PublicKey{Curve: elliptic.P256(), X: new(big.Int).SetBytes(xb), Y: new(big.Int).SetBytes(yb)},
+		D:         new(big.Int).SetBytes(db),
+	}, nil
+}
+
+func jwkThumbprintP256(pub *ecdsa.PublicKey) string {
+	json := `{"crv":"P-256","kty":"EC","x":"` + coord(pub.X) + `","y":"` + coord(pub.Y) + `"}`
+	sum := sha256.Sum256([]byte(json))
+	return b64u(sum[:])
+}
+
+func signJWT(header, claims map[string]any, key *ecdsa.PrivateKey) (string, error) {
+	hb, err := json.Marshal(header)
+	if err != nil {
+		return "", err
+	}
+	cb, err := json.Marshal(claims)
+	if err != nil {
+		return "", err
+	}
+	input := b64u(hb) + "." + b64u(cb)
+	sum := sha256.Sum256([]byte(input))
+	r, s, err := ecdsa.Sign(rand.Reader, key, sum[:])
+	if err != nil {
+		return "", err
+	}
+	var rb, sb [32]byte
+	r.FillBytes(rb[:])
+	s.FillBytes(sb[:])
+	return input + "." + b64u(append(rb[:], sb[:]...)), nil
+}
+
+func (c *Client) dpopProof(key *ecdsa.PrivateKey, method, uri, nonce, ath string) (string, error) {
 	now := time.Now()
 	jti := make([]byte, 16)
-	rand.Read(jti)
-
-	publicJWK := jose.JSONWebKey{
-		Key:       &dpopKey.PublicKey,
-		Algorithm: string(jose.ES256),
+	if _, err := io.ReadFull(rand.Reader, jti); err != nil {
+		return "", err
 	}
-
-	claims := map[string]interface{}{
-		"jti": base64.RawURLEncoding.EncodeToString(jti),
+	header := map[string]any{
+		"typ": "dpop+jwt",
+		"alg": "ES256",
+		"jwk": publicJWK(&key.PublicKey),
+	}
+	claims := map[string]any{
+		"jti": b64u(jti),
 		"htm": method,
 		"htu": uri,
 		"iat": now.Add(-30 * time.Second).Unix(),
@@ -307,251 +188,337 @@ func (c *Client) CreateDPoPProof(dpopKey *ecdsa.PrivateKey, method, uri, nonce, 
 	if ath != "" {
 		claims["ath"] = ath
 	}
-
-	signer, err := jose.NewSigner(jose.SigningKey{Algorithm: jose.ES256, Key: dpopKey}, &jose.SignerOptions{
-		ExtraHeaders: map[jose.HeaderKey]interface{}{
-			"typ": "dpop+jwt",
-			"jwk": publicJWK,
-		},
-	})
-	if err != nil {
-		return "", err
-	}
-
-	claimsBytes, _ := json.Marshal(claims)
-	sig, err := signer.Sign(claimsBytes)
-	if err != nil {
-		return "", err
-	}
-
-	return sig.CompactSerialize()
+	return signJWT(header, claims, key)
 }
 
-func (c *Client) CreateClientAssertion(issuer string) (string, error) {
+func (c *Client) clientAssertion(issuer string) (string, error) {
 	now := time.Now()
 	jti := make([]byte, 16)
-	rand.Read(jti)
-
-	claims := jwt.Claims{
-		Issuer:   c.ClientID,
-		Subject:  c.ClientID,
-		Audience: jwt.Audience{issuer},
-		IssuedAt: jwt.NewNumericDate(now.Add(-30 * time.Second)),
-		Expiry:   jwt.NewNumericDate(now.Add(5 * time.Minute)),
-		ID:       base64.RawURLEncoding.EncodeToString(jti),
-	}
-
-	signer, err := jose.NewSigner(jose.SigningKey{Algorithm: jose.ES256, Key: c.PrivateKey}, &jose.SignerOptions{
-		ExtraHeaders: map[jose.HeaderKey]interface{}{
-			"kid": c.PublicJWK.KeyID,
-		},
-	})
-	if err != nil {
+	if _, err := io.ReadFull(rand.Reader, jti); err != nil {
 		return "", err
 	}
-
-	return jwt.Signed(signer).Claims(claims).Serialize()
+	header := map[string]any{"alg": "ES256", "kid": c.signingKid}
+	claims := map[string]any{
+		"iss": c.ClientID,
+		"sub": c.ClientID,
+		"aud": issuer,
+		"iat": now.Add(-30 * time.Second).Unix(),
+		"exp": now.Add(5 * time.Minute).Unix(),
+		"jti": b64u(jti),
+	}
+	return signJWT(header, claims, c.signingKey)
 }
 
-func (c *Client) SendPAR(meta *AuthServerMetadata, loginHint, scope string, dpopKey *ecdsa.PrivateKey, pkceChallenge string) (*PARResponse, string, string, error) {
-	return c.SendPARWithPrompt(meta, loginHint, scope, dpopKey, pkceChallenge, "")
+func GeneratePKCE() (verifier, challenge string) {
+	b := make([]byte, 32)
+	_, _ = io.ReadFull(rand.Reader, b)
+	verifier = b64u(b)
+	sum := sha256.Sum256([]byte(verifier))
+	challenge = b64u(sum[:])
+	return
 }
 
-func (c *Client) SendPARWithPrompt(meta *AuthServerMetadata, loginHint, scope string, dpopKey *ecdsa.PrivateKey, pkceChallenge, prompt string) (*PARResponse, string, string, error) {
-	stateBytes := make([]byte, 16)
-	rand.Read(stateBytes)
-	state := base64.RawURLEncoding.EncodeToString(stateBytes)
+func randomState() string {
+	b := make([]byte, 16)
+	_, _ = io.ReadFull(rand.Reader, b)
+	return b64u(b)
+}
 
-	parResp, dpopNonce, err := c.sendPARRequest(meta, loginHint, scope, dpopKey, pkceChallenge, state, "", prompt)
-	if err != nil {
+func (c *Client) PublicJWKS() map[string]any {
+	pub := publicJWK(&c.signingKey.PublicKey)
+	return map[string]any{
+		"keys": []any{
+			map[string]any{
+				"kty": "EC", "crv": "P-256", "x": pub.X, "y": pub.Y,
+				"use": "sig", "alg": "ES256", "kid": c.signingKid,
+			},
+		},
+	}
+}
 
-		if strings.Contains(err.Error(), "use_dpop_nonce") && dpopNonce != "" {
-
-			parResp, dpopNonce, err = c.sendPARRequest(meta, loginHint, scope, dpopKey, pkceChallenge, state, dpopNonce, prompt)
-			if err != nil {
-				return nil, "", "", err
-			}
-		} else {
-			return nil, "", "", err
+func (c *Client) ResolveHandle(ctx context.Context, handle string) (string, error) {
+	handle = strings.TrimPrefix(strings.ToLower(strings.TrimSpace(handle)), "@")
+	if did, err := c.resolveHandleAt(ctx, "https://public.api.bsky.app", handle); err == nil && strings.HasPrefix(did, "did:") {
+		return did, nil
+	}
+	candidates := []string{"https://" + handle}
+	if parts := strings.Split(handle, "."); len(parts) > 2 {
+		candidates = append(candidates, "https://"+strings.Join(parts[1:], "."))
+	}
+	for _, svc := range candidates {
+		if did, err := c.resolveHandleAt(ctx, svc, handle); err == nil && strings.HasPrefix(did, "did:") {
+			return did, nil
 		}
 	}
-
-	return parResp, state, dpopNonce, nil
+	return "", fmt.Errorf("could not resolve handle %q", handle)
 }
 
-func (c *Client) sendPARRequest(meta *AuthServerMetadata, loginHint, scope string, dpopKey *ecdsa.PrivateKey, pkceChallenge, state, dpopNonce, prompt string) (*PARResponse, string, error) {
-	dpopProof, err := c.CreateDPoPProof(dpopKey, "POST", meta.PushedAuthorizationRequestEndpoint, dpopNonce, "")
-	if err != nil {
-		return nil, "", err
+func (c *Client) resolveHandleAt(ctx context.Context, service, handle string) (string, error) {
+	service = strings.TrimRight(service, "/")
+	if service != "https://public.api.bsky.app" {
+		if err := validatePDSURL(service); err != nil {
+			return "", err
+		}
 	}
-
-	clientAssertion, err := c.CreateClientAssertion(meta.Issuer)
-	if err != nil {
-		return nil, "", err
+	u := service + "/xrpc/com.atproto.identity.resolveHandle?handle=" + url.QueryEscape(handle)
+	var out struct {
+		DID string `json:"did"`
 	}
+	if err := c.getJSON(ctx, u, &out); err != nil {
+		return "", err
+	}
+	return out.DID, nil
+}
 
-	data := url.Values{}
-	data.Set("client_id", c.ClientID)
-	data.Set("redirect_uri", c.RedirectURI)
-	data.Set("response_type", "code")
-	data.Set("scope", scope)
-	data.Set("state", state)
-	data.Set("code_challenge", pkceChallenge)
-	data.Set("code_challenge_method", "S256")
-	data.Set("client_assertion_type", "urn:ietf:params:oauth:client-assertion-type:jwt-bearer")
-	data.Set("client_assertion", clientAssertion)
+func (c *Client) ResolveDIDToPDS(ctx context.Context, did string) (string, error) {
+	var docURL string
+	switch {
+	case strings.HasPrefix(did, "did:plc:"):
+		docURL = "https://plc.directory/" + did
+	case strings.HasPrefix(did, "did:web:"):
+		domain := strings.TrimPrefix(did, "did:web:")
+		host := domain
+		if i := strings.IndexByte(host, ':'); i >= 0 {
+			host = host[:i]
+		}
+		if err := validatePDSURL("https://" + host); err != nil {
+			return "", err
+		}
+		docURL = "https://" + strings.ReplaceAll(domain, ":", "/") + "/.well-known/did.json"
+	default:
+		return "", fmt.Errorf("unsupported DID method: %s", did)
+	}
+	var doc struct {
+		Service []struct {
+			Type            string `json:"type"`
+			ServiceEndpoint string `json:"serviceEndpoint"`
+		} `json:"service"`
+	}
+	if err := c.getJSON(ctx, docURL, &doc); err != nil {
+		return "", err
+	}
+	for _, svc := range doc.Service {
+		if svc.Type == "AtprotoPersonalDataServer" {
+			if err := validatePDSURL(svc.ServiceEndpoint); err != nil {
+				return "", err
+			}
+			return strings.TrimRight(svc.ServiceEndpoint, "/"), nil
+		}
+	}
+	return "", fmt.Errorf("no PDS found in DID document")
+}
+
+func (c *Client) ResolveDIDToHandle(ctx context.Context, did string) (string, error) {
+	var docURL string
+	switch {
+	case strings.HasPrefix(did, "did:plc:"):
+		docURL = "https://plc.directory/" + did
+	case strings.HasPrefix(did, "did:web:"):
+		domain := strings.TrimPrefix(did, "did:web:")
+		host := domain
+		if i := strings.IndexByte(host, ':'); i >= 0 {
+			host = host[:i]
+		}
+		if err := validatePDSURL("https://" + host); err != nil {
+			return "", err
+		}
+		docURL = "https://" + strings.ReplaceAll(domain, ":", "/") + "/.well-known/did.json"
+	default:
+		return "", fmt.Errorf("unsupported DID method: %s", did)
+	}
+	var doc struct {
+		AlsoKnownAs []string `json:"alsoKnownAs"`
+	}
+	if err := c.getJSON(ctx, docURL, &doc); err != nil {
+		return "", err
+	}
+	for _, aka := range doc.AlsoKnownAs {
+		if handle := strings.TrimPrefix(aka, "at://"); handle != aka {
+			return handle, nil
+		}
+	}
+	return "", fmt.Errorf("no handle found in DID document")
+}
+
+func (c *Client) GetAuthServerMetadata(ctx context.Context, pdsURL string) (*AuthServerMetadata, error) {
+	if err := validatePDSURL(pdsURL); err != nil {
+		return nil, err
+	}
+	var resource struct {
+		AuthorizationServers []string `json:"authorization_servers"`
+	}
+	if err := c.getJSON(ctx, strings.TrimRight(pdsURL, "/")+"/.well-known/oauth-protected-resource", &resource); err != nil {
+		return nil, err
+	}
+	if len(resource.AuthorizationServers) == 0 {
+		return nil, fmt.Errorf("no authorization servers found")
+	}
+	authServer := resource.AuthorizationServers[0]
+	if err := validatePDSURL(authServer); err != nil {
+		return nil, err
+	}
+	return c.fetchAuthMeta(ctx, authServer)
+}
+
+func (c *Client) GetAuthServerMetadataForSignup(ctx context.Context, rawURL string) (*AuthServerMetadata, error) {
+	if err := validatePDSURL(rawURL); err != nil {
+		return nil, err
+	}
+	if meta, err := c.fetchAuthMeta(ctx, rawURL); err == nil {
+		return meta, nil
+	}
+	return c.GetAuthServerMetadata(ctx, rawURL)
+}
+
+func (c *Client) fetchAuthMeta(ctx context.Context, authServer string) (*AuthServerMetadata, error) {
+	var meta AuthServerMetadata
+	if err := c.getJSON(ctx, strings.TrimRight(authServer, "/")+"/.well-known/oauth-authorization-server", &meta); err != nil {
+		return nil, err
+	}
+	if meta.Issuer == "" || meta.TokenEndpoint == "" || meta.AuthorizationEndpoint == "" || meta.PushedAuthorizationRequestEndpoint == "" {
+		return nil, fmt.Errorf("incomplete auth server metadata")
+	}
+	return &meta, nil
+}
+
+func (c *Client) getJSON(ctx context.Context, u string, dst any) error {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
+	if err != nil {
+		return err
+	}
+	resp, err := c.http.Do(req)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = resp.Body.Close() }()
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("GET %s: %d", u, resp.StatusCode)
+	}
+	return json.NewDecoder(resp.Body).Decode(dst)
+}
+
+func (c *Client) SendPAR(ctx context.Context, meta *AuthServerMetadata, loginHint, scope string, dpopKey *ecdsa.PrivateKey, challenge string) (*PARResponse, string, string, error) {
+	return c.SendPARWithPrompt(ctx, meta, loginHint, scope, dpopKey, challenge, "")
+}
+
+func (c *Client) SendPARWithPrompt(ctx context.Context, meta *AuthServerMetadata, loginHint, scope string, dpopKey *ecdsa.PrivateKey, challenge, prompt string) (*PARResponse, string, string, error) {
+	state := randomState()
+	assertion, err := c.clientAssertion(meta.Issuer)
+	if err != nil {
+		return nil, "", "", err
+	}
+	form := url.Values{}
+	form.Set("client_id", c.ClientID)
+	form.Set("redirect_uri", c.RedirectURI)
+	form.Set("response_type", "code")
+	form.Set("scope", scope)
+	form.Set("state", state)
+	form.Set("code_challenge", challenge)
+	form.Set("code_challenge_method", "S256")
+	form.Set("client_assertion_type", clientAssertionType)
+	form.Set("client_assertion", assertion)
 	if loginHint != "" {
-		data.Set("login_hint", loginHint)
+		form.Set("login_hint", loginHint)
 	}
 	if prompt != "" {
-		data.Set("prompt", prompt)
+		form.Set("prompt", prompt)
 	}
-
-	req, err := http.NewRequest("POST", meta.PushedAuthorizationRequestEndpoint, strings.NewReader(data.Encode()))
+	body, nonce, err := c.formPOST(ctx, meta.PushedAuthorizationRequestEndpoint, form, dpopKey, "", "")
 	if err != nil {
-		return nil, "", err
+		return nil, "", nonce, err
 	}
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Set("DPoP", dpopProof)
-
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return nil, "", err
+	var par PARResponse
+	if err := json.Unmarshal(body, &par); err != nil {
+		return nil, "", nonce, err
 	}
-	defer resp.Body.Close()
-
-	responseNonce := resp.Header.Get("DPoP-Nonce")
-
-	if resp.StatusCode != 200 && resp.StatusCode != 201 {
-		body, _ := io.ReadAll(resp.Body)
-		return nil, responseNonce, fmt.Errorf("PAR failed: %d - %s", resp.StatusCode, string(body))
-	}
-
-	var parResp PARResponse
-	if err := json.NewDecoder(resp.Body).Decode(&parResp); err != nil {
-		return nil, responseNonce, err
-	}
-
-	return &parResp, responseNonce, nil
+	return &par, state, nonce, nil
 }
 
-func (c *Client) ExchangeCode(meta *AuthServerMetadata, code, pkceVerifier string, dpopKey *ecdsa.PrivateKey, dpopNonce string) (*TokenResponse, string, error) {
-	return c.exchangeCodeInternal(meta, code, pkceVerifier, dpopKey, dpopNonce, false)
+func (c *Client) AuthorizeURL(meta *AuthServerMetadata, requestURI string) string {
+	u, _ := url.Parse(meta.AuthorizationEndpoint)
+	q := u.Query()
+	q.Set("client_id", c.ClientID)
+	q.Set("request_uri", requestURI)
+	u.RawQuery = q.Encode()
+	return u.String()
 }
 
-func (c *Client) exchangeCodeInternal(meta *AuthServerMetadata, code, pkceVerifier string, dpopKey *ecdsa.PrivateKey, dpopNonce string, isRetry bool) (*TokenResponse, string, error) {
-	accessTokenHash := ""
-	dpopProof, err := c.CreateDPoPProof(dpopKey, "POST", meta.TokenEndpoint, dpopNonce, accessTokenHash)
+func (c *Client) ExchangeCode(ctx context.Context, meta *AuthServerMetadata, code, verifier string, dpopKey *ecdsa.PrivateKey, initialNonce string) (*TokenResponse, error) {
+	assertion, err := c.clientAssertion(meta.Issuer)
 	if err != nil {
-		return nil, "", err
+		return nil, err
 	}
-
-	clientAssertion, err := c.CreateClientAssertion(meta.Issuer)
+	form := url.Values{}
+	form.Set("grant_type", "authorization_code")
+	form.Set("code", code)
+	form.Set("redirect_uri", c.RedirectURI)
+	form.Set("client_id", c.ClientID)
+	form.Set("code_verifier", verifier)
+	form.Set("client_assertion_type", clientAssertionType)
+	form.Set("client_assertion", assertion)
+	body, _, err := c.formPOST(ctx, meta.TokenEndpoint, form, dpopKey, "", initialNonce)
 	if err != nil {
-		return nil, "", err
+		return nil, err
 	}
+	var tok TokenResponse
+	if err := json.Unmarshal(body, &tok); err != nil {
+		return nil, err
+	}
+	return &tok, nil
+}
 
-	data := url.Values{}
-	data.Set("grant_type", "authorization_code")
-	data.Set("code", code)
-	data.Set("redirect_uri", c.RedirectURI)
-	data.Set("client_id", c.ClientID)
-	data.Set("code_verifier", pkceVerifier)
-	data.Set("client_assertion_type", "urn:ietf:params:oauth:client-assertion-type:jwt-bearer")
-	data.Set("client_assertion", clientAssertion)
-
-	req, err := http.NewRequest("POST", meta.TokenEndpoint, strings.NewReader(data.Encode()))
+func (c *Client) RefreshToken(ctx context.Context, meta *AuthServerMetadata, refreshToken string, dpopKey *ecdsa.PrivateKey) (*TokenResponse, error) {
+	assertion, err := c.clientAssertion(meta.Issuer)
 	if err != nil {
-		return nil, "", err
+		return nil, err
 	}
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Set("DPoP", dpopProof)
-
-	resp, err := http.DefaultClient.Do(req)
+	form := url.Values{}
+	form.Set("grant_type", "refresh_token")
+	form.Set("refresh_token", refreshToken)
+	form.Set("client_id", c.ClientID)
+	form.Set("client_assertion_type", clientAssertionType)
+	form.Set("client_assertion", assertion)
+	body, _, err := c.formPOST(ctx, meta.TokenEndpoint, form, dpopKey, "", "")
 	if err != nil {
-		return nil, "", err
+		return nil, err
 	}
-	defer resp.Body.Close()
+	var tok TokenResponse
+	if err := json.Unmarshal(body, &tok); err != nil {
+		return nil, err
+	}
+	return &tok, nil
+}
 
-	newNonce := resp.Header.Get("DPoP-Nonce")
-
-	if resp.StatusCode != 200 {
-		body, _ := io.ReadAll(resp.Body)
-		bodyStr := string(body)
-
-		if !isRetry && strings.Contains(bodyStr, "use_dpop_nonce") && newNonce != "" {
-			return c.exchangeCodeInternal(meta, code, pkceVerifier, dpopKey, newNonce, true)
+func (c *Client) formPOST(ctx context.Context, endpoint string, form url.Values, dpopKey *ecdsa.PrivateKey, ath, initialNonce string) ([]byte, string, error) {
+	nonce := initialNonce
+	encoded := form.Encode()
+	for attempt := 0; attempt < 2; attempt++ {
+		proof, err := c.dpopProof(dpopKey, http.MethodPost, endpoint, nonce, ath)
+		if err != nil {
+			return nil, nonce, err
 		}
-
-		return nil, newNonce, fmt.Errorf("token exchange failed: %d - %s", resp.StatusCode, bodyStr)
-	}
-
-	var tokenResp TokenResponse
-	if err := json.NewDecoder(resp.Body).Decode(&tokenResp); err != nil {
-		return nil, newNonce, err
-	}
-
-	return &tokenResp, newNonce, nil
-}
-
-func (c *Client) RefreshToken(meta *AuthServerMetadata, refreshToken string, dpopKey *ecdsa.PrivateKey, dpopNonce string) (*TokenResponse, string, error) {
-	return c.refreshTokenInternal(meta, refreshToken, dpopKey, dpopNonce, false)
-}
-
-func (c *Client) refreshTokenInternal(meta *AuthServerMetadata, refreshToken string, dpopKey *ecdsa.PrivateKey, dpopNonce string, isRetry bool) (*TokenResponse, string, error) {
-	dpopProof, err := c.CreateDPoPProof(dpopKey, "POST", meta.TokenEndpoint, dpopNonce, "")
-	if err != nil {
-		return nil, "", err
-	}
-
-	clientAssertion, err := c.CreateClientAssertion(meta.Issuer)
-	if err != nil {
-		return nil, "", err
-	}
-
-	data := url.Values{}
-	data.Set("grant_type", "refresh_token")
-	data.Set("refresh_token", refreshToken)
-	data.Set("client_id", c.ClientID)
-	data.Set("client_assertion_type", "urn:ietf:params:oauth:client-assertion-type:jwt-bearer")
-	data.Set("client_assertion", clientAssertion)
-
-	req, err := http.NewRequest("POST", meta.TokenEndpoint, strings.NewReader(data.Encode()))
-	if err != nil {
-		return nil, "", err
-	}
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Set("DPoP", dpopProof)
-
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return nil, "", err
-	}
-	defer resp.Body.Close()
-
-	newNonce := resp.Header.Get("DPoP-Nonce")
-
-	if resp.StatusCode != 200 {
-		body, _ := io.ReadAll(resp.Body)
-		bodyStr := string(body)
-
-		if !isRetry && strings.Contains(bodyStr, "use_dpop_nonce") && newNonce != "" {
-			return c.refreshTokenInternal(meta, refreshToken, dpopKey, newNonce, true)
+		req, err := http.NewRequestWithContext(ctx, http.MethodPost, endpoint, strings.NewReader(encoded))
+		if err != nil {
+			return nil, nonce, err
 		}
-
-		return nil, newNonce, fmt.Errorf("refresh failed: %d - %s", resp.StatusCode, bodyStr)
+		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+		req.Header.Set("DPoP", proof)
+		resp, err := c.http.Do(req)
+		if err != nil {
+			return nil, nonce, err
+		}
+		body, _ := io.ReadAll(resp.Body)
+		_ = resp.Body.Close()
+		if n := resp.Header.Get("DPoP-Nonce"); n != "" {
+			nonce = n
+		}
+		if resp.StatusCode == http.StatusOK || resp.StatusCode == http.StatusCreated {
+			return body, nonce, nil
+		}
+		if attempt == 0 && nonce != "" && strings.Contains(string(body), "use_dpop_nonce") {
+			continue
+		}
+		return nil, nonce, fmt.Errorf("oauth %s: %d: %s", endpoint, resp.StatusCode, string(body))
 	}
-
-	var tokenResp TokenResponse
-	if err := json.NewDecoder(resp.Body).Decode(&tokenResp); err != nil {
-		return nil, newNonce, err
-	}
-
-	return &tokenResp, newNonce, nil
-}
-
-func (c *Client) GetPublicJWKS() map[string]interface{} {
-	return map[string]interface{}{
-		"keys": []interface{}{c.PublicJWK},
-	}
+	return nil, nonce, fmt.Errorf("oauth %s: failed after nonce retry", endpoint)
 }

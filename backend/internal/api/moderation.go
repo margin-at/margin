@@ -624,11 +624,11 @@ func (m *ModerationHandler) getViewerDID(r *http.Request) string {
 	if err != nil {
 		return ""
 	}
-	did, _, _, _, _, err := m.db.GetSession(cookie.Value)
+	sess, err := m.db.GetOAuthSessionByID(cookie.Value)
 	if err != nil {
 		return ""
 	}
-	return did
+	return sess.DID
 }
 
 func (m *ModerationHandler) GetLabelerInfo(w http.ResponseWriter, r *http.Request) {
@@ -683,7 +683,7 @@ func (m *ModerationHandler) AdminBanAccount(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	m.db.DeleteSessionsByDID(req.DID)
+	m.db.DeleteOAuthSessionsByDID(req.DID)
 
 	WriteSuccess(w, map[string]string{"status": "ok"})
 }

@@ -4,12 +4,11 @@ import (
 	"bytes"
 	"context"
 	"crypto/ecdsa"
-	"crypto/x509"
-	"encoding/pem"
 	"errors"
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"margin.at/internal/db"
@@ -22,36 +21,32 @@ var ErrSessionInvalid = errors.New("session invalid")
 
 type TokenRefresher struct {
 	db         *db.DB
-	privateKey *ecdsa.PrivateKey
+	signingKey *ecdsa.PrivateKey
 	baseURL    string
 }
 
-func NewTokenRefresher(database *db.DB, privateKey *ecdsa.PrivateKey) *TokenRefresher {
+func NewTokenRefresher(database *db.DB, signingKey *ecdsa.PrivateKey) *TokenRefresher {
 	return &TokenRefresher{
 		db:         database,
-		privateKey: privateKey,
-		baseURL:    os.Getenv("BASE_URL"),
+		signingKey: signingKey,
+		baseURL:    strings.TrimRight(os.Getenv("BASE_URL"), "/"),
 	}
 }
 
-func (tr *TokenRefresher) getOAuthClient(r *http.Request) *oauth.Client {
-	baseURL := tr.baseURL
-	if baseURL == "" {
+func (tr *TokenRefresher) oauthClient(r *http.Request) *oauth.Client {
+	base := tr.baseURL
+	if base == "" {
 		scheme := "http"
 		if r.TLS != nil || r.Header.Get("X-Forwarded-Proto") == "https" {
 			scheme = "https"
 		}
-		baseURL = fmt.Sprintf("%s://%s", scheme, r.Host)
+		host := r.Header.Get("X-Forwarded-Host")
+		if host == "" {
+			host = r.Host
+		}
+		base = strings.TrimRight(fmt.Sprintf("%s://%s", scheme, host), "/")
 	}
-
-	if len(baseURL) > 0 && baseURL[len(baseURL)-1] == '/' {
-		baseURL = baseURL[:len(baseURL)-1]
-	}
-
-	clientID := baseURL + "/oauth-client-metadata.json"
-	redirectURI := baseURL + "/auth/callback"
-
-	return oauth.NewClient(clientID, redirectURI, tr.privateKey)
+	return oauth.NewClient(base+"/oauth-client-metadata.json", base+"/auth/callback", tr.signingKey)
 }
 
 type SessionData struct {
@@ -64,109 +59,102 @@ type SessionData struct {
 	PDS          string
 }
 
+func sessionFromRow(s db.OAuthSessionRow) (*SessionData, error) {
+	dpopKey, err := oauth.ParsePrivateJWK(s.DPoP.Crv, s.DPoP.D, s.DPoP.X, s.DPoP.Y)
+	if err != nil {
+		return nil, err
+	}
+	return &SessionData{
+		ID:           s.ID,
+		DID:          s.DID,
+		Handle:       s.Handle,
+		AccessToken:  s.AccessToken,
+		RefreshToken: s.RefreshToken,
+		DPoPKey:      dpopKey,
+		PDS:          s.PDS,
+	}, nil
+}
+
 func (tr *TokenRefresher) GetSessionWithAutoRefresh(r *http.Request) (*SessionData, error) {
 	sessionID := ""
-
-	cookie, err := r.Cookie("margin_session")
-	if err == nil {
+	if cookie, err := r.Cookie("margin_session"); err == nil {
 		sessionID = cookie.Value
 	} else {
 		sessionID = r.Header.Get("X-Session-Token")
 	}
-
 	if sessionID == "" {
 		return nil, fmt.Errorf("not authenticated")
 	}
 
-	did, handle, accessToken, refreshToken, dpopKeyStr, err := tr.db.GetSession(sessionID)
+	sess, err := tr.db.GetOAuthSessionByID(sessionID)
 	if err != nil {
-		tr.db.DeleteSession(sessionID)
 		return nil, fmt.Errorf("%w: session expired", ErrSessionInvalid)
 	}
 
-	block, _ := pem.Decode([]byte(dpopKeyStr))
-	if block == nil {
-		tr.db.DeleteSession(sessionID)
-		return nil, fmt.Errorf("%w: invalid DPoP key", ErrSessionInvalid)
-	}
-	dpopKey, err := x509.ParseECPrivateKey(block.Bytes)
-	if err != nil {
-		tr.db.DeleteSession(sessionID)
-		return nil, fmt.Errorf("%w: invalid DPoP key", ErrSessionInvalid)
-	}
-
-	pds, err := xrpc.ResolveDIDToPDS(did)
-	if err != nil {
-		return nil, fmt.Errorf("failed to resolve PDS")
+	if time.Until(sess.AccessTokenExpiresAt) < time.Minute {
+		refreshed, rerr := tr.refreshSession(r, sessionID)
+		if rerr != nil {
+			logger.Error("Proactive token refresh failed for %s: %v", sess.DID, rerr)
+			tr.db.DeleteOAuthSession(sessionID)
+			return nil, fmt.Errorf("%w: %v", ErrSessionInvalid, rerr)
+		}
+		return refreshed, nil
 	}
 
-	return &SessionData{
-		ID:           sessionID,
-		DID:          did,
-		Handle:       handle,
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
-		DPoPKey:      dpopKey,
-		PDS:          pds,
-	}, nil
+	return sessionFromRow(sess)
 }
 
-func (tr *TokenRefresher) RefreshSessionToken(r *http.Request, session *SessionData) (*SessionData, error) {
-	if session.ID == "" {
-		return nil, fmt.Errorf("invalid session ID")
-	}
+func (tr *TokenRefresher) refreshSession(r *http.Request, sessionID string) (*SessionData, error) {
+	var result *SessionData
 
-	oauthClient := tr.getOAuthClient(r)
-	ctx := context.Background()
+	lockErr := tr.db.WithAdvisoryLock(context.Background(), "oauth_refresh:"+sessionID, func(ctx context.Context) error {
+		fresh, err := tr.db.GetOAuthSessionByID(sessionID)
+		if err != nil {
+			return err
+		}
+		if time.Until(fresh.AccessTokenExpiresAt) >= time.Minute {
+			result, err = sessionFromRow(fresh)
+			return err
+		}
 
-	meta, err := oauthClient.GetAuthServerMetadata(ctx, session.PDS)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get auth server metadata: %w", err)
-	}
+		dpopKey, err := oauth.ParsePrivateJWK(fresh.DPoP.Crv, fresh.DPoP.D, fresh.DPoP.X, fresh.DPoP.Y)
+		if err != nil {
+			return err
+		}
+		meta := &oauth.AuthServerMetadata{Issuer: fresh.Issuer, TokenEndpoint: fresh.TokenEndpoint}
+		tok, err := tr.oauthClient(r).RefreshToken(ctx, meta, fresh.RefreshToken, dpopKey)
+		if err != nil {
+			return err
+		}
 
-	tokenResp, _, err := oauthClient.RefreshToken(meta, session.RefreshToken, session.DPoPKey, "")
-	if err != nil {
-		return nil, fmt.Errorf("failed to refresh token: %w", err)
-	}
+		newRefresh := tok.RefreshToken
+		if newRefresh == "" {
+			newRefresh = fresh.RefreshToken
+		}
+		atExpiry := time.Now().Add(time.Hour)
+		if tok.ExpiresIn > 0 {
+			atExpiry = time.Now().Add(time.Duration(tok.ExpiresIn) * time.Second)
+		}
+		if err := tr.db.UpdateOAuthSessionTokens(sessionID, tok.AccessToken, newRefresh, atExpiry); err != nil {
+			logger.Error("persist refreshed tokens for %s: %v", fresh.DID, err)
+		}
 
-	dpopKeyBytes, err := x509.MarshalECPrivateKey(session.DPoPKey)
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal DPoP key: %w", err)
-	}
-	dpopKeyPEM := pem.EncodeToMemory(&pem.Block{
-		Type:  "EC PRIVATE KEY",
-		Bytes: dpopKeyBytes,
+		result = &SessionData{
+			ID:           sessionID,
+			DID:          fresh.DID,
+			Handle:       fresh.Handle,
+			AccessToken:  tok.AccessToken,
+			RefreshToken: newRefresh,
+			DPoPKey:      dpopKey,
+			PDS:          fresh.PDS,
+		}
+		logger.Info("Successfully refreshed token for user %s", fresh.Handle)
+		return nil
 	})
-
-	newRefreshToken := tokenResp.RefreshToken
-	if newRefreshToken == "" {
-		newRefreshToken = session.RefreshToken
+	if lockErr != nil {
+		return nil, lockErr
 	}
-
-	expiresAt := time.Now().Add(7 * 24 * time.Hour)
-	if err := tr.db.SaveSession(
-		session.ID,
-		session.DID,
-		session.Handle,
-		tokenResp.AccessToken,
-		newRefreshToken,
-		string(dpopKeyPEM),
-		expiresAt,
-	); err != nil {
-		return nil, fmt.Errorf("failed to save refreshed session: %w", err)
-	}
-
-	logger.Info("Successfully refreshed token for user %s", session.Handle)
-
-	return &SessionData{
-		ID:           session.ID,
-		DID:          session.DID,
-		Handle:       session.Handle,
-		AccessToken:  tokenResp.AccessToken,
-		RefreshToken: newRefreshToken,
-		DPoPKey:      session.DPoPKey,
-		PDS:          session.PDS,
-	}, nil
+	return result, nil
 }
 
 func IsTokenExpiredError(err error) bool {
@@ -192,17 +180,16 @@ func (tr *TokenRefresher) ExecuteWithAutoRefresh(
 	if err == nil {
 		return nil
 	}
-
 	if !IsTokenExpiredError(err) {
 		return err
 	}
 
 	logger.Info("Token expired for user %s, attempting refresh...", session.Handle)
 
-	newSession, refreshErr := tr.RefreshSessionToken(r, session)
+	newSession, refreshErr := tr.refreshSession(r, session.ID)
 	if refreshErr != nil {
 		logger.Error("Token refresh failed for user %s, invalidating session: %v", session.Handle, refreshErr)
-		tr.db.DeleteSession(session.ID)
+		tr.db.DeleteOAuthSession(session.ID)
 		return fmt.Errorf("%w: %v", ErrSessionInvalid, refreshErr)
 	}
 

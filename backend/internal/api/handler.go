@@ -1366,11 +1366,11 @@ func (h *Handler) getViewerDID(r *http.Request) string {
 	if err != nil {
 		return ""
 	}
-	did, _, _, _, _, err := h.sessionRepo.GetSession(r.Context(), cookie.Value)
+	sess, err := h.db.GetOAuthSessionByID(cookie.Value)
 	if err != nil {
 		return ""
 	}
-	return did
+	return sess.DID
 }
 
 type fullProfileRepository struct {
