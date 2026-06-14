@@ -19,7 +19,7 @@ func (r *CollectionRepository) GetCollectionsForNoteURIs(ctx context.Context, no
 	if len(noteURIs) == 0 {
 		return map[string]domain.Collection{}, nil
 	}
-	rows, err := r.db.QueryContext(ctx, `
+	rows, err := r.db.Query(ctx, `
 		SELECT DISTINCT ON (ci.annotation_uri)
 			ci.annotation_uri,
 			c.uri, c.author_did, c.name, c.description, c.icon, c.created_at, c.indexed_at

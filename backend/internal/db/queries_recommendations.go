@@ -1,11 +1,14 @@
 package db
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
 	"time"
+
+	"margin.at/internal/db/sqlcdb"
 )
 
 type Document struct {
@@ -54,114 +57,120 @@ type UserProfile struct {
 	UpdatedAt       time.Time `json:"updatedAt"`
 }
 
-func (db *DB) UpsertPublication(p *Publication) error {
-	query := `
-		INSERT INTO publications (uri, author_did, url, name, description, show_in_discover, indexed_at)
-		VALUES ($1, $2, $3, $4, $5, $6, $7)
-		ON CONFLICT(uri) DO UPDATE SET
-			name = EXCLUDED.name,
-			description = EXCLUDED.description,
-			show_in_discover = EXCLUDED.show_in_discover,
-			indexed_at = EXCLUDED.indexed_at
-	`
-	_, err := db.Exec(query, p.URI, p.AuthorDID, p.URL, p.Name, p.Description, p.ShowInDiscover, p.IndexedAt)
-	return err
+func (db *DB) UpsertPublication(ctx context.Context, p *Publication) error {
+	return db.q.UpsertPublication(ctx, sqlcdb.UpsertPublicationParams{
+		Uri:            p.URI,
+		AuthorDid:      p.AuthorDID,
+		Url:            p.URL,
+		Name:           p.Name,
+		Description:    p.Description,
+		ShowInDiscover: p.ShowInDiscover,
+		IndexedAt:      p.IndexedAt,
+	})
 }
 
-func (db *DB) DeletePublication(uri string) error {
-	_, err := db.Exec("DELETE FROM publications WHERE uri = $1", uri)
-	return err
+func (db *DB) DeletePublication(ctx context.Context, uri string) error {
+	return db.q.DeletePublication(ctx, uri)
 }
 
-func (db *DB) GetPublicationByURL(url string) (*Publication, error) {
-	var p Publication
-	err := db.QueryRow(
-		"SELECT uri, author_did, url, name, description, show_in_discover, indexed_at FROM publications WHERE url = $1",
-		url,
-	).Scan(&p.URI, &p.AuthorDID, &p.URL, &p.Name, &p.Description, &p.ShowInDiscover, &p.IndexedAt)
+func (db *DB) GetPublicationByURL(ctx context.Context, url string) (*Publication, error) {
+	r, err := db.q.GetPublicationByURL(ctx, url)
 	if err != nil {
 		return nil, err
 	}
-	return &p, nil
+	return &Publication{
+		URI:            r.Uri,
+		AuthorDID:      r.AuthorDid,
+		URL:            r.Url,
+		Name:           r.Name,
+		Description:    r.Description,
+		ShowInDiscover: r.ShowInDiscover,
+		IndexedAt:      r.IndexedAt,
+	}, nil
 }
 
-func (db *DB) UpsertDocument(d *Document) error {
-	query := `
-		INSERT INTO documents (uri, author_did, site, path, title, description, text_content, tags_json, canonical_url, published_at, indexed_at)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-		ON CONFLICT(uri) DO UPDATE SET
-			title = EXCLUDED.title,
-			description = EXCLUDED.description,
-			text_content = EXCLUDED.text_content,
-			tags_json = EXCLUDED.tags_json,
-			canonical_url = EXCLUDED.canonical_url,
-			indexed_at = EXCLUDED.indexed_at
-	`
-	_, err := db.Exec(query, d.URI, d.AuthorDID, d.Site, d.Path, d.Title, d.Description, d.TextContent, d.TagsJSON, d.CanonicalURL, d.PublishedAt, d.IndexedAt)
-	return err
+func (db *DB) UpsertDocument(ctx context.Context, d *Document) error {
+	var canonicalURL *string
+	if d.CanonicalURL != "" {
+		canonicalURL = &d.CanonicalURL
+	}
+	return db.q.UpsertDocument(ctx, sqlcdb.UpsertDocumentParams{
+		Uri:          d.URI,
+		AuthorDid:    d.AuthorDID,
+		Site:         d.Site,
+		Path:         d.Path,
+		Title:        d.Title,
+		Description:  d.Description,
+		TextContent:  d.TextContent,
+		TagsJson:     d.TagsJSON,
+		CanonicalUrl: canonicalURL,
+		PublishedAt:  d.PublishedAt,
+		IndexedAt:    d.IndexedAt,
+	})
 }
 
-func (db *DB) DeleteDocument(uri string) error {
-	_, err := db.Exec("DELETE FROM documents WHERE uri = $1", uri)
-	return err
+func (db *DB) DeleteDocument(ctx context.Context, uri string) error {
+	return db.q.DeleteDocument(ctx, uri)
 }
 
-func (db *DB) GetDocumentByCanonicalURL(canonicalURL string) (*Document, error) {
-	var d Document
-	err := db.QueryRow(
-		`SELECT uri, author_did, site, path, title, description, text_content, tags_json, canonical_url, published_at, indexed_at
-		 FROM documents WHERE canonical_url = $1`,
-		canonicalURL,
-	).Scan(&d.URI, &d.AuthorDID, &d.Site, &d.Path, &d.Title, &d.Description, &d.TextContent, &d.TagsJSON, &d.CanonicalURL, &d.PublishedAt, &d.IndexedAt)
+func (db *DB) GetDocumentByCanonicalURL(ctx context.Context, canonicalURL string) (*Document, error) {
+	r, err := db.q.GetDocumentByCanonicalURL(ctx, &canonicalURL)
 	if err != nil {
 		return nil, err
 	}
+	d := mapDocument(r)
 	return &d, nil
 }
 
-func (db *DB) GetDocumentByURI(uri string) (*Document, error) {
-	var d Document
-	err := db.QueryRow(
-		`SELECT uri, author_did, site, path, title, description, text_content, tags_json, canonical_url, published_at, indexed_at
-		 FROM documents WHERE uri = $1`,
-		uri,
-	).Scan(&d.URI, &d.AuthorDID, &d.Site, &d.Path, &d.Title, &d.Description, &d.TextContent, &d.TagsJSON, &d.CanonicalURL, &d.PublishedAt, &d.IndexedAt)
+func (db *DB) GetDocumentByURI(ctx context.Context, uri string) (*Document, error) {
+	r, err := db.q.GetDocumentByURI(ctx, uri)
 	if err != nil {
 		return nil, err
 	}
+	d := mapDocument(r)
 	return &d, nil
 }
 
-func (db *DB) GetDocumentsWithoutEmbeddings(limit int) ([]Document, error) {
-	rows, err := db.Query(`
-		SELECT d.uri, d.author_did, d.site, d.path, d.title, d.description, d.text_content, d.tags_json, d.canonical_url, d.published_at, d.indexed_at
-		FROM documents d
-		LEFT JOIN document_embeddings de ON d.uri = de.document_uri
-		WHERE de.document_uri IS NULL
-		ORDER BY d.indexed_at DESC
-		LIMIT $1
-	`, limit)
+func (db *DB) GetDocumentsWithoutEmbeddings(ctx context.Context, limit int) ([]Document, error) {
+	rows, err := db.q.GetDocumentsWithoutEmbeddings(ctx, int32(limit))
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-	return scanDocuments(rows)
+	return mapDocuments(rows), nil
 }
 
-func (db *DB) GetAnnotationsWithoutEmbeddings(limit int) ([]Annotation, error) {
-	rows, err := db.Query(`
-		SELECT a.uri, a.author_did, a.motivation, a.body_value, a.body_format, a.body_uri, a.target_source, a.target_hash, a.target_title, a.selector_json, a.tags_json, a.created_at, a.indexed_at, a.cid
-		FROM annotations a
-		LEFT JOIN annotation_embeddings ae ON a.uri = ae.annotation_uri
-		WHERE ae.annotation_uri IS NULL AND a.motivation IN ('commenting', 'highlighting')
-		ORDER BY a.created_at DESC
-		LIMIT $1
-	`, limit)
+func (db *DB) GetAnnotationsWithoutEmbeddings(ctx context.Context, limit int) ([]Annotation, error) {
+	rows, err := db.q.GetAnnotationsWithoutEmbeddings(ctx, int32(limit))
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-	return scanAnnotations(rows)
+	var results []Annotation
+	for _, r := range rows {
+		a := Annotation{
+			URI:          r.Uri,
+			AuthorDID:    r.AuthorDid,
+			BodyValue:    r.BodyValue,
+			BodyFormat:   r.BodyFormat,
+			BodyURI:      r.BodyUri,
+			TargetTitle:  r.TargetTitle,
+			SelectorJSON: r.SelectorJson,
+			TagsJSON:     r.TagsJson,
+			CreatedAt:    r.CreatedAt,
+			IndexedAt:    r.IndexedAt,
+			CID:          r.Cid,
+		}
+		if r.Motivation != nil {
+			a.Motivation = *r.Motivation
+		}
+		if r.TargetSource != nil {
+			a.TargetSource = *r.TargetSource
+		}
+		if r.TargetHash != nil {
+			a.TargetHash = *r.TargetHash
+		}
+		results = append(results, a)
+	}
+	return results, nil
 }
 
 type HighlightForEmbedding struct {
@@ -173,191 +182,172 @@ type HighlightForEmbedding struct {
 	TagsJSON     *string
 }
 
-func (db *DB) GetHighlightsWithoutEmbeddings(limit int) ([]HighlightForEmbedding, error) {
-	rows, err := db.Query(`
-		SELECT h.uri, h.author_did, h.target_source, h.target_title, h.selector_json, h.tags_json
-		FROM highlights h
-		LEFT JOIN annotation_embeddings ae ON h.uri = ae.annotation_uri
-		WHERE ae.annotation_uri IS NULL
-		ORDER BY h.created_at DESC
-		LIMIT $1
-	`, limit)
+func (db *DB) GetHighlightsWithoutEmbeddings(ctx context.Context, limit int) ([]HighlightForEmbedding, error) {
+	rows, err := db.q.GetHighlightsWithoutEmbeddings(ctx, int32(limit))
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-
 	var results []HighlightForEmbedding
-	for rows.Next() {
-		var h HighlightForEmbedding
-		if err := rows.Scan(&h.URI, &h.AuthorDID, &h.TargetSource, &h.TargetTitle, &h.SelectorJSON, &h.TagsJSON); err != nil {
-			return nil, err
-		}
-		results = append(results, h)
+	for _, r := range rows {
+		results = append(results, HighlightForEmbedding{
+			URI:          r.Uri,
+			AuthorDID:    r.AuthorDid,
+			TargetSource: r.TargetSource,
+			TargetTitle:  r.TargetTitle,
+			SelectorJSON: r.SelectorJson,
+			TagsJSON:     r.TagsJson,
+		})
 	}
 	return results, nil
 }
 
-func (db *DB) GetDistinctAnnotationAuthors() ([]string, error) {
-	rows, err := db.Query(`SELECT DISTINCT author_did FROM annotation_embeddings`)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var dids []string
-	for rows.Next() {
-		var did string
-		if err := rows.Scan(&did); err != nil {
-			return nil, err
-		}
-		dids = append(dids, did)
-	}
-	return dids, nil
+func (db *DB) GetDistinctAnnotationAuthors(ctx context.Context) ([]string, error) {
+	return db.q.GetDistinctAnnotationAuthors(ctx)
 }
 
-func scanDocuments(rows interface {
-	Next() bool
-	Scan(...interface{}) error
-}) ([]Document, error) {
+func mapDocument(r sqlcdb.Document) Document {
+	d := Document{
+		URI:         r.Uri,
+		AuthorDID:   r.AuthorDid,
+		Site:        r.Site,
+		Path:        r.Path,
+		Title:       r.Title,
+		Description: r.Description,
+		TextContent: r.TextContent,
+		TagsJSON:    r.TagsJson,
+		PublishedAt: r.PublishedAt,
+		IndexedAt:   r.IndexedAt,
+	}
+	if r.CanonicalUrl != nil {
+		d.CanonicalURL = *r.CanonicalUrl
+	}
+	return d
+}
+
+func mapDocuments(rows []sqlcdb.Document) []Document {
 	var docs []Document
-	for rows.Next() {
-		var d Document
-		if err := rows.Scan(&d.URI, &d.AuthorDID, &d.Site, &d.Path, &d.Title, &d.Description, &d.TextContent, &d.TagsJSON, &d.CanonicalURL, &d.PublishedAt, &d.IndexedAt); err != nil {
-			return nil, err
-		}
-		docs = append(docs, d)
+	for _, r := range rows {
+		docs = append(docs, mapDocument(r))
 	}
-	return docs, nil
+	return docs
 }
 
-func (db *DB) GetRecentDocuments(limit, offset int) ([]Document, error) {
-	rows, err := db.Query(`
-		SELECT uri, author_did, site, path, title, description, text_content, tags_json, canonical_url, published_at, indexed_at
-		FROM documents
-		ORDER BY published_at DESC
-		LIMIT $1 OFFSET $2
-	`, limit, offset)
+func (db *DB) GetRecentDocuments(ctx context.Context, limit, offset int) ([]Document, error) {
+	rows, err := db.q.GetRecentDocuments(ctx, sqlcdb.GetRecentDocumentsParams{
+		Limit:  int32(limit),
+		Offset: int32(offset),
+	})
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-	return scanDocuments(rows)
+	return mapDocuments(rows), nil
 }
 
-func (db *DB) GetPopularDocuments(limit, offset int) ([]Document, error) {
-	rows, err := db.Query(`
-		SELECT d.uri, d.author_did, d.site, d.path, d.title, d.description, d.text_content, d.tags_json, d.canonical_url, d.published_at, d.indexed_at
-		FROM documents d
-		LEFT JOIN annotations a ON a.target_source = d.canonical_url
-		GROUP BY d.uri
-		ORDER BY COUNT(a.uri) DESC, d.published_at DESC
-		LIMIT $1 OFFSET $2
-	`, limit, offset)
+func (db *DB) GetPopularDocuments(ctx context.Context, limit, offset int) ([]Document, error) {
+	rows, err := db.q.GetPopularDocuments(ctx, sqlcdb.GetPopularDocumentsParams{
+		Limit:  int32(limit),
+		Offset: int32(offset),
+	})
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-	return scanDocuments(rows)
+	return mapDocuments(rows), nil
 }
 
-func (db *DB) GetDocumentCount() (int, error) {
-	var count int
-	err := db.QueryRow("SELECT COUNT(*) FROM documents").Scan(&count)
-	return count, err
+func (db *DB) GetDocumentCount(ctx context.Context) (int, error) {
+	n, err := db.q.GetDocumentCount(ctx)
+	return int(n), err
 }
 
-func (db *DB) UpsertDocumentEmbedding(documentURI string, embedding []float32) error {
+func (db *DB) UpsertDocumentEmbedding(ctx context.Context, documentURI string, embedding []float32) error {
 	vecStr := float32SliceToVectorString(embedding)
-	_, err := db.Exec(
-		`INSERT INTO document_embeddings (document_uri, embedding, updated_at) VALUES ($1, $2, $3)
-		 ON CONFLICT(document_uri) DO UPDATE SET embedding = EXCLUDED.embedding, updated_at = EXCLUDED.updated_at`,
-		documentURI, vecStr, time.Now(),
-	)
-	return err
+	return db.q.UpsertDocumentEmbedding(ctx, sqlcdb.UpsertDocumentEmbeddingParams{
+		DocumentUri: documentURI,
+		Embedding:   vecStr,
+		UpdatedAt:   time.Now(),
+	})
 }
 
-func (db *DB) UpsertAnnotationEmbedding(annotationURI, authorDID string, documentURI *string, embedding []float32) error {
+func (db *DB) UpsertAnnotationEmbedding(ctx context.Context, annotationURI, authorDID string, documentURI *string, embedding []float32) error {
 	vecStr := float32SliceToVectorString(embedding)
-	_, err := db.Exec(
-		`INSERT INTO annotation_embeddings (annotation_uri, author_did, document_uri, embedding, updated_at) VALUES ($1, $2, $3, $4, $5)
-		 ON CONFLICT(annotation_uri) DO UPDATE SET embedding = EXCLUDED.embedding, document_uri = EXCLUDED.document_uri, updated_at = EXCLUDED.updated_at`,
-		annotationURI, authorDID, documentURI, vecStr, time.Now(),
-	)
-	return err
+	return db.q.UpsertAnnotationEmbedding(ctx, sqlcdb.UpsertAnnotationEmbeddingParams{
+		AnnotationUri: annotationURI,
+		AuthorDid:     authorDID,
+		DocumentUri:   documentURI,
+		Embedding:     vecStr,
+		UpdatedAt:     time.Now(),
+	})
 }
 
-func (db *DB) DeleteAnnotationEmbedding(annotationURI string) error {
-	_, err := db.Exec("DELETE FROM annotation_embeddings WHERE annotation_uri = $1", annotationURI)
-	return err
+func (db *DB) DeleteAnnotationEmbedding(ctx context.Context, annotationURI string) error {
+	return db.q.DeleteAnnotationEmbedding(ctx, annotationURI)
 }
 
-func (db *DB) UpsertUserProfile(authorDID string, embedding []float32, tagAffinities map[string]float64, annotationCount int) error {
+func (db *DB) UpsertUserProfile(ctx context.Context, authorDID string, embedding []float32, tagAffinities map[string]float64, annotationCount int) error {
 	vecStr := float32SliceToVectorString(embedding)
 	tagsJSON, _ := json.Marshal(tagAffinities)
-	_, err := db.Exec(
-		`INSERT INTO user_profiles (author_did, embedding, tag_affinities, annotation_count, updated_at) VALUES ($1, $2, $3, $4, $5)
-		 ON CONFLICT(author_did) DO UPDATE SET embedding = EXCLUDED.embedding, tag_affinities = EXCLUDED.tag_affinities, annotation_count = EXCLUDED.annotation_count, updated_at = EXCLUDED.updated_at`,
-		authorDID, vecStr, string(tagsJSON), annotationCount, time.Now(),
-	)
-	return err
+	tags := string(tagsJSON)
+	return db.q.UpsertUserProfile(ctx, sqlcdb.UpsertUserProfileParams{
+		AuthorDid:       authorDID,
+		Embedding:       vecStr,
+		TagAffinities:   &tags,
+		AnnotationCount: int32(annotationCount),
+		UpdatedAt:       time.Now(),
+	})
 }
 
-func (db *DB) GetUserProfile(authorDID string) (*UserProfile, error) {
-	var p UserProfile
-	var embStr string
-	err := db.QueryRow(
-		`SELECT author_did, embedding, tag_affinities, annotation_count, updated_at FROM user_profiles WHERE author_did = $1`,
-		authorDID,
-	).Scan(&p.AuthorDID, &embStr, &p.TagAffinities, &p.AnnotationCount, &p.UpdatedAt)
+func (db *DB) GetUserProfile(ctx context.Context, authorDID string) (*UserProfile, error) {
+	r, err := db.q.GetUserProfile(ctx, authorDID)
 	if err != nil {
 		return nil, err
 	}
-	p.Embedding = parseVectorString(embStr)
+	p := UserProfile{
+		AuthorDID:       r.AuthorDid,
+		Embedding:       parseVectorString(r.Embedding),
+		AnnotationCount: int(r.AnnotationCount),
+		UpdatedAt:       r.UpdatedAt,
+	}
+	if r.TagAffinities != nil {
+		p.TagAffinities = *r.TagAffinities
+	}
 	return &p, nil
 }
 
-func (db *DB) GetAnnotationEmbeddingsByAuthor(authorDID string) ([]AnnotationEmbedding, error) {
-	rows, err := db.Query(
-		`SELECT annotation_uri, author_did, document_uri, embedding, updated_at FROM annotation_embeddings WHERE author_did = $1`,
-		authorDID,
-	)
+func (db *DB) GetAnnotationEmbeddingsByAuthor(ctx context.Context, authorDID string) ([]AnnotationEmbedding, error) {
+	rows, err := db.q.GetAnnotationEmbeddingsByAuthor(ctx, authorDID)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-
 	var results []AnnotationEmbedding
-	for rows.Next() {
-		var ae AnnotationEmbedding
-		var embStr string
-		if err := rows.Scan(&ae.AnnotationURI, &ae.AuthorDID, &ae.DocumentURI, &embStr, &ae.UpdatedAt); err != nil {
-			return nil, err
-		}
-		ae.Embedding = parseVectorString(embStr)
-		results = append(results, ae)
+	for _, r := range rows {
+		results = append(results, AnnotationEmbedding{
+			AnnotationURI: r.AnnotationUri,
+			AuthorDID:     r.AuthorDid,
+			DocumentURI:   r.DocumentUri,
+			Embedding:     parseVectorString(r.Embedding),
+			UpdatedAt:     r.UpdatedAt,
+		})
 	}
 	return results, nil
 }
 
-func (db *DB) GetRecentAnnotationEmbeddingsByAuthor(authorDID string, limit int) ([]AnnotationEmbedding, error) {
-	rows, err := db.Query(
-		`SELECT annotation_uri, author_did, document_uri, embedding, updated_at FROM annotation_embeddings WHERE author_did = $1 ORDER BY updated_at DESC LIMIT $2`,
-		authorDID, limit,
-	)
+func (db *DB) GetRecentAnnotationEmbeddingsByAuthor(ctx context.Context, authorDID string, limit int) ([]AnnotationEmbedding, error) {
+	rows, err := db.q.GetRecentAnnotationEmbeddingsByAuthor(ctx, sqlcdb.GetRecentAnnotationEmbeddingsByAuthorParams{
+		AuthorDid: authorDID,
+		Limit:     int32(limit),
+	})
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-
 	var results []AnnotationEmbedding
-	for rows.Next() {
-		var ae AnnotationEmbedding
-		var embStr string
-		if err := rows.Scan(&ae.AnnotationURI, &ae.AuthorDID, &ae.DocumentURI, &embStr, &ae.UpdatedAt); err != nil {
-			return nil, err
-		}
-		ae.Embedding = parseVectorString(embStr)
-		results = append(results, ae)
+	for _, r := range rows {
+		results = append(results, AnnotationEmbedding{
+			AnnotationURI: r.AnnotationUri,
+			AuthorDID:     r.AuthorDid,
+			DocumentURI:   r.DocumentUri,
+			Embedding:     parseVectorString(r.Embedding),
+			UpdatedAt:     r.UpdatedAt,
+		})
 	}
 	return results, nil
 }
@@ -376,64 +366,39 @@ type CandidateDocument struct {
 	Engagement   int       `json:"engagement"`
 }
 
-func (db *DB) GetCandidateDocuments(userDID string, limit int) ([]CandidateDocument, error) {
-	rows, err := db.Query(`
-		SELECT
-			d.uri, d.author_did, d.site, d.path, d.title, d.description, d.tags_json,
-			d.canonical_url, d.published_at, de.embedding,
-			COALESCE(eng.cnt, 0) AS engagement
-		FROM documents d
-		JOIN document_embeddings de ON d.uri = de.document_uri
-		LEFT JOIN (
-			SELECT document_uri, COUNT(DISTINCT author_did) AS cnt
-			FROM annotation_embeddings
-			WHERE document_uri IS NOT NULL
-			GROUP BY document_uri
-		) eng ON eng.document_uri = d.uri
-		LEFT JOIN publications p ON d.site = p.uri OR d.site = p.url
-		WHERE d.author_did != $1
-		  AND (p.show_in_discover IS NULL OR p.show_in_discover = true)
-		  AND LENGTH(d.title) > 15
-		  AND (LENGTH(COALESCE(d.description, '')) >= 30 OR LENGTH(COALESCE(d.text_content, '')) >= 100)
-		  AND LOWER(d.title) NOT LIKE '%test%'
-		  AND LOWER(d.title) NOT LIKE '%testing%'
-		  AND LOWER(d.title) NOT LIKE '%hello world%'
-		  AND LOWER(d.title) NOT LIKE '%untitled%'
-		  AND LOWER(d.title) NOT LIKE '%draft%'
-		  AND LOWER(d.title) NOT LIKE '%asdf%'
-		  AND LOWER(d.title) NOT LIKE '%lorem%'
-		  AND LOWER(d.title) NOT LIKE '%placeholder%'
-		  AND d.uri NOT IN (
-		    SELECT DISTINCT document_uri FROM annotation_embeddings
-		    WHERE author_did = $2 AND document_uri IS NOT NULL
-		  )
-		ORDER BY d.published_at DESC
-		LIMIT $3
-	`, userDID, userDID, limit)
+func (db *DB) GetCandidateDocuments(ctx context.Context, userDID string, limit int) ([]CandidateDocument, error) {
+	rows, err := db.q.GetCandidateDocuments(ctx, sqlcdb.GetCandidateDocumentsParams{
+		AuthorDid:   userDID,
+		AuthorDid_2: userDID,
+		Limit:       int32(limit),
+	})
 	if err != nil {
 		return nil, fmt.Errorf("candidate query: %w", err)
 	}
-	defer rows.Close()
-
 	var results []CandidateDocument
-	for rows.Next() {
-		var c CandidateDocument
-		var embStr string
-		if err := rows.Scan(
-			&c.URI, &c.AuthorDID, &c.Site, &c.Path, &c.Title, &c.Description,
-			&c.TagsJSON, &c.CanonicalURL, &c.PublishedAt, &embStr, &c.Engagement,
-		); err != nil {
-			return nil, err
+	for _, r := range rows {
+		c := CandidateDocument{
+			URI:         r.Uri,
+			AuthorDID:   r.AuthorDid,
+			Site:        r.Site,
+			Path:        r.Path,
+			Title:       r.Title,
+			Description: r.Description,
+			TagsJSON:    r.TagsJson,
+			PublishedAt: r.PublishedAt,
+			Embedding:   parseVectorString(r.Embedding),
+			Engagement:  int(r.Engagement),
 		}
-		c.Embedding = parseVectorString(embStr)
+		if r.CanonicalUrl != nil {
+			c.CanonicalURL = *r.CanonicalUrl
+		}
 		results = append(results, c)
 	}
 	return results, nil
 }
 
-func (db *DB) MatchAnnotationToDocument(targetSource string) (*string, error) {
-	var uri string
-	err := db.QueryRow(`SELECT uri FROM documents WHERE canonical_url = $1`, targetSource).Scan(&uri)
+func (db *DB) MatchAnnotationToDocument(ctx context.Context, targetSource string) (*string, error) {
+	uri, err := db.q.MatchAnnotationToDocument(ctx, &targetSource)
 	if err != nil {
 		return nil, err
 	}

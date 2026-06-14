@@ -2,19 +2,16 @@ package postgres
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"strings"
 	"time"
 
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"margin.at/internal/domain"
 )
 
-type DB interface {
-	ExecContext(ctx context.Context, query string, args ...interface{}) (sql.Result, error)
-	QueryContext(ctx context.Context, query string, args ...interface{}) (*sql.Rows, error)
-	QueryRowContext(ctx context.Context, query string, args ...interface{}) *sql.Row
-}
+type DB = *pgxpool.Pool
 
 type NoteRepository struct {
 	db DB
@@ -128,7 +125,7 @@ func (r *NoteRepository) List(ctx context.Context, f domain.NoteFilter) ([]domai
 
 	args = append(args, limit, f.Offset)
 
-	rows, err := r.db.QueryContext(ctx, query, args...)
+	rows, err := r.db.Query(ctx, query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -144,13 +141,13 @@ func (r *NoteRepository) GetByURI(ctx context.Context, uri string) (*domain.Note
 		WHERE uri = $1
 	`
 	var note domain.Note
-	err := r.db.QueryRowContext(ctx, query, uri).Scan(
+	err := r.db.QueryRow(ctx, query, uri).Scan(
 		&note.URI, &note.AuthorDID, &note.Motivation, &note.Color, &note.Description,
 		&note.BodyValue, &note.BodyFormat, &note.BodyURI,
 		&note.TargetSource, &note.TargetHash, &note.TargetTitle,
 		&note.SelectorJSON, &note.TagsJSON, &note.CreatedAt, &note.IndexedAt, &note.CID,
 	)
-	if err == sql.ErrNoRows {
+	if err == pgx.ErrNoRows {
 		return nil, nil
 	}
 	if err != nil {
@@ -181,7 +178,7 @@ func (r *NoteRepository) CreateNote(ctx context.Context, n *domain.Note) error {
 			indexed_at = EXCLUDED.indexed_at,
 			cid = EXCLUDED.cid
 	`
-	_, err := r.db.ExecContext(ctx, query,
+	_, err := r.db.Exec(ctx, query,
 		n.URI, n.AuthorDID, n.Motivation, n.Color, n.Description, n.BodyValue, n.BodyFormat, n.BodyURI,
 		n.TargetSource, n.TargetHash, n.TargetTitle, n.SelectorJSON, n.TagsJSON, n.CreatedAt, n.IndexedAt, n.CID,
 	)
@@ -189,12 +186,12 @@ func (r *NoteRepository) CreateNote(ctx context.Context, n *domain.Note) error {
 }
 
 func (r *NoteRepository) DeleteNote(ctx context.Context, uri string) error {
-	_, err := r.db.ExecContext(ctx, "DELETE FROM notes WHERE uri = $1", uri)
+	_, err := r.db.Exec(ctx, "DELETE FROM notes WHERE uri = $1", uri)
 	return err
 }
 
 func (r *NoteRepository) UpdateNoteAnnotation(ctx context.Context, uri, bodyValue, tagsJSON string, cid *string) error {
-	_, err := r.db.ExecContext(ctx, `
+	_, err := r.db.Exec(ctx, `
 		UPDATE notes
 		SET body_value = $1, tags_json = NULLIF($2, ''), cid = $3, indexed_at = $4
 		WHERE uri = $5
@@ -205,10 +202,10 @@ func (r *NoteRepository) UpdateNoteAnnotation(ctx context.Context, uri, bodyValu
 func (r *NoteRepository) GetLikeByUserAndSubject(ctx context.Context, did, subjectURI string) (*domain.Like, error) {
 	query := "SELECT uri, author_did, subject_uri, created_at, indexed_at FROM likes WHERE author_did = $1 AND subject_uri = $2"
 	var l domain.Like
-	err := r.db.QueryRowContext(ctx, query, did, subjectURI).Scan(
+	err := r.db.QueryRow(ctx, query, did, subjectURI).Scan(
 		&l.URI, &l.AuthorDID, &l.SubjectURI, &l.CreatedAt, &l.IndexedAt,
 	)
-	if err == sql.ErrNoRows {
+	if err == pgx.ErrNoRows {
 		return nil, nil
 	}
 	if err != nil {
@@ -218,7 +215,7 @@ func (r *NoteRepository) GetLikeByUserAndSubject(ctx context.Context, did, subje
 }
 
 func (r *NoteRepository) CreateLike(ctx context.Context, l *domain.Like) error {
-	_, err := r.db.ExecContext(ctx, `
+	_, err := r.db.Exec(ctx, `
 		INSERT INTO likes (uri, author_did, subject_uri, created_at, indexed_at)
 		VALUES ($1, $2, $3, $4, $5)
 		ON CONFLICT(uri) DO NOTHING
@@ -227,12 +224,12 @@ func (r *NoteRepository) CreateLike(ctx context.Context, l *domain.Like) error {
 }
 
 func (r *NoteRepository) DeleteLike(ctx context.Context, uri string) error {
-	_, err := r.db.ExecContext(ctx, "DELETE FROM likes WHERE uri = $1", uri)
+	_, err := r.db.Exec(ctx, "DELETE FROM likes WHERE uri = $1", uri)
 	return err
 }
 
 func (r *NoteRepository) CreateReply(ctx context.Context, rep *domain.Reply) error {
-	_, err := r.db.ExecContext(ctx, `
+	_, err := r.db.Exec(ctx, `
 		INSERT INTO replies (uri, author_did, parent_uri, root_uri, text, format, created_at, indexed_at, cid)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
 		ON CONFLICT(uri) DO NOTHING
@@ -243,37 +240,37 @@ func (r *NoteRepository) CreateReply(ctx context.Context, rep *domain.Reply) err
 func (r *NoteRepository) GetReplyByURI(ctx context.Context, uri string) (*domain.Reply, error) {
 	query := "SELECT uri, author_did, parent_uri, root_uri, text, format, created_at, indexed_at, cid FROM replies WHERE uri = $1"
 	var rep domain.Reply
-	err := r.db.QueryRowContext(ctx, query, uri).Scan(
+	err := r.db.QueryRow(ctx, query, uri).Scan(
 		&rep.URI, &rep.AuthorDID, &rep.ParentURI, &rep.RootURI, &rep.Text, &rep.Format, &rep.CreatedAt, &rep.IndexedAt, &rep.CID,
 	)
-	if err == sql.ErrNoRows {
+	if err == pgx.ErrNoRows {
 		return nil, nil
 	}
 	return &rep, err
 }
 
 func (r *NoteRepository) DeleteReply(ctx context.Context, uri string) error {
-	_, err := r.db.ExecContext(ctx, "DELETE FROM replies WHERE uri = $1", uri)
+	_, err := r.db.Exec(ctx, "DELETE FROM replies WHERE uri = $1", uri)
 	return err
 }
 
 func (r *NoteRepository) DeleteAnnotation(ctx context.Context, uri string) error {
-	_, err := r.db.ExecContext(ctx, "DELETE FROM annotations WHERE uri = $1", uri)
+	_, err := r.db.Exec(ctx, "DELETE FROM annotations WHERE uri = $1", uri)
 	return err
 }
 
 func (r *NoteRepository) DeleteHighlight(ctx context.Context, uri string) error {
-	_, err := r.db.ExecContext(ctx, "DELETE FROM highlights WHERE uri = $1", uri)
+	_, err := r.db.Exec(ctx, "DELETE FROM highlights WHERE uri = $1", uri)
 	return err
 }
 
 func (r *NoteRepository) DeleteBookmark(ctx context.Context, uri string) error {
-	_, err := r.db.ExecContext(ctx, "DELETE FROM bookmarks WHERE uri = $1", uri)
+	_, err := r.db.Exec(ctx, "DELETE FROM bookmarks WHERE uri = $1", uri)
 	return err
 }
 
 func (r *NoteRepository) UpdateAnnotation(ctx context.Context, uri, bodyValue, tagsJSON string, cid *string) error {
-	_, err := r.db.ExecContext(ctx, `
+	_, err := r.db.Exec(ctx, `
 		UPDATE annotations
 		SET body_value = $1, tags_json = NULLIF($2, ''), cid = $3, indexed_at = $4
 		WHERE uri = $5
@@ -288,11 +285,11 @@ func (r *NoteRepository) GetAnnotationByURI(ctx context.Context, uri string) (*d
 		FROM annotations WHERE uri = $1
 	`
 	var a domain.Annotation
-	err := r.db.QueryRowContext(ctx, query, uri).Scan(
+	err := r.db.QueryRow(ctx, query, uri).Scan(
 		&a.URI, &a.AuthorDID, &a.Motivation, &a.BodyValue, &a.BodyFormat, &a.BodyURI,
 		&a.TargetSource, &a.TargetHash, &a.TargetTitle, &a.SelectorJSON, &a.TagsJSON, &a.CreatedAt, &a.IndexedAt, &a.CID,
 	)
-	if err == sql.ErrNoRows {
+	if err == pgx.ErrNoRows {
 		return nil, nil
 	}
 	return &a, err
@@ -301,8 +298,8 @@ func (r *NoteRepository) GetAnnotationByURI(ctx context.Context, uri string) (*d
 func (r *NoteRepository) CheckDuplicateAnnotation(ctx context.Context, did, url, text string) (*domain.Annotation, error) {
 	query := "SELECT uri, cid FROM annotations WHERE author_did = $1 AND target_source = $2 AND body_value = $3 LIMIT 1"
 	var a domain.Annotation
-	err := r.db.QueryRowContext(ctx, query, did, url, text).Scan(&a.URI, &a.CID)
-	if err == sql.ErrNoRows {
+	err := r.db.QueryRow(ctx, query, did, url, text).Scan(&a.URI, &a.CID)
+	if err == pgx.ErrNoRows {
 		return nil, nil
 	}
 	return &a, err
@@ -311,14 +308,14 @@ func (r *NoteRepository) CheckDuplicateAnnotation(ctx context.Context, did, url,
 func (r *NoteRepository) CheckDuplicateHighlight(ctx context.Context, did, url string, selector []byte) (*domain.Highlight, error) {
 	query := "SELECT uri, cid FROM highlights WHERE author_did = $1 AND target_source = $2 AND selector_json = $3 LIMIT 1"
 	var h domain.Highlight
-	err := r.db.QueryRowContext(ctx, query, did, url, selector).Scan(&h.URI, &h.CID)
-	if err == sql.ErrNoRows {
+	err := r.db.QueryRow(ctx, query, did, url, selector).Scan(&h.URI, &h.CID)
+	if err == pgx.ErrNoRows {
 		return nil, nil
 	}
 	return &h, err
 }
 
-func scanNotes(rows *sql.Rows) ([]domain.Note, error) {
+func scanNotes(rows pgx.Rows) ([]domain.Note, error) {
 	var notes []domain.Note
 	for rows.Next() {
 		var note domain.Note

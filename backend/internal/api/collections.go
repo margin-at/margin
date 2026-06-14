@@ -89,7 +89,7 @@ func (s *CollectionService) CreateCollection(w http.ResponseWriter, r *http.Requ
 		CreatedAt:   time.Now(),
 		IndexedAt:   time.Now(),
 	}
-	s.db.CreateCollection(collection)
+	s.db.CreateCollection(r.Context(), collection)
 
 	WriteSuccess(w, result)
 }
@@ -148,7 +148,7 @@ func (s *CollectionService) AddCollectionItem(w http.ResponseWriter, r *http.Req
 		CreatedAt:     time.Now(),
 		IndexedAt:     time.Now(),
 	}
-	if err := s.db.AddToCollection(item); err != nil {
+	if err := s.db.AddToCollection(r.Context(), item); err != nil {
 		logger.Error("Failed to add to collection in DB: %v", err)
 	}
 
@@ -175,7 +175,7 @@ func (s *CollectionService) RemoveCollectionItem(w http.ResponseWriter, r *http.
 		logger.Error("Warning: PDS delete failed for %s: %v", itemURI, err)
 	}
 
-	s.db.RemoveFromCollection(itemURI)
+	s.db.RemoveFromCollection(r.Context(), itemURI)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -189,7 +189,7 @@ func (s *CollectionService) GetAnnotationCollections(w http.ResponseWriter, r *h
 		return
 	}
 
-	uris, err := s.db.GetCollectionURIsForAnnotation(annotationURI)
+	uris, err := s.db.GetCollectionURIsForAnnotation(r.Context(), annotationURI)
 	if err != nil {
 		WriteInternalError(w, "Internal server error")
 		return
@@ -216,7 +216,7 @@ func (s *CollectionService) GetCollections(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	collections, err := s.db.GetCollectionsByAuthor(authorDID)
+	collections, err := s.db.GetCollectionsByAuthor(r.Context(), authorDID)
 	if err != nil {
 		WriteInternalError(w, "Internal server error")
 		return
@@ -229,7 +229,7 @@ func (s *CollectionService) GetCollections(w http.ResponseWriter, r *http.Reques
 	for i, c := range collections {
 		collectionURIs[i] = c.URI
 	}
-	itemCounts, _ := s.db.GetCollectionItemCounts(collectionURIs)
+	itemCounts, _ := s.db.GetCollectionItemCounts(r.Context(), collectionURIs)
 
 	apiCollections := make([]APICollection, len(collections))
 	for i, c := range collections {
@@ -285,7 +285,7 @@ func (s *CollectionService) GetCollectionItems(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	items, err := s.db.GetCollectionItems(collectionURI)
+	items, err := s.db.GetCollectionItems(r.Context(), collectionURI)
 	if err != nil {
 		WriteInternalError(w, "Internal server error")
 		return
@@ -398,7 +398,7 @@ func (s *CollectionService) UpdateCollection(w http.ResponseWriter, r *http.Requ
 		CreatedAt:   time.Now(),
 		IndexedAt:   time.Now(),
 	}
-	s.db.CreateCollection(collection)
+	s.db.CreateCollection(r.Context(), collection)
 
 	WriteSuccess(w, result)
 }
@@ -421,7 +421,7 @@ func (s *CollectionService) DeleteCollection(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	items, _ := s.db.GetCollectionItems(uri)
+	items, _ := s.db.GetCollectionItems(r.Context(), uri)
 
 	err = s.refresher.ExecuteWithAutoRefresh(r, session, func(client *xrpc.Client, did string) error {
 		for _, item := range items {
@@ -437,7 +437,7 @@ func (s *CollectionService) DeleteCollection(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	s.db.DeleteCollection(uri)
+	s.db.DeleteCollection(r.Context(), uri)
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{"status": "deleted"})
@@ -450,7 +450,7 @@ func (s *CollectionService) GetCollection(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	collection, err := s.db.GetCollectionByURI(uri)
+	collection, err := s.db.GetCollectionByURI(r.Context(), uri)
 	if err != nil {
 		if strings.Contains(uri, "at.margin.collection") && strings.HasPrefix(uri, "at://") {
 			uriWithoutScheme := strings.TrimPrefix(uri, "at://")
@@ -460,7 +460,7 @@ func (s *CollectionService) GetCollection(w http.ResponseWriter, r *http.Request
 				rkey := parts[len(parts)-1]
 				sembleURI := fmt.Sprintf("at://%s/network.cosmik.collection/%s", did, rkey)
 
-				collection, err = s.db.GetCollectionByURI(sembleURI)
+				collection, err = s.db.GetCollectionByURI(r.Context(), sembleURI)
 			}
 		}
 	}
@@ -473,7 +473,7 @@ func (s *CollectionService) GetCollection(w http.ResponseWriter, r *http.Request
 	profiles := fetchProfilesForDIDs(s.db, []string{collection.AuthorDID})
 	creator := profiles[collection.AuthorDID]
 
-	itemCounts, _ := s.db.GetCollectionItemCounts([]string{collection.URI})
+	itemCounts, _ := s.db.GetCollectionItemCounts(r.Context(), []string{collection.URI})
 
 	icon := ""
 	if collection.Icon != nil {

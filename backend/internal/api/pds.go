@@ -55,13 +55,13 @@ func (h *Handler) FetchLatestUserRecords(r *http.Request, did string, collection
 			if err == nil && parsed != nil {
 				switch v := parsed.(type) {
 				case *db.Annotation:
-					h.db.CreateAnnotation(v)
+					h.db.CreateAnnotation(r.Context(), v)
 				case *db.Highlight:
-					h.db.CreateHighlight(v)
+					h.db.CreateHighlight(r.Context(), v)
 				case *db.Bookmark:
-					h.db.CreateBookmark(v)
+					h.db.CreateBookmark(r.Context(), v)
 				case *db.APIKey:
-					h.db.CreateAPIKey(v)
+					h.db.CreateAPIKey(r.Context(), v)
 				case *db.Preferences:
 				}
 				results = append(results, parsed)

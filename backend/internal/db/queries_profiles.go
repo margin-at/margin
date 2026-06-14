@@ -1,180 +1,173 @@
 package db
 
 import (
-	"database/sql"
-	"fmt"
-	"strings"
+	"context"
+	"errors"
+
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgtype"
+	"margin.at/internal/db/sqlcdb"
 )
 
-func (db *DB) GetProfile(did string) (*Profile, error) {
-	var p Profile
-	err := db.QueryRow(
-		`SELECT uri, author_did, display_name, avatar, bio, website, links_json, created_at, indexed_at
-		 FROM profiles WHERE author_did = $1`, did,
-	).Scan(&p.URI, &p.AuthorDID, &p.DisplayName, &p.Avatar, &p.Bio, &p.Website, &p.LinksJSON, &p.CreatedAt, &p.IndexedAt)
+func (db *DB) GetProfile(ctx context.Context, did string) (*Profile, error) {
+	r, err := db.q.GetProfile(ctx, did)
 	switch err {
 	case nil:
-		return &p, nil
-	case sql.ErrNoRows:
+		return &Profile{
+			URI:         r.Uri,
+			AuthorDID:   r.AuthorDid,
+			DisplayName: r.DisplayName,
+			Avatar:      r.Avatar,
+			Bio:         r.Bio,
+			Website:     r.Website,
+			LinksJSON:   r.LinksJson,
+			CreatedAt:   r.CreatedAt,
+			IndexedAt:   r.IndexedAt,
+		}, nil
+	case pgx.ErrNoRows:
 		return nil, nil
 	default:
 		return nil, err
 	}
 }
 
-func (db *DB) GetProfilesByDIDs(dids []string) (map[string]*Profile, error) {
+func (db *DB) GetProfilesByDIDs(ctx context.Context, dids []string) (map[string]*Profile, error) {
 	if len(dids) == 0 {
 		return nil, nil
 	}
 
-	placeholders := make([]string, len(dids))
-	args := make([]interface{}, len(dids))
-	for i, did := range dids {
-		placeholders[i] = fmt.Sprintf("$%d", i+1)
-		args[i] = did
-	}
-
-	rows, err := db.Query(
-		`SELECT uri, author_did, display_name, bio, avatar, website, links_json, created_at, indexed_at
-		 FROM profiles WHERE author_did IN (`+strings.Join(placeholders, ",")+`)`,
-		args...,
-	)
+	rows, err := db.q.GetProfilesByDIDs(ctx, dids)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
 
 	profiles := make(map[string]*Profile)
-	for rows.Next() {
-		var p Profile
-		if err := rows.Scan(&p.URI, &p.AuthorDID, &p.DisplayName, &p.Bio, &p.Avatar, &p.Website, &p.LinksJSON, &p.CreatedAt, &p.IndexedAt); err != nil {
-			continue
+	for _, r := range rows {
+		p := Profile{
+			URI:         r.Uri,
+			AuthorDID:   r.AuthorDid,
+			DisplayName: r.DisplayName,
+			Bio:         r.Bio,
+			Avatar:      r.Avatar,
+			Website:     r.Website,
+			LinksJSON:   r.LinksJson,
+			CreatedAt:   r.CreatedAt,
+			IndexedAt:   r.IndexedAt,
 		}
 		profiles[p.AuthorDID] = &p
 	}
-	return profiles, rows.Err()
+	return profiles, nil
 }
 
-func (db *DB) UpsertProfile(p *Profile) error {
-	_, err := db.Exec(`
-		INSERT INTO profiles (uri, author_did, display_name, avatar, bio, website, links_json, created_at, indexed_at)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-		ON CONFLICT(uri) DO UPDATE SET
-			display_name = EXCLUDED.display_name,
-			avatar       = EXCLUDED.avatar,
-			bio          = EXCLUDED.bio,
-			website      = EXCLUDED.website,
-			links_json   = EXCLUDED.links_json,
-			indexed_at   = EXCLUDED.indexed_at
-	`, p.URI, p.AuthorDID, p.DisplayName, p.Avatar, p.Bio, p.Website, p.LinksJSON, p.CreatedAt, p.IndexedAt)
-	return err
+func (db *DB) UpsertProfile(ctx context.Context, p *Profile) error {
+	return db.q.UpsertProfile(ctx, sqlcdb.UpsertProfileParams{
+		Uri:         p.URI,
+		AuthorDid:   p.AuthorDID,
+		DisplayName: p.DisplayName,
+		Avatar:      p.Avatar,
+		Bio:         p.Bio,
+		Website:     p.Website,
+		LinksJson:   p.LinksJSON,
+		CreatedAt:   p.CreatedAt,
+		IndexedAt:   p.IndexedAt,
+	})
 }
 
-func (db *DB) DeleteProfile(uri string) error {
-	_, err := db.Exec("DELETE FROM profiles WHERE uri = $1", uri)
-	return err
+func (db *DB) DeleteProfile(ctx context.Context, uri string) error {
+	return db.q.DeleteProfile(ctx, uri)
 }
 
-func (db *DB) GetPreferences(did string) (*Preferences, error) {
-	var p Preferences
-	err := db.QueryRow(
-		`SELECT uri, author_did, external_link_skipped_hostnames, subscribed_labelers,
-		        label_preferences, disable_external_link_warning, enable_community_bookmarks,
-		        created_at, indexed_at, cid
-		 FROM preferences WHERE author_did = $1`, did,
-	).Scan(
-		&p.URI, &p.AuthorDID, &p.ExternalLinkSkippedHostnames, &p.SubscribedLabelers,
-		&p.LabelPreferences, &p.DisableExternalLinkWarning, &p.EnableCommunityBookmarks,
-		&p.CreatedAt, &p.IndexedAt, &p.CID,
-	)
+func (db *DB) GetPreferences(ctx context.Context, did string) (*Preferences, error) {
+	r, err := db.q.GetPreferences(ctx, did)
 	switch err {
 	case nil:
-		return &p, nil
-	case sql.ErrNoRows:
+		p := &Preferences{
+			URI:                          r.Uri,
+			AuthorDID:                    r.AuthorDid,
+			ExternalLinkSkippedHostnames: r.ExternalLinkSkippedHostnames,
+			SubscribedLabelers:           r.SubscribedLabelers,
+			LabelPreferences:             r.LabelPreferences,
+			CreatedAt:                    r.CreatedAt,
+			IndexedAt:                    r.IndexedAt,
+			CID:                          r.Cid,
+		}
+		if r.DisableExternalLinkWarning.Valid {
+			v := r.DisableExternalLinkWarning.Bool
+			p.DisableExternalLinkWarning = &v
+		}
+		if r.EnableCommunityBookmarks.Valid {
+			v := r.EnableCommunityBookmarks.Bool
+			p.EnableCommunityBookmarks = &v
+		}
+		return p, nil
+	case pgx.ErrNoRows:
 		return nil, nil
 	default:
 		return nil, err
 	}
 }
 
-func (db *DB) UpsertPreferences(p *Preferences) error {
-	_, err := db.Exec(`
-		INSERT INTO preferences (
-			uri, author_did, external_link_skipped_hostnames, subscribed_labelers,
-			label_preferences, disable_external_link_warning, enable_community_bookmarks,
-			created_at, indexed_at, cid
-		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-		ON CONFLICT(uri) DO UPDATE SET
-			external_link_skipped_hostnames = EXCLUDED.external_link_skipped_hostnames,
-			subscribed_labelers             = EXCLUDED.subscribed_labelers,
-			label_preferences               = EXCLUDED.label_preferences,
-			disable_external_link_warning   = EXCLUDED.disable_external_link_warning,
-			enable_community_bookmarks      = EXCLUDED.enable_community_bookmarks,
-			indexed_at                      = EXCLUDED.indexed_at,
-			cid                             = EXCLUDED.cid
-	`, p.URI, p.AuthorDID, p.ExternalLinkSkippedHostnames, p.SubscribedLabelers,
-		p.LabelPreferences, p.DisableExternalLinkWarning, p.EnableCommunityBookmarks,
-		p.CreatedAt, p.IndexedAt, p.CID)
-	return err
-}
-
-func (db *DB) DeletePreferences(uri string) error {
-	_, err := db.Exec("DELETE FROM preferences WHERE uri = $1", uri)
-	return err
-}
-
-func (db *DB) GetPreferenceURIs(did string) ([]string, error) {
-	rows, err := db.Query(
-		"SELECT uri FROM preferences WHERE author_did = $1 AND uri IS NOT NULL AND uri != ''", did,
-	)
-	if err != nil {
-		return nil, err
+func (db *DB) UpsertPreferences(ctx context.Context, p *Preferences) error {
+	var disableWarning, enableBookmarks pgtype.Bool
+	if p.DisableExternalLinkWarning != nil {
+		disableWarning = pgtype.Bool{Bool: *p.DisableExternalLinkWarning, Valid: true}
 	}
-	defer rows.Close()
-	var uris []string
-	for rows.Next() {
-		var uri string
-		if err := rows.Scan(&uri); err != nil {
-			return nil, err
-		}
-		uris = append(uris, uri)
+	if p.EnableCommunityBookmarks != nil {
+		enableBookmarks = pgtype.Bool{Bool: *p.EnableCommunityBookmarks, Valid: true}
 	}
-	return uris, rows.Err()
+	return db.q.UpsertPreferences(ctx, sqlcdb.UpsertPreferencesParams{
+		Uri:                          p.URI,
+		AuthorDid:                    p.AuthorDID,
+		ExternalLinkSkippedHostnames: p.ExternalLinkSkippedHostnames,
+		SubscribedLabelers:           p.SubscribedLabelers,
+		LabelPreferences:             p.LabelPreferences,
+		DisableExternalLinkWarning:   disableWarning,
+		EnableCommunityBookmarks:     enableBookmarks,
+		CreatedAt:                    p.CreatedAt,
+		IndexedAt:                    p.IndexedAt,
+		Cid:                          p.CID,
+	})
 }
 
-func (db *DB) DeleteAPIKey(id, ownerDID string) (string, error) {
-	var uri string
-	err := db.QueryRow("SELECT uri FROM api_keys WHERE id = $1 AND owner_did = $2", id, ownerDID).Scan(&uri)
+func (db *DB) DeletePreferences(ctx context.Context, uri string) error {
+	return db.q.DeletePreferences(ctx, uri)
+}
+
+func (db *DB) GetPreferenceURIs(ctx context.Context, did string) ([]string, error) {
+	return db.q.GetPreferenceURIs(ctx, did)
+}
+
+func (db *DB) DeleteAPIKey(ctx context.Context, id, ownerDID string) (string, error) {
+	uri, err := db.q.DeleteAPIKeyReturningURI(ctx, sqlcdb.DeleteAPIKeyReturningURIParams{
+		ID:       id,
+		OwnerDid: ownerDID,
+	})
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return "", nil
 		}
 		return "", err
 	}
-	_, err = db.Exec("DELETE FROM api_keys WHERE id = $1 AND owner_did = $2", id, ownerDID)
-	return uri, err
+	if uri == nil {
+		return "", nil
+	}
+	return *uri, nil
 }
 
-func (db *DB) DeleteAPIKeyByURI(uri string) error {
-	_, err := db.Exec("DELETE FROM api_keys WHERE uri = $1", uri)
-	return err
+func (db *DB) DeleteAPIKeyByURI(ctx context.Context, uri string) error {
+	return db.q.DeleteAPIKeyByURI(ctx, &uri)
 }
 
-func (db *DB) GetAPIKeyURIs(ownerDID string) ([]string, error) {
-	rows, err := db.Query(
-		"SELECT uri FROM api_keys WHERE owner_did = $1 AND uri IS NOT NULL AND uri != ''", ownerDID,
-	)
+func (db *DB) GetAPIKeyURIs(ctx context.Context, ownerDID string) ([]string, error) {
+	rows, err := db.q.GetAPIKeyURIs(ctx, ownerDID)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
 	var uris []string
-	for rows.Next() {
-		var uri string
-		if err := rows.Scan(&uri); err != nil {
-			return nil, err
+	for _, uri := range rows {
+		if uri != nil {
+			uris = append(uris, *uri)
 		}
-		uris = append(uris, uri)
 	}
-	return uris, rows.Err()
+	return uris, nil
 }

@@ -121,16 +121,16 @@ func (s *Service) PerformSync(ctx context.Context, did string, getClient func(co
 
 			switch collectionNSID {
 			case xrpc.CollectionAnnotation:
-				localURIs, err = s.db.GetAnnotationURIs(did)
+				localURIs, err = s.db.GetAnnotationURIs(ctx, did)
 				localURIs = filterURIsByCollection(localURIs, xrpc.CollectionAnnotation)
 			case xrpc.CollectionHighlight:
-				localURIs, err = s.db.GetHighlightURIs(did)
+				localURIs, err = s.db.GetHighlightURIs(ctx, did)
 				localURIs = filterURIsByCollection(localURIs, xrpc.CollectionHighlight)
 			case xrpc.CollectionBookmark:
-				localURIs, err = s.db.GetBookmarkURIs(did)
+				localURIs, err = s.db.GetBookmarkURIs(ctx, did)
 				localURIs = filterURIsByCollection(localURIs, xrpc.CollectionBookmark)
 			case xrpc.CollectionCollection:
-				cols, e := s.db.GetCollectionsByAuthor(did)
+				cols, e := s.db.GetCollectionsByAuthor(ctx, did)
 				if e == nil {
 					for _, c := range cols {
 						localURIs = append(localURIs, c.URI)
@@ -140,7 +140,7 @@ func (s *Service) PerformSync(ctx context.Context, did string, getClient func(co
 					err = e
 				}
 			case xrpc.CollectionCollectionItem:
-				items, e := s.db.GetCollectionItemsByAuthor(did)
+				items, e := s.db.GetCollectionItemsByAuthor(ctx, did)
 				if e == nil {
 					for _, item := range items {
 						localURIs = append(localURIs, item.URI)
@@ -150,7 +150,7 @@ func (s *Service) PerformSync(ctx context.Context, did string, getClient func(co
 					err = e
 				}
 			case xrpc.CollectionReply:
-				replies, e := s.db.GetRepliesByAuthor(did)
+				replies, e := s.db.GetRepliesByAuthor(ctx, did)
 				if e == nil {
 					for _, r := range replies {
 						localURIs = append(localURIs, r.URI)
@@ -160,7 +160,7 @@ func (s *Service) PerformSync(ctx context.Context, did string, getClient func(co
 					err = e
 				}
 			case xrpc.CollectionLike:
-				likes, e := s.db.GetLikesByAuthor(did)
+				likes, e := s.db.GetLikesByAuthor(ctx, did)
 				if e == nil {
 					for _, l := range likes {
 						localURIs = append(localURIs, l.URI)
@@ -170,8 +170,8 @@ func (s *Service) PerformSync(ctx context.Context, did string, getClient func(co
 					err = e
 				}
 			case xrpc.CollectionSembleCard:
-				annos, e1 := s.db.GetAnnotationURIs(did)
-				books, e2 := s.db.GetBookmarkURIs(did)
+				annos, e1 := s.db.GetAnnotationURIs(ctx, did)
+				books, e2 := s.db.GetBookmarkURIs(ctx, did)
 				if e1 != nil {
 					err = e1
 					break
@@ -184,7 +184,7 @@ func (s *Service) PerformSync(ctx context.Context, did string, getClient func(co
 				localURIs = append(localURIs, books...)
 				localURIs = filterURIsByCollection(localURIs, xrpc.CollectionSembleCard)
 			case xrpc.CollectionSembleCollection:
-				cols, e := s.db.GetCollectionsByAuthor(did)
+				cols, e := s.db.GetCollectionsByAuthor(ctx, did)
 				if e == nil {
 					for _, c := range cols {
 						localURIs = append(localURIs, c.URI)
@@ -194,13 +194,13 @@ func (s *Service) PerformSync(ctx context.Context, did string, getClient func(co
 					err = e
 				}
 			case xrpc.CollectionAPIKey:
-				localURIs, err = s.db.GetAPIKeyURIs(did)
+				localURIs, err = s.db.GetAPIKeyURIs(ctx, did)
 				localURIs = filterURIsByCollection(localURIs, xrpc.CollectionAPIKey)
 			case xrpc.CollectionPreferences:
-				localURIs, err = s.db.GetPreferenceURIs(did)
+				localURIs, err = s.db.GetPreferenceURIs(ctx, did)
 				localURIs = filterURIsByCollection(localURIs, xrpc.CollectionPreferences)
 			case xrpc.CollectionSembleCollectionLink:
-				items, e := s.db.GetCollectionItemsByAuthor(did)
+				items, e := s.db.GetCollectionItemsByAuthor(ctx, did)
 				if e == nil {
 					for _, item := range items {
 						localURIs = append(localURIs, item.URI)
@@ -210,7 +210,7 @@ func (s *Service) PerformSync(ctx context.Context, did string, getClient func(co
 					err = e
 				}
 			case xrpc.CollectionLichenBookmark:
-				localURIs, err = s.db.GetBookmarkURIs(did)
+				localURIs, err = s.db.GetBookmarkURIs(ctx, did)
 				localURIs = filterURIsByCollection(localURIs, xrpc.CollectionLichenBookmark)
 			}
 
@@ -219,32 +219,32 @@ func (s *Service) PerformSync(ctx context.Context, did string, getClient func(co
 					if !fetchedURIs[uri] {
 						switch collectionNSID {
 						case xrpc.CollectionAnnotation:
-							_ = s.db.DeleteAnnotation(uri)
+							_ = s.db.DeleteAnnotation(ctx, uri)
 						case xrpc.CollectionHighlight:
-							_ = s.db.DeleteHighlight(uri)
+							_ = s.db.DeleteHighlight(ctx, uri)
 						case xrpc.CollectionBookmark:
-							_ = s.db.DeleteBookmark(uri)
+							_ = s.db.DeleteBookmark(ctx, uri)
 						case xrpc.CollectionCollection:
-							_ = s.db.DeleteCollection(uri)
+							_ = s.db.DeleteCollection(ctx, uri)
 						case xrpc.CollectionCollectionItem:
-							_ = s.db.RemoveFromCollection(uri)
+							_ = s.db.RemoveFromCollection(ctx, uri)
 						case xrpc.CollectionReply:
-							_ = s.db.DeleteReply(uri)
+							_ = s.db.DeleteReply(ctx, uri)
 						case xrpc.CollectionLike:
-							_ = s.db.DeleteLike(uri)
+							_ = s.db.DeleteLike(ctx, uri)
 						case xrpc.CollectionSembleCard:
-							_ = s.db.DeleteAnnotation(uri)
-							_ = s.db.DeleteBookmark(uri)
+							_ = s.db.DeleteAnnotation(ctx, uri)
+							_ = s.db.DeleteBookmark(ctx, uri)
 						case xrpc.CollectionSembleCollection:
-							_ = s.db.DeleteCollection(uri)
+							_ = s.db.DeleteCollection(ctx, uri)
 						case xrpc.CollectionSembleCollectionLink:
-							_ = s.db.RemoveFromCollection(uri)
+							_ = s.db.RemoveFromCollection(ctx, uri)
 						case xrpc.CollectionAPIKey:
-							_ = s.db.DeleteAPIKeyByURI(uri)
+							_ = s.db.DeleteAPIKeyByURI(ctx, uri)
 						case xrpc.CollectionPreferences:
-							_ = s.db.DeletePreferences(uri)
+							_ = s.db.DeletePreferences(ctx, uri)
 						case xrpc.CollectionLichenBookmark:
-							_ = s.db.DeleteBookmark(uri)
+							_ = s.db.DeleteBookmark(ctx, uri)
 						}
 						deletedCount++
 					}
@@ -331,7 +331,7 @@ func (s *Service) upsertRecord(did, collection, uri, cid string, value json.RawM
 			tagsJSONPtr = &tagsStr
 		}
 
-		return s.db.CreateAnnotation(&db.Annotation{
+		return s.db.CreateAnnotation(context.Background(), &db.Annotation{
 			URI:          uri,
 			AuthorDID:    did,
 			Motivation:   motivation,
@@ -383,7 +383,7 @@ func (s *Service) upsertRecord(did, collection, uri, cid string, value json.RawM
 			tagsJSONPtr = &tagsStr
 		}
 
-		return s.db.CreateHighlight(&db.Highlight{
+		return s.db.CreateHighlight(context.Background(), &db.Highlight{
 			URI:          uri,
 			AuthorDID:    did,
 			TargetSource: record.Target.Source,
@@ -425,7 +425,7 @@ func (s *Service) upsertRecord(did, collection, uri, cid string, value json.RawM
 			tagsJSONPtr = &tagsStr
 		}
 
-		return s.db.CreateBookmark(&db.Bookmark{
+		return s.db.CreateBookmark(context.Background(), &db.Bookmark{
 			URI:         uri,
 			AuthorDID:   did,
 			Source:      record.Source,
@@ -455,7 +455,7 @@ func (s *Service) upsertRecord(did, collection, uri, cid string, value json.RawM
 			iconPtr = &i
 		}
 
-		return s.db.CreateCollection(&db.Collection{
+		return s.db.CreateCollection(context.Background(), &db.Collection{
 			URI:         uri,
 			AuthorDID:   did,
 			Name:        record.Name,
@@ -472,7 +472,7 @@ func (s *Service) upsertRecord(did, collection, uri, cid string, value json.RawM
 		}
 		createdAt, _ := time.Parse(time.RFC3339, record.CreatedAt)
 
-		return s.db.AddToCollection(&db.CollectionItem{
+		return s.db.AddToCollection(context.Background(), &db.CollectionItem{
 			URI:           uri,
 			AuthorDID:     did,
 			CollectionURI: record.Collection,
@@ -495,7 +495,7 @@ func (s *Service) upsertRecord(did, collection, uri, cid string, value json.RawM
 			formatPtr = &f
 		}
 
-		return s.db.CreateReply(&db.Reply{
+		return s.db.CreateReply(context.Background(), &db.Reply{
 			URI:       uri,
 			AuthorDID: did,
 			ParentURI: record.Parent.URI,
@@ -514,7 +514,7 @@ func (s *Service) upsertRecord(did, collection, uri, cid string, value json.RawM
 		}
 		createdAt, _ := time.Parse(time.RFC3339, record.CreatedAt)
 
-		return s.db.CreateLike(&db.Like{
+		return s.db.CreateLike(context.Background(), &db.Like{
 			URI:        uri,
 			AuthorDID:  did,
 			SubjectURI: record.Subject.URI,
@@ -551,7 +551,7 @@ func (s *Service) upsertRecord(did, collection, uri, cid string, value json.RawM
 			motivation := "commenting"
 			bodyValue := note.Text
 
-			return s.db.CreateAnnotation(&db.Annotation{
+			return s.db.CreateAnnotation(context.Background(), &db.Annotation{
 				URI:          uri,
 				AuthorDID:    did,
 				Motivation:   motivation,
@@ -581,7 +581,7 @@ func (s *Service) upsertRecord(did, collection, uri, cid string, value json.RawM
 				titlePtr = &t
 			}
 
-			return s.db.CreateBookmark(&db.Bookmark{
+			return s.db.CreateBookmark(context.Background(), &db.Bookmark{
 				URI:        uri,
 				AuthorDID:  did,
 				Source:     source,
@@ -608,7 +608,7 @@ func (s *Service) upsertRecord(did, collection, uri, cid string, value json.RawM
 		icon := "icon:semble"
 		iconPtr = &icon
 
-		return s.db.CreateCollection(&db.Collection{
+		return s.db.CreateCollection(context.Background(), &db.Collection{
 			URI:         uri,
 			AuthorDID:   did,
 			Name:        record.Name,
@@ -625,7 +625,7 @@ func (s *Service) upsertRecord(did, collection, uri, cid string, value json.RawM
 		}
 		createdAt, _ := time.Parse(time.RFC3339, record.CreatedAt)
 
-		return s.db.AddToCollection(&db.CollectionItem{
+		return s.db.AddToCollection(context.Background(), &db.CollectionItem{
 			URI:           uri,
 			AuthorDID:     did,
 			CollectionURI: record.Collection.URI,
@@ -646,7 +646,7 @@ func (s *Service) upsertRecord(did, collection, uri, cid string, value json.RawM
 		}
 		createdAt, _ := time.Parse(time.RFC3339, record.CreatedAt)
 
-		return s.db.CreateBookmark(&db.Bookmark{
+		return s.db.CreateBookmark(context.Background(), &db.Bookmark{
 			URI:        uri,
 			AuthorDID:  did,
 			Source:     source,
@@ -666,7 +666,7 @@ func (s *Service) upsertRecord(did, collection, uri, cid string, value json.RawM
 		parts := strings.Split(uri, "/")
 		rkey := parts[len(parts)-1]
 
-		return s.db.CreateAPIKey(&db.APIKey{
+		return s.db.CreateAPIKey(context.Background(), &db.APIKey{
 			ID:        rkey,
 			OwnerDID:  did,
 			Name:      record.Name,
@@ -720,7 +720,7 @@ func (s *Service) upsertRecord(did, collection, uri, cid string, value json.RawM
 		if err := verification.VerifyDocument(canonicalURL, uri); err != nil {
 			return nil
 		}
-		return s.db.UpsertDocument(&db.Document{
+		return s.db.UpsertDocument(context.Background(), &db.Document{
 			URI:          uri,
 			AuthorDID:    did,
 			Site:         record.Site,
@@ -762,7 +762,7 @@ func (s *Service) upsertRecord(did, collection, uri, cid string, value json.RawM
 			labelPrefsPtr = &s
 		}
 
-		return s.db.UpsertPreferences(&db.Preferences{
+		return s.db.UpsertPreferences(context.Background(), &db.Preferences{
 			URI:                          uri,
 			AuthorDID:                    did,
 			ExternalLinkSkippedHostnames: skippedHostnamesPtr,

@@ -1,128 +1,98 @@
 package db
 
-import "fmt"
+import (
+	"context"
 
-func (db *DB) CreateLike(l *Like) error {
-	_, err := db.Exec(`
-		INSERT INTO likes (uri, author_did, subject_uri, created_at, indexed_at)
-		VALUES ($1, $2, $3, $4, $5)
-		ON CONFLICT(uri) DO NOTHING
-	`, l.URI, l.AuthorDID, l.SubjectURI, l.CreatedAt, l.IndexedAt)
-	return err
+	"margin.at/internal/db/sqlcdb"
+)
+
+func (db *DB) CreateLike(ctx context.Context, l *Like) error {
+	return db.q.CreateLike(ctx, sqlcdb.CreateLikeParams{
+		Uri:        l.URI,
+		AuthorDid:  l.AuthorDID,
+		SubjectUri: l.SubjectURI,
+		CreatedAt:  l.CreatedAt,
+		IndexedAt:  l.IndexedAt,
+	})
 }
 
-func (db *DB) DeleteLike(uri string) error {
-	_, err := db.Exec(`DELETE FROM likes WHERE uri = $1`, uri)
-	return err
+func (db *DB) DeleteLike(ctx context.Context, uri string) error {
+	return db.q.DeleteLike(ctx, uri)
 }
 
-func (db *DB) GetLikesByAuthor(authorDID string) ([]Like, error) {
-	rows, err := db.Query(`
-		SELECT uri, author_did, subject_uri, created_at, indexed_at
-		FROM likes
-		WHERE author_did = $1
-		ORDER BY created_at DESC
-	`, authorDID)
+func (db *DB) GetLikesByAuthor(ctx context.Context, authorDID string) ([]Like, error) {
+	rows, err := db.q.GetLikesByAuthor(ctx, authorDID)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-
 	var likes []Like
-	for rows.Next() {
-		var l Like
-		if err := rows.Scan(&l.URI, &l.AuthorDID, &l.SubjectURI, &l.CreatedAt, &l.IndexedAt); err != nil {
-			return nil, err
-		}
-		likes = append(likes, l)
+	for _, r := range rows {
+		likes = append(likes, Like{
+			URI:        r.Uri,
+			AuthorDID:  r.AuthorDid,
+			SubjectURI: r.SubjectUri,
+			CreatedAt:  r.CreatedAt,
+			IndexedAt:  r.IndexedAt,
+		})
 	}
 	return likes, nil
 }
 
-func (db *DB) GetLikeCount(subjectURI string) (int, error) {
-	var count int
-	err := db.QueryRow(`SELECT COUNT(*) FROM likes WHERE subject_uri = $1`, subjectURI).Scan(&count)
-	return count, err
+func (db *DB) GetLikeCount(ctx context.Context, subjectURI string) (int, error) {
+	count, err := db.q.GetLikeCount(ctx, subjectURI)
+	return int(count), err
 }
 
-func (db *DB) GetLikeByUserAndSubject(userDID, subjectURI string) (*Like, error) {
-	var like Like
-	err := db.QueryRow(`
-		SELECT uri, author_did, subject_uri, created_at, indexed_at
-		FROM likes
-		WHERE author_did = $1 AND subject_uri = $2
-	`, userDID, subjectURI).Scan(&like.URI, &like.AuthorDID, &like.SubjectURI, &like.CreatedAt, &like.IndexedAt)
+func (db *DB) GetLikeByUserAndSubject(ctx context.Context, userDID, subjectURI string) (*Like, error) {
+	r, err := db.q.GetLikeByUserAndSubject(ctx, sqlcdb.GetLikeByUserAndSubjectParams{
+		AuthorDid:  userDID,
+		SubjectUri: subjectURI,
+	})
 	if err != nil {
 		return nil, err
 	}
-	return &like, nil
+	return &Like{
+		URI:        r.Uri,
+		AuthorDID:  r.AuthorDid,
+		SubjectURI: r.SubjectUri,
+		CreatedAt:  r.CreatedAt,
+		IndexedAt:  r.IndexedAt,
+	}, nil
 }
 
-func (db *DB) GetLikeCounts(subjectURIs []string) (map[string]int, error) {
+func (db *DB) GetLikeCounts(ctx context.Context, subjectURIs []string) (map[string]int, error) {
 	if len(subjectURIs) == 0 {
 		return map[string]int{}, nil
 	}
 
-	query := `
-		SELECT subject_uri, COUNT(*)
-		FROM likes
-		WHERE subject_uri IN (` + buildPlaceholders(len(subjectURIs), 1) + `)
-		GROUP BY subject_uri
-	`
-
-	args := make([]interface{}, len(subjectURIs))
-	for i, uri := range subjectURIs {
-		args[i] = uri
-	}
-
-	rows, err := db.Query(query, args...)
+	rows, err := db.q.GetLikeCounts(ctx, subjectURIs)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
 
 	counts := make(map[string]int)
-	for rows.Next() {
-		var uri string
-		var count int
-		if err := rows.Scan(&uri, &count); err != nil {
-			return nil, err
-		}
-		counts[uri] = count
+	for _, r := range rows {
+		counts[r.SubjectUri] = int(r.Count)
 	}
 
 	return counts, nil
 }
 
-func (db *DB) GetViewerLikes(viewerDID string, subjectURIs []string) (map[string]bool, error) {
+func (db *DB) GetViewerLikes(ctx context.Context, viewerDID string, subjectURIs []string) (map[string]bool, error) {
 	if len(subjectURIs) == 0 {
 		return map[string]bool{}, nil
 	}
 
-	query := fmt.Sprintf(`
-		SELECT subject_uri
-		FROM likes
-		WHERE author_did = $1 AND subject_uri IN (%s)
-	`, buildPlaceholders(len(subjectURIs), 2))
-
-	args := make([]interface{}, len(subjectURIs)+1)
-	args[0] = viewerDID
-	for i, uri := range subjectURIs {
-		args[i+1] = uri
-	}
-
-	rows, err := db.Query(query, args...)
+	rows, err := db.q.GetViewerLikes(ctx, sqlcdb.GetViewerLikesParams{
+		AuthorDid: viewerDID,
+		Column2:   subjectURIs,
+	})
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
 
 	likes := make(map[string]bool)
-	for rows.Next() {
-		var uri string
-		if err := rows.Scan(&uri); err != nil {
-			return nil, err
-		}
+	for _, uri := range rows {
 		likes[uri] = true
 	}
 

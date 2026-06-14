@@ -68,7 +68,7 @@ func main() {
 	if err := database.Migrate(); err != nil {
 		logger.Fatal("Failed to run migrations: %v", err)
 	}
-	database.MigrateUnifiedNotes()
+	database.MigrateUnifiedNotes(context.Background())
 
 	go func() {
 		ticker := time.NewTicker(1 * time.Hour)
@@ -76,10 +76,10 @@ func main() {
 
 		runCleanup := func() {
 			_, err := database.TryAdvisoryLock(context.Background(), db.LockSessionCleanup, func() error {
-				if err := database.DeleteExpiredOAuthSessions(); err != nil {
+				if err := database.DeleteExpiredOAuthSessions(context.Background()); err != nil {
 					return err
 				}
-				return database.DeleteExpiredPendingAuthsOAuth()
+				return database.DeleteExpiredPendingAuthsOAuth(context.Background())
 			})
 			if err != nil {
 				logger.Error("Failed to run cleanup of expired sessions: %v", err)

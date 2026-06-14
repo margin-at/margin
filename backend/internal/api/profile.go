@@ -83,7 +83,7 @@ func (h *Handler) UpdateProfile(w http.ResponseWriter, r *http.Request) {
 		CreatedAt:   time.Now(),
 		IndexedAt:   time.Now(),
 	}
-	h.db.UpsertProfile(profile)
+	h.db.UpsertProfile(r.Context(), profile)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -110,7 +110,7 @@ func (h *Handler) GetProfile(w http.ResponseWriter, r *http.Request) {
 
 	if !strings.HasPrefix(did, "did:") {
 		var resolvedDID string
-		err := h.db.QueryRow("SELECT did FROM sessions WHERE handle = $1 LIMIT 1", did).Scan(&resolvedDID)
+		err := h.db.Pool().QueryRow(r.Context(), "SELECT did FROM oauth_sessions WHERE handle = $1 LIMIT 1", did).Scan(&resolvedDID)
 		if err == nil {
 			did = resolvedDID
 		} else {
@@ -121,7 +121,7 @@ func (h *Handler) GetProfile(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	profile, err := h.db.GetProfile(did)
+	profile, err := h.db.GetProfile(r.Context(), did)
 	if err != nil {
 		WriteInternalError(w, "Failed to fetch profile")
 		return
@@ -165,7 +165,7 @@ func (h *Handler) GetProfile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var handle string
-	if err := h.db.QueryRow("SELECT handle FROM sessions WHERE did = $1 LIMIT 1", profile.AuthorDID).Scan(&handle); err == nil {
+	if err := h.db.Pool().QueryRow(r.Context(), "SELECT handle FROM oauth_sessions WHERE did = $1 LIMIT 1", profile.AuthorDID).Scan(&handle); err == nil {
 		resp.Handle = handle
 	}
 
@@ -190,7 +190,7 @@ func (h *Handler) GetProfile(w http.ResponseWriter, r *http.Request) {
 
 	viewerDID := h.getViewerDID(r)
 	if viewerDID != "" && viewerDID != profile.AuthorDID {
-		blocking, muting, blockedBy, err := h.db.GetViewerRelationship(viewerDID, profile.AuthorDID)
+		blocking, muting, blockedBy, err := h.db.GetViewerRelationship(r.Context(), viewerDID, profile.AuthorDID)
 		if err == nil {
 			resp.Viewer = &struct {
 				Blocking  bool `json:"blocking"`
@@ -211,7 +211,7 @@ func (h *Handler) GetProfile(w http.ResponseWriter, r *http.Request) {
 			subscribedLabelers = []string{serviceDID}
 		}
 	}
-	if didLabels, err := h.db.GetContentLabelsForDIDs([]string{profile.AuthorDID}, subscribedLabelers); err == nil {
+	if didLabels, err := h.db.GetContentLabelsForDIDs(r.Context(), []string{profile.AuthorDID}, subscribedLabelers); err == nil {
 		if labels, ok := didLabels[profile.AuthorDID]; ok {
 			for _, l := range labels {
 				resp.Labels = append(resp.Labels, struct {

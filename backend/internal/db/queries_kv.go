@@ -1,15 +1,21 @@
 package db
 
-func (db *DB) GetOrCreateKV(key, value string) (string, error) {
-	_, err := db.Exec(
-		`INSERT INTO kv_store (key, value, updated_at) VALUES ($1, $2, NOW()) ON CONFLICT (key) DO NOTHING`,
-		key, value)
-	if err != nil {
+import (
+	"context"
+
+	"margin.at/internal/db/sqlcdb"
+)
+
+func (db *DB) GetOrCreateKV(ctx context.Context, key, value string) (string, error) {
+	if err := db.q.InsertKVIgnore(ctx, sqlcdb.InsertKVIgnoreParams{
+		Key:   key,
+		Value: value,
+	}); err != nil {
 		return "", err
 	}
 
-	var v string
-	if err := db.QueryRow(`SELECT value FROM kv_store WHERE key = $1`, key).Scan(&v); err != nil {
+	v, err := db.q.GetKVValue(ctx, key)
+	if err != nil {
 		return "", err
 	}
 	return v, nil

@@ -192,7 +192,7 @@ func fetchCounts(ctx context.Context, database *db.DB, uris []string, viewerDID 
 		wg.Add(2)
 		go func() {
 			defer wg.Done()
-			if lc, err := database.GetLikeCounts(uris); err == nil {
+			if lc, err := database.GetLikeCounts(ctx, uris); err == nil {
 				mu.Lock()
 				likeCounts = lc
 				mu.Unlock()
@@ -200,7 +200,7 @@ func fetchCounts(ctx context.Context, database *db.DB, uris []string, viewerDID 
 		}()
 		go func() {
 			defer wg.Done()
-			if rc, err := database.GetReplyCounts(uris); err == nil {
+			if rc, err := database.GetReplyCounts(ctx, uris); err == nil {
 				mu.Lock()
 				replyCounts = rc
 				mu.Unlock()
@@ -210,7 +210,7 @@ func fetchCounts(ctx context.Context, database *db.DB, uris []string, viewerDID 
 			wg.Add(1)
 			go func() {
 				defer wg.Done()
-				if vl, err := database.GetViewerLikes(viewerDID, uris); err == nil {
+				if vl, err := database.GetViewerLikes(ctx, viewerDID, uris); err == nil {
 					mu.Lock()
 					viewerLikes = vl
 					mu.Unlock()
@@ -279,7 +279,7 @@ func fetchEngagementData(database *db.DB, uris []string, authorDIDs []string, vi
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		if ul, err := database.GetContentLabelsForURIs(uris, labelerDIDs); err == nil {
+		if ul, err := database.GetContentLabelsForURIs(context.Background(), uris, labelerDIDs); err == nil {
 			mu.Lock()
 			uriLabels = ul
 			mu.Unlock()
@@ -289,7 +289,7 @@ func fetchEngagementData(database *db.DB, uris []string, authorDIDs []string, vi
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		if dl, err := database.GetContentLabelsForDIDs(authorDIDs, labelerDIDs); err == nil {
+		if dl, err := database.GetContentLabelsForDIDs(context.Background(), authorDIDs, labelerDIDs); err == nil {
 			mu.Lock()
 			didLabels = dl
 			mu.Unlock()
@@ -299,7 +299,7 @@ func fetchEngagementData(database *db.DB, uris []string, authorDIDs []string, vi
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		if et, err := database.GetLatestEditTimes(uris); err == nil {
+		if et, err := database.GetLatestEditTimes(context.Background(), uris); err == nil {
 			mu.Lock()
 			editTimes = et
 			mu.Unlock()
@@ -630,7 +630,7 @@ func fetchProfilesForDIDs(database *db.DB, dids []string) map[string]Author {
 	}
 
 	if database != nil {
-		marginProfiles, err := database.GetProfilesByDIDs(missingDIDs)
+		marginProfiles, err := database.GetProfilesByDIDs(context.Background(), missingDIDs)
 		if err == nil {
 			for did, mp := range marginProfiles {
 				author := Author{DID: did}
@@ -719,7 +719,7 @@ func fetchProfilesForDIDs(database *db.DB, dids []string) map[string]Author {
 	}
 
 	if database != nil && len(dids) > 0 {
-		marginProfiles, err := database.GetProfilesByDIDs(dids)
+		marginProfiles, err := database.GetProfilesByDIDs(context.Background(), dids)
 		if err == nil {
 			for did, mp := range marginProfiles {
 				author, exists := profiles[did]
@@ -833,7 +833,7 @@ func hydrateCollectionItemsWithData(database *db.DB, items []db.CollectionItem, 
 
 	collectionsMap := make(map[string]APICollection)
 	if len(collectionURIs) > 0 {
-		colls, err := database.GetCollectionsByURIs(collectionURIs)
+		colls, err := database.GetCollectionsByURIs(context.Background(), collectionURIs)
 		if err == nil {
 			for _, coll := range colls {
 				icon := ""
@@ -875,7 +875,7 @@ func hydrateCollectionItemsWithData(database *db.DB, items []db.CollectionItem, 
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			result, err := database.GetNotesByURIs(noteURIs)
+			result, err := database.GetNotesByURIs(context.Background(), noteURIs)
 			if err == nil {
 				mu.Lock()
 				rawNotes = result
@@ -887,7 +887,7 @@ func hydrateCollectionItemsWithData(database *db.DB, items []db.CollectionItem, 
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			result, err := database.GetAnnotationsByURIs(annotationURIs)
+			result, err := database.GetAnnotationsByURIs(context.Background(), annotationURIs)
 			if err == nil {
 				mu.Lock()
 				rawAnnos = result
@@ -899,7 +899,7 @@ func hydrateCollectionItemsWithData(database *db.DB, items []db.CollectionItem, 
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			result, err := database.GetHighlightsByURIs(highlightURIs)
+			result, err := database.GetHighlightsByURIs(context.Background(), highlightURIs)
 			if err == nil {
 				mu.Lock()
 				rawHighlights = result
@@ -911,7 +911,7 @@ func hydrateCollectionItemsWithData(database *db.DB, items []db.CollectionItem, 
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			result, err := database.GetBookmarksByURIs(bookmarkURIs)
+			result, err := database.GetBookmarksByURIs(context.Background(), bookmarkURIs)
 			if err == nil {
 				mu.Lock()
 				rawBookmarks = result
@@ -1202,7 +1202,7 @@ func hydrateNotifications(database *db.DB, notifications []db.Notification) ([]A
 
 	replyMap := make(map[string]APIReply)
 	if len(replyURIs) > 0 {
-		replies, err := database.GetRepliesByURIs(replyURIs)
+		replies, err := database.GetRepliesByURIs(context.Background(), replyURIs)
 		if err == nil {
 			hydratedReplies, _ := hydrateReplies(database, replies)
 			for _, r := range hydratedReplies {
@@ -1213,19 +1213,19 @@ func hydrateNotifications(database *db.DB, notifications []db.Notification) ([]A
 
 	contentMap := make(map[string]interface{})
 	if len(contentURIs) > 0 {
-		if annotations, err := database.GetAnnotationsByURIs(contentURIs); err == nil && len(annotations) > 0 {
+		if annotations, err := database.GetAnnotationsByURIs(context.Background(), contentURIs); err == nil && len(annotations) > 0 {
 			hydratedAnnotations, _ := hydrateAnnotations(database, annotations, "")
 			for _, a := range hydratedAnnotations {
 				contentMap[a.ID] = a
 			}
 		}
-		if highlights, err := database.GetHighlightsByURIs(contentURIs); err == nil && len(highlights) > 0 {
+		if highlights, err := database.GetHighlightsByURIs(context.Background(), contentURIs); err == nil && len(highlights) > 0 {
 			hydratedHighlights, _ := hydrateHighlights(database, highlights, "")
 			for _, h := range hydratedHighlights {
 				contentMap[h.ID] = h
 			}
 		}
-		if bookmarks, err := database.GetBookmarksByURIs(contentURIs); err == nil && len(bookmarks) > 0 {
+		if bookmarks, err := database.GetBookmarksByURIs(context.Background(), contentURIs); err == nil && len(bookmarks) > 0 {
 			hydratedBookmarks, _ := hydrateBookmarks(database, bookmarks, "")
 			for _, b := range hydratedBookmarks {
 				contentMap[b.ID] = b
@@ -1310,7 +1310,7 @@ func getSubscribedLabelers(database *db.DB, viewerDID string) []string {
 		return nil
 	}
 
-	prefs, err := database.GetPreferences(viewerDID)
+	prefs, err := database.GetPreferences(context.Background(), viewerDID)
 	if err != nil || prefs == nil || prefs.SubscribedLabelers == nil {
 		if serviceDID != "" {
 			return []string{serviceDID}

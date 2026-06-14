@@ -26,8 +26,8 @@ type FeedService struct {
 	notes     domain.NoteRepository
 	hydration *HydrationService
 	database  interface {
-		GetAllHiddenDIDs(actorDID string) (map[string]bool, error)
-		GetBannedDIDs() ([]string, error)
+		GetAllHiddenDIDs(ctx context.Context, actorDID string) (map[string]bool, error)
+		GetBannedDIDs(ctx context.Context) ([]string, error)
 	}
 }
 
@@ -35,8 +35,8 @@ func NewFeedService(
 	notes domain.NoteRepository,
 	hydration *HydrationService,
 	db interface {
-		GetAllHiddenDIDs(actorDID string) (map[string]bool, error)
-		GetBannedDIDs() ([]string, error)
+		GetAllHiddenDIDs(ctx context.Context, actorDID string) (map[string]bool, error)
+		GetBannedDIDs(ctx context.Context) ([]string, error)
 	},
 ) *FeedService {
 	return &FeedService{
@@ -66,7 +66,7 @@ func (s *FeedService) GetFeed(ctx context.Context, req FeedRequest) (*FeedRespon
 		return nil, err
 	}
 
-	if bannedDIDs, err := s.database.GetBannedDIDs(); err == nil && len(bannedDIDs) > 0 {
+	if bannedDIDs, err := s.database.GetBannedDIDs(ctx); err == nil && len(bannedDIDs) > 0 {
 		banned := make(map[string]bool, len(bannedDIDs))
 		for _, did := range bannedDIDs {
 			banned[did] = true
@@ -81,7 +81,7 @@ func (s *FeedService) GetFeed(ctx context.Context, req FeedRequest) (*FeedRespon
 	}
 
 	if req.ViewerDID != "" {
-		hidden, _ := s.database.GetAllHiddenDIDs(req.ViewerDID)
+		hidden, _ := s.database.GetAllHiddenDIDs(ctx, req.ViewerDID)
 		if len(hidden) > 0 {
 			filtered := notes[:0]
 			for _, n := range notes {

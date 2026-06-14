@@ -1,6 +1,7 @@
 package db
 
 import (
+	"context"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
@@ -63,23 +64,16 @@ func ToJSON(v interface{}) string {
 	return string(b)
 }
 
-func (db *DB) GetAuthorByURI(uri string) (string, error) {
-	var authorDID string
-	err := db.QueryRow(`SELECT author_did FROM annotations WHERE uri = $1`, uri).Scan(&authorDID)
-	if err == nil {
+func (db *DB) GetAuthorByURI(ctx context.Context, uri string) (string, error) {
+	if authorDID, err := db.q.GetAnnotationAuthorByURI(ctx, uri); err == nil {
 		return authorDID, nil
 	}
-
-	err = db.QueryRow(`SELECT author_did FROM highlights WHERE uri = $1`, uri).Scan(&authorDID)
-	if err == nil {
+	if authorDID, err := db.q.GetHighlightAuthorByURI(ctx, uri); err == nil {
 		return authorDID, nil
 	}
-
-	err = db.QueryRow(`SELECT author_did FROM bookmarks WHERE uri = $1`, uri).Scan(&authorDID)
-	if err == nil {
+	if authorDID, err := db.q.GetBookmarkAuthorByURI(ctx, uri); err == nil {
 		return authorDID, nil
 	}
-
 	return "", fmt.Errorf("uri not found or no author")
 }
 

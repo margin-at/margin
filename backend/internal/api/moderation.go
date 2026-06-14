@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"strconv"
@@ -39,7 +40,7 @@ func (m *ModerationHandler) BlockUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := m.db.CreateBlock(session.DID, req.DID); err != nil {
+	if err := m.db.CreateBlock(r.Context(), session.DID, req.DID); err != nil {
 		logger.Error("Failed to create block: %v", err)
 		WriteInternalError(w, "Failed to block user")
 		return
@@ -61,7 +62,7 @@ func (m *ModerationHandler) UnblockUser(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	if err := m.db.DeleteBlock(session.DID, did); err != nil {
+	if err := m.db.DeleteBlock(r.Context(), session.DID, did); err != nil {
 		logger.Error("Failed to delete block: %v", err)
 		WriteInternalError(w, "Failed to unblock user")
 		return
@@ -77,7 +78,7 @@ func (m *ModerationHandler) GetBlocks(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	blocks, err := m.db.GetBlocks(session.DID)
+	blocks, err := m.db.GetBlocks(r.Context(), session.DID)
 	if err != nil {
 		WriteInternalError(w, "Failed to fetch blocks")
 		return
@@ -127,7 +128,7 @@ func (m *ModerationHandler) MuteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := m.db.CreateMute(session.DID, req.DID); err != nil {
+	if err := m.db.CreateMute(r.Context(), session.DID, req.DID); err != nil {
 		logger.Error("Failed to create mute: %v", err)
 		WriteInternalError(w, "Failed to mute user")
 		return
@@ -149,7 +150,7 @@ func (m *ModerationHandler) UnmuteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := m.db.DeleteMute(session.DID, did); err != nil {
+	if err := m.db.DeleteMute(r.Context(), session.DID, did); err != nil {
 		logger.Error("Failed to delete mute: %v", err)
 		WriteInternalError(w, "Failed to unmute user")
 		return
@@ -165,7 +166,7 @@ func (m *ModerationHandler) GetMutes(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	mutes, err := m.db.GetMutes(session.DID)
+	mutes, err := m.db.GetMutes(r.Context(), session.DID)
 	if err != nil {
 		WriteInternalError(w, "Failed to fetch mutes")
 		return
@@ -204,7 +205,7 @@ func (m *ModerationHandler) GetRelationship(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	blocked, muted, blockedBy, err := m.db.GetViewerRelationship(viewerDID, subjectDID)
+	blocked, muted, blockedBy, err := m.db.GetViewerRelationship(r.Context(), viewerDID, subjectDID)
 	if err != nil {
 		WriteInternalError(w, "Failed to get relationship")
 		return
@@ -254,7 +255,7 @@ func (m *ModerationHandler) CreateReport(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	id, err := m.db.CreateReport(session.DID, req.SubjectDID, req.SubjectURI, req.ReasonType, req.ReasonText)
+	id, err := m.db.CreateReport(r.Context(), session.DID, req.SubjectDID, req.SubjectURI, req.ReasonType, req.ReasonText)
 	if err != nil {
 		logger.Error("Failed to create report: %v", err)
 		WriteInternalError(w, "Failed to submit report")
@@ -280,7 +281,7 @@ func (m *ModerationHandler) AdminGetReports(w http.ResponseWriter, r *http.Reque
 	limit := parseIntParam(r, "limit", 50)
 	offset := parseIntParam(r, "offset", 0)
 
-	reports, err := m.db.GetReports(status, limit, offset)
+	reports, err := m.db.GetReports(r.Context(), status, limit, offset)
 	if err != nil {
 		WriteInternalError(w, "Failed to fetch reports")
 		return
@@ -329,8 +330,8 @@ func (m *ModerationHandler) AdminGetReports(w http.ResponseWriter, r *http.Reque
 		items[i].ResolvedBy = rpt.ResolvedBy
 	}
 
-	pendingCount, _ := m.db.GetReportCount("pending")
-	totalCount, _ := m.db.GetReportCount("")
+	pendingCount, _ := m.db.GetReportCount(r.Context(), "pending")
+	totalCount, _ := m.db.GetReportCount(r.Context(), "")
 
 	WriteSuccess(w, map[string]interface{}{
 		"items":        items,
@@ -373,13 +374,13 @@ func (m *ModerationHandler) AdminTakeAction(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	report, err := m.db.GetReport(req.ReportID)
+	report, err := m.db.GetReport(r.Context(), req.ReportID)
 	if err != nil {
 		WriteNotFound(w, "Report not found")
 		return
 	}
 
-	if err := m.db.CreateModerationAction(req.ReportID, session.DID, req.Action, req.Comment); err != nil {
+	if err := m.db.CreateModerationAction(r.Context(), req.ReportID, session.DID, req.Action, req.Comment); err != nil {
 		logger.Error("Failed to create moderation action: %v", err)
 		WriteInternalError(w, "Failed to take action")
 		return
@@ -394,13 +395,13 @@ func (m *ModerationHandler) AdminTakeAction(w http.ResponseWriter, r *http.Reque
 	case "takedown":
 		resolveStatus = "resolved"
 		if report.SubjectURI != nil && *report.SubjectURI != "" {
-			m.deleteContent(*report.SubjectURI)
+			m.deleteContent(r.Context(), *report.SubjectURI)
 		}
 	case "acknowledge":
 		resolveStatus = "acknowledged"
 	}
 
-	if err := m.db.ResolveReport(req.ReportID, session.DID, resolveStatus); err != nil {
+	if err := m.db.ResolveReport(r.Context(), req.ReportID, session.DID, resolveStatus); err != nil {
 		logger.Error("Failed to resolve report: %v", err)
 	}
 
@@ -426,13 +427,13 @@ func (m *ModerationHandler) AdminGetReport(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	report, err := m.db.GetReport(id)
+	report, err := m.db.GetReport(r.Context(), id)
 	if err != nil {
 		WriteNotFound(w, "Report not found")
 		return
 	}
 
-	actions, _ := m.db.GetReportActions(id)
+	actions, _ := m.db.GetReportActions(r.Context(), id)
 
 	profiles := fetchProfilesForDIDs(m.db, []string{report.ReporterDID, report.SubjectDID})
 
@@ -455,13 +456,13 @@ func (m *ModerationHandler) AdminCheckAccess(w http.ResponseWriter, r *http.Requ
 	WriteSuccess(w, map[string]bool{"isAdmin": config.Get().IsAdmin(session.DID)})
 }
 
-func (m *ModerationHandler) deleteContent(uri string) {
-	m.db.MarkTakenDown(uri)
-	m.db.Exec("DELETE FROM notes WHERE uri = $1", uri)
-	m.db.Exec("DELETE FROM annotations WHERE uri = $1", uri)
-	m.db.Exec("DELETE FROM highlights WHERE uri = $1", uri)
-	m.db.Exec("DELETE FROM bookmarks WHERE uri = $1", uri)
-	m.db.Exec("DELETE FROM replies WHERE uri = $1", uri)
+func (m *ModerationHandler) deleteContent(ctx context.Context, uri string) {
+	m.db.MarkTakenDown(ctx, uri)
+	m.db.Pool().Exec(ctx, "DELETE FROM notes WHERE uri = $1", uri)
+	m.db.Pool().Exec(ctx, "DELETE FROM annotations WHERE uri = $1", uri)
+	m.db.Pool().Exec(ctx, "DELETE FROM highlights WHERE uri = $1", uri)
+	m.db.Pool().Exec(ctx, "DELETE FROM bookmarks WHERE uri = $1", uri)
+	m.db.Pool().Exec(ctx, "DELETE FROM replies WHERE uri = $1", uri)
 }
 
 func (m *ModerationHandler) AdminCreateLabel(w http.ResponseWriter, r *http.Request) {
@@ -520,7 +521,7 @@ func (m *ModerationHandler) AdminCreateLabel(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	if err := m.db.CreateContentLabel(labelerDID, targetURI, req.Val, session.DID); err != nil {
+	if err := m.db.CreateContentLabel(r.Context(), labelerDID, targetURI, req.Val, session.DID); err != nil {
 		logger.Error("Failed to create content label: %v", err)
 		WriteInternalError(w, "Failed to create label")
 		return
@@ -548,7 +549,7 @@ func (m *ModerationHandler) AdminDeleteLabel(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	if err := m.db.DeleteContentLabel(id); err != nil {
+	if err := m.db.DeleteContentLabel(r.Context(), id); err != nil {
 		WriteInternalError(w, "Failed to delete label")
 		return
 	}
@@ -571,7 +572,7 @@ func (m *ModerationHandler) AdminGetLabels(w http.ResponseWriter, r *http.Reques
 	limit := parseIntParam(r, "limit", 50)
 	offset := parseIntParam(r, "offset", 0)
 
-	labels, err := m.db.GetAllContentLabels(limit, offset)
+	labels, err := m.db.GetAllContentLabels(r.Context(), limit, offset)
 	if err != nil {
 		WriteInternalError(w, "Failed to fetch labels")
 		return
@@ -624,7 +625,7 @@ func (m *ModerationHandler) getViewerDID(r *http.Request) string {
 	if err != nil {
 		return ""
 	}
-	sess, err := m.db.GetOAuthSessionByID(cookie.Value)
+	sess, err := m.db.GetOAuthSessionByID(r.Context(), cookie.Value)
 	if err != nil {
 		return ""
 	}
@@ -677,13 +678,13 @@ func (m *ModerationHandler) AdminBanAccount(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	if err := m.db.BanAccount(req.DID, session.DID, req.Reason); err != nil {
+	if err := m.db.BanAccount(r.Context(), req.DID, session.DID, req.Reason); err != nil {
 		logger.Error("Failed to ban account: %v", err)
 		WriteInternalError(w, "Failed to ban account")
 		return
 	}
 
-	m.db.DeleteOAuthSessionsByDID(req.DID)
+	m.db.DeleteOAuthSessionsByDID(r.Context(), req.DID)
 
 	WriteSuccess(w, map[string]string{"status": "ok"})
 }
@@ -705,7 +706,7 @@ func (m *ModerationHandler) AdminUnbanAccount(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	if err := m.db.UnbanAccount(did); err != nil {
+	if err := m.db.UnbanAccount(r.Context(), did); err != nil {
 		logger.Error("Failed to unban account: %v", err)
 		WriteInternalError(w, "Failed to unban account")
 		return
@@ -725,7 +726,7 @@ func (m *ModerationHandler) AdminGetBannedAccounts(w http.ResponseWriter, r *htt
 		return
 	}
 
-	accounts, err := m.db.GetBannedAccounts()
+	accounts, err := m.db.GetBannedAccounts(r.Context())
 	if err != nil {
 		WriteInternalError(w, "Failed to get banned accounts")
 		return

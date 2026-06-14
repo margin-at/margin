@@ -1,6 +1,9 @@
 package db
 
-import "strings"
+import (
+	"context"
+	"strings"
+)
 
 func escapeLike(s string) string {
 	s = strings.ReplaceAll(s, "\\", "\\\\")
@@ -9,7 +12,7 @@ func escapeLike(s string) string {
 	return s
 }
 
-func (db *DB) SearchAnnotations(query string, authorDID string, limit, offset int) ([]Annotation, error) {
+func (db *DB) SearchAnnotations(ctx context.Context, query string, authorDID string, limit, offset int) ([]Annotation, error) {
 	pattern := "%" + escapeLike(query) + "%"
 
 	var baseQuery string
@@ -36,7 +39,7 @@ func (db *DB) SearchAnnotations(query string, authorDID string, limit, offset in
 		args = []interface{}{pattern, pattern, pattern, pattern, pattern, limit, offset}
 	}
 
-	rows, err := db.Query(baseQuery, args...)
+	rows, err := db.pool.Query(ctx, baseQuery, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +48,7 @@ func (db *DB) SearchAnnotations(query string, authorDID string, limit, offset in
 	return scanAnnotations(rows)
 }
 
-func (db *DB) SearchHighlights(query string, authorDID string, limit, offset int) ([]Highlight, error) {
+func (db *DB) SearchHighlights(ctx context.Context, query string, authorDID string, limit, offset int) ([]Highlight, error) {
 	pattern := "%" + escapeLike(query) + "%"
 
 	var baseQuery string
@@ -72,7 +75,7 @@ func (db *DB) SearchHighlights(query string, authorDID string, limit, offset int
 		args = []interface{}{pattern, pattern, pattern, pattern, limit, offset}
 	}
 
-	rows, err := db.Query(baseQuery, args...)
+	rows, err := db.pool.Query(ctx, baseQuery, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -81,7 +84,7 @@ func (db *DB) SearchHighlights(query string, authorDID string, limit, offset int
 	return scanHighlights(rows)
 }
 
-func (db *DB) SearchBookmarks(query string, authorDID string, limit, offset int) ([]Bookmark, error) {
+func (db *DB) SearchBookmarks(ctx context.Context, query string, authorDID string, limit, offset int) ([]Bookmark, error) {
 	pattern := "%" + escapeLike(query) + "%"
 
 	var baseQuery string
@@ -108,11 +111,26 @@ func (db *DB) SearchBookmarks(query string, authorDID string, limit, offset int)
 		args = []interface{}{pattern, pattern, pattern, pattern, limit, offset}
 	}
 
-	rows, err := db.Query(baseQuery, args...)
+	rows, err := db.pool.Query(ctx, baseQuery, args...)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
 	return scanBookmarks(rows)
+}
+
+func scanBookmarks(rows interface {
+	Next() bool
+	Scan(...interface{}) error
+}) ([]Bookmark, error) {
+	var bookmarks []Bookmark
+	for rows.Next() {
+		var b Bookmark
+		if err := rows.Scan(&b.URI, &b.AuthorDID, &b.Source, &b.SourceHash, &b.Title, &b.Description, &b.TagsJSON, &b.CreatedAt, &b.IndexedAt, &b.CID); err != nil {
+			return nil, err
+		}
+		bookmarks = append(bookmarks, b)
+	}
+	return bookmarks, nil
 }

@@ -8,14 +8,20 @@ import (
 	"strings"
 	"time"
 
-	_ "github.com/lib/pq"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jackc/pgx/v5/stdlib"
+	"margin.at/internal/db/sqlcdb"
 	"margin.at/internal/domain"
 )
 
 type DB struct {
-	*sql.DB
-	crypter fieldCrypter
+	pool        *pgxpool.Pool
+	migrationDB *sql.DB
+	q           *sqlcdb.Queries
+	crypter     fieldCrypter
 }
+
+func (db *DB) Pool() *pgxpool.Pool { return db.pool }
 
 type (
 	Note             = domain.Note
@@ -43,55 +49,68 @@ func New(dsn string) (*DB, error) {
 		return nil, fmt.Errorf("only PostgreSQL is supported; DSN must start with postgres:// or postgresql://")
 	}
 
-	sqlDB, err := sql.Open("postgres", dsn)
+	cfg, err := pgxpool.ParseConfig(dsn)
+	if err != nil {
+		return nil, fmt.Errorf("parse config: %w", err)
+	}
+	cfg.MaxConns = 25
+	cfg.MinConns = 2
+	cfg.MaxConnLifetime = time.Hour
+	cfg.MaxConnIdleTime = 15 * time.Minute
+	cfg.HealthCheckPeriod = 30 * time.Second
+
+	pool, err := pgxpool.NewWithConfig(context.Background(), cfg)
 	if err != nil {
 		return nil, fmt.Errorf("open database: %w", err)
 	}
-
-	sqlDB.SetMaxOpenConns(25)
-	sqlDB.SetMaxIdleConns(10)
-	sqlDB.SetConnMaxLifetime(5 * time.Minute)
-	sqlDB.SetConnMaxIdleTime(2 * time.Minute)
-
-	if err := sqlDB.Ping(); err != nil {
+	if err := pool.Ping(context.Background()); err != nil {
+		pool.Close()
 		return nil, fmt.Errorf("ping database: %w", err)
 	}
 
-	return &DB{DB: sqlDB}, nil
+	return &DB{pool: pool, migrationDB: stdlib.OpenDBFromPool(pool), q: sqlcdb.New(pool)}, nil
 }
 
-func (db *DB) Close() error { return db.DB.Close() }
+func (db *DB) Close() error {
+	if db.migrationDB != nil {
+		db.migrationDB.Close()
+	}
+	if db.pool != nil {
+		db.pool.Close()
+	}
+	return nil
+}
 
 func (db *DB) AdvisoryLock(ctx context.Context, key int64, fn func() error) (bool, error) {
-	conn, err := db.Conn(ctx)
+	conn, err := db.pool.Acquire(ctx)
 	if err != nil {
 		return false, fmt.Errorf("advisory lock: acquire conn: %w", err)
 	}
-	defer conn.Close()
+	defer conn.Release()
 
-	if _, err := conn.ExecContext(ctx, "SELECT pg_advisory_lock($1)", key); err != nil {
+	if _, err := conn.Exec(ctx, "SELECT pg_advisory_lock($1)", key); err != nil {
 		return false, fmt.Errorf("advisory lock: acquire: %w", err)
 	}
-	defer conn.ExecContext(ctx, "SELECT pg_advisory_unlock($1)", key) //nolint:errcheck
+	defer conn.Exec(context.Background(), "SELECT pg_advisory_unlock($1)", key) //nolint:errcheck
 
 	return true, fn()
 }
 
 func (db *DB) TryAdvisoryLock(ctx context.Context, key int64, fn func() error) (bool, error) {
-	conn, err := db.Conn(ctx)
+	conn, err := db.pool.Acquire(ctx)
 	if err != nil {
 		return false, fmt.Errorf("try advisory lock: acquire conn: %w", err)
 	}
-	defer conn.Close()
+	defer conn.Release()
 
 	var acquired bool
-	if err := conn.QueryRowContext(ctx, "SELECT pg_try_advisory_lock($1)", key).Scan(&acquired); err != nil {
+	if err := conn.QueryRow(ctx, "SELECT pg_try_advisory_lock($1)", key).Scan(&acquired); err != nil {
 		return false, fmt.Errorf("try advisory lock: %w", err)
 	}
 	if !acquired {
 		return false, nil
 	}
-	defer conn.ExecContext(ctx, "SELECT pg_advisory_unlock($1)", key) //nolint:errcheck
+	defer conn.Exec(context.Background(), "SELECT pg_advisory_unlock($1)", key) //nolint:errcheck
 
 	return true, fn()
 }

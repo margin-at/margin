@@ -82,10 +82,10 @@ func GenerateSigningKey() (*ecdsa.PrivateKey, error) {
 const SigningKeyKV = "oauth_signing_key"
 
 type KVStore interface {
-	GetOrCreateEncryptedKV(key, value string) (string, error)
+	GetOrCreateEncryptedKV(ctx context.Context, key, value string) (string, error)
 }
 
-func LoadSigningKey(kv KVStore) (*ecdsa.PrivateKey, error) {
+func LoadSigningKey(ctx context.Context, kv KVStore) (*ecdsa.PrivateKey, error) {
 	candidate, err := GenerateSigningKey()
 	if err != nil {
 		return nil, err
@@ -94,7 +94,7 @@ func LoadSigningKey(kv KVStore) (*ecdsa.PrivateKey, error) {
 	if err != nil {
 		return nil, err
 	}
-	stored, err := kv.GetOrCreateEncryptedKV(SigningKeyKV, string(raw))
+	stored, err := kv.GetOrCreateEncryptedKV(ctx, SigningKeyKV, string(raw))
 	if err != nil {
 		return nil, err
 	}

@@ -2,10 +2,10 @@ package postgres
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"strings"
 
+	"github.com/jackc/pgx/v5"
 	"margin.at/internal/domain"
 )
 
@@ -32,7 +32,7 @@ func (r *ProfileRepository) GetProfiles(ctx context.Context, dids []string) (map
 	query := `SELECT author_did, display_name, avatar FROM profiles WHERE author_did IN (` +
 		strings.Join(placeholders, ",") + `)`
 
-	rows, err := r.db.QueryContext(ctx, query, args...)
+	rows, err := r.db.Query(ctx, query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -70,10 +70,10 @@ func (r *ProfileRepository) GetProfile(ctx context.Context, did string) (*domain
 	query := `SELECT uri, author_did, display_name, avatar, bio, website, links_json, created_at, indexed_at
 	          FROM profiles WHERE author_did = $1`
 	var p domain.Profile
-	err := r.db.QueryRowContext(ctx, query, did).Scan(
+	err := r.db.QueryRow(ctx, query, did).Scan(
 		&p.URI, &p.AuthorDID, &p.DisplayName, &p.Avatar, &p.Bio, &p.Website, &p.LinksJSON, &p.CreatedAt, &p.IndexedAt,
 	)
-	if err == sql.ErrNoRows {
+	if err == pgx.ErrNoRows {
 		return nil, nil
 	}
 	if err != nil {
@@ -83,7 +83,7 @@ func (r *ProfileRepository) GetProfile(ctx context.Context, did string) (*domain
 }
 
 func (r *ProfileRepository) UpsertProfile(ctx context.Context, p *domain.Profile) error {
-	_, err := r.db.ExecContext(ctx, `
+	_, err := r.db.Exec(ctx, `
 		INSERT INTO profiles (uri, author_did, display_name, avatar, bio, website, links_json, created_at, indexed_at)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
 		ON CONFLICT(uri) DO UPDATE SET

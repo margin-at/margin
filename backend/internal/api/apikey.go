@@ -4,10 +4,8 @@ import (
 	"context"
 	"crypto/rand"
 	"crypto/sha256"
-	"crypto/x509"
 	"encoding/hex"
 	"encoding/json"
-	"encoding/pem"
 	"fmt"
 	"net/http"
 	"strings"
@@ -92,7 +90,7 @@ func (h *APIKeyHandler) CreateKey(w http.ResponseWriter, r *http.Request) {
 		IndexedAt: time.Now(),
 	}
 
-	if err := h.db.CreateAPIKey(apiKey); err != nil {
+	if err := h.db.CreateAPIKey(r.Context(), apiKey); err != nil {
 		logger.Error("[ERROR] Failed to insert API key into DB: %v", err)
 		WriteInternalError(w, "Failed to create key")
 		return
@@ -113,7 +111,7 @@ func (h *APIKeyHandler) ListKeys(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	keys, err := h.db.GetAPIKeysByOwner(session.DID)
+	keys, err := h.db.GetAPIKeysByOwner(r.Context(), session.DID)
 	if err != nil {
 		WriteInternalError(w, "Failed to get keys")
 		return
@@ -139,7 +137,7 @@ func (h *APIKeyHandler) DeleteKey(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	uri, err := h.db.DeleteAPIKey(keyID, session.DID)
+	uri, err := h.db.DeleteAPIKey(r.Context(), keyID, session.DID)
 	if err != nil {
 		WriteInternalError(w, "Failed to delete key")
 		return
@@ -218,12 +216,12 @@ func (h *APIKeyHandler) QuickBookmark(w http.ResponseWriter, r *http.Request) {
 
 	logger.Info("[QuickBookmark] created record URI=%s for DID %s", result.URI, apiKey.OwnerDID)
 
-	h.db.UpdateAPIKeyLastUsed(apiKey.ID)
+	h.db.UpdateAPIKeyLastUsed(r.Context(), apiKey.ID)
 
 	capturedTags := append([]string(nil), req.Tags...)
 	capturedNoteURI := result.URI
 	go func(did, url, noteURI string) {
-		prefs, dbErr := h.db.GetPreferences(did)
+		prefs, dbErr := h.db.GetPreferences(context.Background(), did)
 		communityEnabled := dbErr == nil && prefs != nil && (prefs.EnableCommunityBookmarks == nil || *prefs.EnableCommunityBookmarks)
 		if !communityEnabled {
 			return
@@ -245,7 +243,7 @@ func (h *APIKeyHandler) QuickBookmark(w http.ResponseWriter, r *http.Request) {
 		defer cancel()
 		communityResult, communityErr := client.CreateRecord(ctx, did, xrpc.CollectionCommunityBookmark, communityRecord)
 		if communityErr == nil && communityResult != nil {
-			_ = h.db.SaveCommunityBookmarkRef(noteURI, communityResult.URI)
+			_ = h.db.SaveCommunityBookmarkRef(context.Background(), noteURI, communityResult.URI)
 		}
 	}(apiKey.OwnerDID, req.URL, capturedNoteURI)
 
@@ -276,7 +274,7 @@ func (h *APIKeyHandler) QuickBookmark(w http.ResponseWriter, r *http.Request) {
 		IndexedAt:    time.Now(),
 		CID:          &cid,
 	}
-	h.db.CreateNote(note)
+	h.db.CreateNote(r.Context(), note)
 
 	WriteSuccess(w, map[string]string{
 		"uri":     result.URI,
@@ -359,7 +357,7 @@ func (h *APIKeyHandler) QuickSave(w http.ResponseWriter, r *http.Request) {
 			return createErr
 		})
 		if err == nil {
-			h.db.UpdateAPIKeyLastUsed(apiKey.ID)
+			h.db.UpdateAPIKeyLastUsed(r.Context(), apiKey.ID)
 			selectorJSON, _ := json.Marshal(req.Selector)
 			selectorStr := string(selectorJSON)
 			colorPtr := &color
@@ -384,7 +382,7 @@ func (h *APIKeyHandler) QuickSave(w http.ResponseWriter, r *http.Request) {
 				CID:          &result.CID,
 			}
 			go func() {
-				if err := h.db.CreateNote(note); err != nil {
+				if err := h.db.CreateNote(context.Background(), note); err != nil {
 					logger.Error("Warning: failed to index highlight note in local DB: %v", err)
 				}
 			}()
@@ -406,7 +404,7 @@ func (h *APIKeyHandler) QuickSave(w http.ResponseWriter, r *http.Request) {
 			return createErr
 		})
 		if err == nil {
-			h.db.UpdateAPIKeyLastUsed(apiKey.ID)
+			h.db.UpdateAPIKeyLastUsed(r.Context(), apiKey.ID)
 
 			var selectorStrPtr *string
 			if req.Selector != nil {
@@ -438,7 +436,7 @@ func (h *APIKeyHandler) QuickSave(w http.ResponseWriter, r *http.Request) {
 				CID:          &result.CID,
 			}
 			go func() {
-				h.db.CreateNote(note)
+				h.db.CreateNote(context.Background(), note)
 			}()
 		}
 	}
@@ -518,7 +516,7 @@ func (h *APIKeyHandler) QuickHighlight(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.db.UpdateAPIKeyLastUsed(apiKey.ID)
+	h.db.UpdateAPIKeyLastUsed(r.Context(), apiKey.ID)
 
 	selectorJSON, _ := json.Marshal(req.Selector)
 	selectorStr := string(selectorJSON)
@@ -548,7 +546,7 @@ func (h *APIKeyHandler) QuickHighlight(w http.ResponseWriter, r *http.Request) {
 		IndexedAt:    time.Now(),
 		CID:          &result.CID,
 	}
-	if err := h.db.CreateNote(note); err != nil {
+	if err := h.db.CreateNote(r.Context(), note); err != nil {
 		logger.Error("Warning: failed to index highlight note in local DB: %v", err)
 	}
 
@@ -579,7 +577,7 @@ func (h *APIKeyHandler) GetMe(w http.ResponseWriter, r *http.Request) {
 		WriteUnauthorized(w, "Unauthorized")
 		return
 	}
-	sess, err := h.db.GetOAuthSessionByID(token)
+	sess, err := h.db.GetOAuthSessionByID(r.Context(), token)
 	if err != nil {
 		WriteUnauthorized(w, "Invalid session")
 		return
@@ -603,7 +601,7 @@ func (h *APIKeyHandler) authenticateAPIKey(r *http.Request) (*db.APIKey, error) 
 	rawKey := strings.TrimPrefix(auth, "Bearer ")
 	keyHash := hashAPIKey(rawKey)
 
-	apiKey, err := h.db.GetAPIKeyByHash(keyHash)
+	apiKey, err := h.db.GetAPIKeyByHash(r.Context(), keyHash)
 	if err != nil {
 		return nil, fmt.Errorf("invalid API key")
 	}
@@ -612,53 +610,28 @@ func (h *APIKeyHandler) authenticateAPIKey(r *http.Request) (*db.APIKey, error) 
 }
 
 func (h *APIKeyHandler) getSessionByDID(did string) (*SessionData, error) {
-	rows, err := h.db.Query(`
-		SELECT id, did, handle, access_token, refresh_token, COALESCE(dpop_key, '')
-		FROM sessions
-		WHERE did = $1 AND expires_at > $2
-		ORDER BY created_at DESC
-		LIMIT 1
-	`, did, time.Now())
+	row, err := h.db.GetLatestOAuthSessionByDID(context.Background(), did)
 	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	if !rows.Next() {
 		return nil, fmt.Errorf("no active session")
 	}
 
-	var sessionID, sessDID, handle, accessToken, refreshToken, dpopKeyStr string
-	if err := rows.Scan(&sessionID, &sessDID, &handle, &accessToken, &refreshToken, &dpopKeyStr); err != nil {
+	session, err := sessionFromRow(row)
+	if err != nil {
 		return nil, err
 	}
 
-	block, _ := pem.Decode([]byte(dpopKeyStr))
-	if block == nil {
-		return nil, fmt.Errorf("invalid session DPoP key")
+	if session.PDS == "" {
+		pds, perr := xrpc.ResolveDIDToPDS(session.DID)
+		if perr != nil {
+			return nil, fmt.Errorf("failed to resolve PDS: %w", perr)
+		}
+		session.PDS = pds
 	}
-	dpopKey, err := x509.ParseECPrivateKey(block.Bytes)
-	if err != nil {
-		return nil, fmt.Errorf("invalid session DPoP key: %w", err)
-	}
-
-	pds, err := xrpc.ResolveDIDToPDS(sessDID)
-	if err != nil {
-		return nil, fmt.Errorf("failed to resolve PDS: %w", err)
-	}
-	if pds == "" {
-		return nil, fmt.Errorf("PDS not found for DID: %s", sessDID)
+	if session.PDS == "" {
+		return nil, fmt.Errorf("PDS not found for DID: %s", session.DID)
 	}
 
-	return &SessionData{
-		ID:           sessionID,
-		DID:          sessDID,
-		Handle:       handle,
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
-		DPoPKey:      dpopKey,
-		PDS:          pds,
-	}, nil
+	return session, nil
 }
 
 func generateAPIKey() string {

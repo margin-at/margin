@@ -1,75 +1,58 @@
 package db
 
 import (
-	"fmt"
-	"strings"
+	"context"
 	"time"
+
+	"margin.at/internal/db/sqlcdb"
 )
 
-func (db *DB) SaveEditHistory(uri, recordType, previousContent string, previousCID *string) error {
-	_, err := db.Exec(`
-		INSERT INTO edit_history (uri, record_type, previous_content, previous_cid, edited_at)
-		VALUES ($1, $2, $3, $4, $5)
-	`, uri, recordType, previousContent, previousCID, time.Now())
-	return err
+func (db *DB) SaveEditHistory(ctx context.Context, uri, recordType, previousContent string, previousCID *string) error {
+	return db.q.SaveEditHistory(ctx, sqlcdb.SaveEditHistoryParams{
+		Uri:             uri,
+		RecordType:      recordType,
+		PreviousContent: previousContent,
+		PreviousCid:     previousCID,
+		EditedAt:        time.Now(),
+	})
 }
 
-func (db *DB) GetEditHistory(uri string) ([]EditHistory, error) {
-	rows, err := db.Query(`
-		SELECT id, uri, record_type, previous_content, previous_cid, edited_at
-		FROM edit_history
-		WHERE uri = $1
-		ORDER BY edited_at DESC
-	`, uri)
+func (db *DB) GetEditHistory(ctx context.Context, uri string) ([]EditHistory, error) {
+	rows, err := db.q.GetEditHistory(ctx, uri)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-
 	var history []EditHistory
-	for rows.Next() {
-		var h EditHistory
-		if err := rows.Scan(&h.ID, &h.URI, &h.RecordType, &h.PreviousContent, &h.PreviousCID, &h.EditedAt); err != nil {
-			return nil, err
-		}
-		history = append(history, h)
+	for _, r := range rows {
+		history = append(history, EditHistory{
+			ID:              int(r.ID),
+			URI:             r.Uri,
+			RecordType:      r.RecordType,
+			PreviousContent: r.PreviousContent,
+			PreviousCID:     r.PreviousCid,
+			EditedAt:        r.EditedAt,
+		})
 	}
 	return history, nil
 }
 
-func (db *DB) GetLatestEditTimes(uris []string) (map[string]time.Time, error) {
+func (db *DB) GetLatestEditTimes(ctx context.Context, uris []string) (map[string]time.Time, error) {
 	if len(uris) == 0 {
 		return nil, nil
 	}
 
-	placeholders := make([]string, len(uris))
-	args := make([]interface{}, len(uris))
-	for i, uri := range uris {
-		placeholders[i] = fmt.Sprintf("$%d", i+1)
-		args[i] = uri
-	}
-
-	query := `
-		SELECT uri, MAX(edited_at) as edited_at
-		FROM edit_history
-		WHERE uri IN (` + strings.Join(placeholders, ",") + `)
-		GROUP BY uri
-	`
-
-	rows, err := db.Query(query, args...)
+	rows, err := db.q.GetLatestEditTimes(ctx, uris)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
 
 	result := make(map[string]time.Time)
-	for rows.Next() {
-		var uri string
-		var editedAt time.Time
-		if err := rows.Scan(&uri, &editedAt); err != nil {
+	for _, r := range rows {
+		editedAt, ok := r.EditedAt.(time.Time)
+		if !ok {
 			continue
 		}
-		result[uri] = editedAt
+		result[r.Uri] = editedAt
 	}
 
 	return result, nil

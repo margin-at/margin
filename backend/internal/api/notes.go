@@ -58,89 +58,107 @@ type NoteIndexDB interface {
 
 type dbAdapter struct{ d *db.DB }
 
-func (a *dbAdapter) CreateNote(n *domain.Note) error               { return a.d.CreateNote(n) }
-func (a *dbAdapter) GetNoteByURI(uri string) (*domain.Note, error) { return a.d.GetNoteByURI(uri) }
-func (a *dbAdapter) DeleteNote(uri string) error                   { return a.d.DeleteNote(uri) }
+func (a *dbAdapter) CreateNote(n *domain.Note) error { return a.d.CreateNote(context.Background(), n) }
+func (a *dbAdapter) GetNoteByURI(uri string) (*domain.Note, error) {
+	return a.d.GetNoteByURI(context.Background(), uri)
+}
+func (a *dbAdapter) DeleteNote(uri string) error { return a.d.DeleteNote(context.Background(), uri) }
 func (a *dbAdapter) UpdateNoteAnnotation(uri, body, tags, cid string) error {
-	return a.d.UpdateNoteAnnotation(uri, body, tags, cid)
+	return a.d.UpdateNoteAnnotation(context.Background(), uri, body, tags, cid)
 }
 func (a *dbAdapter) UpdateNoteHighlight(uri, color, tags, cid string) error {
-	return a.d.UpdateNoteHighlight(uri, color, tags, cid)
+	return a.d.UpdateNoteHighlight(context.Background(), uri, color, tags, cid)
 }
 func (a *dbAdapter) UpdateNoteBookmark(uri, title, desc, tags, cid string) error {
-	return a.d.UpdateNoteBookmark(uri, title, desc, tags, cid)
+	return a.d.UpdateNoteBookmark(context.Background(), uri, title, desc, tags, cid)
 }
-func (a *dbAdapter) CreateAnnotation(ann *domain.Annotation) error { return a.d.CreateAnnotation(ann) }
+func (a *dbAdapter) CreateAnnotation(ann *domain.Annotation) error {
+	return a.d.CreateAnnotation(context.Background(), ann)
+}
 func (a *dbAdapter) GetAnnotationByURI(uri string) (*domain.Annotation, error) {
-	return a.d.GetAnnotationByURI(uri)
+	return a.d.GetAnnotationByURI(context.Background(), uri)
 }
 func (a *dbAdapter) GetAnnotationsByAuthor(did string, limit, offset int) ([]domain.Annotation, error) {
-	return a.d.GetAnnotationsByAuthor(did, limit, offset)
+	return a.d.GetAnnotationsByAuthor(context.Background(), did, limit, offset)
 }
 func (a *dbAdapter) UpdateAnnotation(uri, body, tags, cid string) error {
-	return a.d.UpdateAnnotation(uri, body, tags, cid)
+	return a.d.UpdateAnnotation(context.Background(), uri, body, tags, cid)
 }
-func (a *dbAdapter) DeleteAnnotation(uri string) error         { return a.d.DeleteAnnotation(uri) }
-func (a *dbAdapter) CreateHighlight(h *domain.Highlight) error { return a.d.CreateHighlight(h) }
+func (a *dbAdapter) DeleteAnnotation(uri string) error {
+	return a.d.DeleteAnnotation(context.Background(), uri)
+}
+func (a *dbAdapter) CreateHighlight(h *domain.Highlight) error {
+	return a.d.CreateHighlight(context.Background(), h)
+}
 func (a *dbAdapter) GetHighlightByURI(uri string) (*domain.Highlight, error) {
-	return a.d.GetHighlightByURI(uri)
+	return a.d.GetHighlightByURI(context.Background(), uri)
 }
 func (a *dbAdapter) GetHighlightsByAuthor(did string, limit, offset int) ([]domain.Highlight, error) {
-	return a.d.GetHighlightsByAuthor(did, limit, offset)
+	return a.d.GetHighlightsByAuthor(context.Background(), did, limit, offset)
 }
 func (a *dbAdapter) UpdateHighlight(uri, color, tags, cid string) error {
-	return a.d.UpdateHighlight(uri, color, tags, cid)
+	return a.d.UpdateHighlight(context.Background(), uri, color, tags, cid)
 }
-func (a *dbAdapter) DeleteHighlight(uri string) error        { return a.d.DeleteHighlight(uri) }
-func (a *dbAdapter) CreateBookmark(b *domain.Bookmark) error { return a.d.CreateBookmark(b) }
+func (a *dbAdapter) DeleteHighlight(uri string) error {
+	return a.d.DeleteHighlight(context.Background(), uri)
+}
+func (a *dbAdapter) CreateBookmark(b *domain.Bookmark) error {
+	return a.d.CreateBookmark(context.Background(), b)
+}
 func (a *dbAdapter) GetBookmarkByURI(uri string) (*domain.Bookmark, error) {
-	return a.d.GetBookmarkByURI(uri)
+	return a.d.GetBookmarkByURI(context.Background(), uri)
 }
 func (a *dbAdapter) GetBookmarksByTargetHash(hash string, limit, offset int) ([]domain.Bookmark, error) {
-	return a.d.GetBookmarksByTargetHash(hash, limit, offset)
+	return a.d.GetBookmarksByTargetHash(context.Background(), hash, limit, offset)
 }
 func (a *dbAdapter) UpdateBookmark(uri, title, desc, tags, cid string) error {
-	return a.d.UpdateBookmark(uri, title, desc, tags, cid)
+	return a.d.UpdateBookmark(context.Background(), uri, title, desc, tags, cid)
 }
-func (a *dbAdapter) DeleteBookmark(uri string) error { return a.d.DeleteBookmark(uri) }
-func (a *dbAdapter) CreateLike(l *domain.Like) error { return a.d.CreateLike(l) }
+func (a *dbAdapter) DeleteBookmark(uri string) error {
+	return a.d.DeleteBookmark(context.Background(), uri)
+}
+func (a *dbAdapter) CreateLike(l *domain.Like) error { return a.d.CreateLike(context.Background(), l) }
 func (a *dbAdapter) GetLikeByUserAndSubject(did, sub string) (*domain.Like, error) {
-	return a.d.GetLikeByUserAndSubject(did, sub)
+	return a.d.GetLikeByUserAndSubject(context.Background(), did, sub)
 }
-func (a *dbAdapter) DeleteLike(uri string) error         { return a.d.DeleteLike(uri) }
-func (a *dbAdapter) CreateReply(rep *domain.Reply) error { return a.d.CreateReply(rep) }
+func (a *dbAdapter) DeleteLike(uri string) error { return a.d.DeleteLike(context.Background(), uri) }
+func (a *dbAdapter) CreateReply(rep *domain.Reply) error {
+	return a.d.CreateReply(context.Background(), rep)
+}
 func (a *dbAdapter) GetReplyByURI(uri string) (*domain.Reply, error) {
-	return a.d.GetReplyByURI(uri)
+	return a.d.GetReplyByURI(context.Background(), uri)
 }
-func (a *dbAdapter) DeleteReply(uri string) error { return a.d.DeleteReply(uri) }
+func (a *dbAdapter) DeleteReply(uri string) error { return a.d.DeleteReply(context.Background(), uri) }
 func (a *dbAdapter) CreateNotification(n *domain.Notification) error {
-	return a.d.CreateNotification(n)
+	return a.d.CreateNotification(context.Background(), n)
 }
-func (a *dbAdapter) GetAuthorByURI(uri string) (string, error) { return a.d.GetAuthorByURI(uri) }
+func (a *dbAdapter) GetAuthorByURI(uri string) (string, error) {
+	return a.d.GetAuthorByURI(context.Background(), uri)
+}
 func (a *dbAdapter) GetPreferences(did string) (*domain.Preferences, error) {
-	return a.d.GetPreferences(did)
+	return a.d.GetPreferences(context.Background(), did)
 }
 func (a *dbAdapter) SyncSelfLabels(author, uri string, labels []string) error {
-	return a.d.SyncSelfLabels(author, uri, labels)
+	return a.d.SyncSelfLabels(context.Background(), author, uri, labels)
 }
 func (a *dbAdapter) CreateContentLabel(src, uri, val, by string) error {
-	return a.d.CreateContentLabel(src, uri, val, by)
+	return a.d.CreateContentLabel(context.Background(), src, uri, val, by)
 }
 func (a *dbAdapter) SaveEditHistory(uri, rt, prev string, cid *string) error {
-	return a.d.SaveEditHistory(uri, rt, prev, cid)
+	return a.d.SaveEditHistory(context.Background(), uri, rt, prev, cid)
 }
 func (a *dbAdapter) HashURL(rawURL string) string { return db.HashURL(rawURL) }
 func (a *dbAdapter) CommunityBookmarkExists(did, hash, tags string) (bool, error) {
-	return a.d.CommunityBookmarkExists(did, hash, tags)
+	return a.d.CommunityBookmarkExists(context.Background(), did, hash, tags)
 }
 func (a *dbAdapter) SaveCommunityBookmarkRef(noteURI, communityURI string) error {
-	return a.d.SaveCommunityBookmarkRef(noteURI, communityURI)
+	return a.d.SaveCommunityBookmarkRef(context.Background(), noteURI, communityURI)
 }
 func (a *dbAdapter) GetCommunityBookmarkURI(noteURI string) (string, error) {
-	return a.d.GetCommunityBookmarkURI(noteURI)
+	return a.d.GetCommunityBookmarkURI(context.Background(), noteURI)
 }
 func (a *dbAdapter) DeleteCommunityBookmarkRef(noteURI string) error {
-	return a.d.DeleteCommunityBookmarkRef(noteURI)
+	return a.d.DeleteCommunityBookmarkRef(context.Background(), noteURI)
 }
 
 type NoteWriteService struct {

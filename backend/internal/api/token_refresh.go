@@ -33,19 +33,8 @@ func NewTokenRefresher(database *db.DB, signingKey *ecdsa.PrivateKey) *TokenRefr
 	}
 }
 
-func (tr *TokenRefresher) oauthClient(r *http.Request) *oauth.Client {
+func (tr *TokenRefresher) oauthClient() *oauth.Client {
 	base := tr.baseURL
-	if base == "" {
-		scheme := "http"
-		if r.TLS != nil || r.Header.Get("X-Forwarded-Proto") == "https" {
-			scheme = "https"
-		}
-		host := r.Header.Get("X-Forwarded-Host")
-		if host == "" {
-			host = r.Host
-		}
-		base = strings.TrimRight(fmt.Sprintf("%s://%s", scheme, host), "/")
-	}
 	return oauth.NewClient(base+"/oauth-client-metadata.json", base+"/auth/callback", tr.signingKey)
 }
 
@@ -86,7 +75,7 @@ func (tr *TokenRefresher) GetSessionWithAutoRefresh(r *http.Request) (*SessionDa
 		return nil, fmt.Errorf("not authenticated")
 	}
 
-	sess, err := tr.db.GetOAuthSessionByID(sessionID)
+	sess, err := tr.db.GetOAuthSessionByID(r.Context(), sessionID)
 	if err != nil {
 		return nil, fmt.Errorf("%w: session expired", ErrSessionInvalid)
 	}
@@ -95,7 +84,7 @@ func (tr *TokenRefresher) GetSessionWithAutoRefresh(r *http.Request) (*SessionDa
 		refreshed, rerr := tr.refreshSession(r, sessionID)
 		if rerr != nil {
 			logger.Error("Proactive token refresh failed for %s: %v", sess.DID, rerr)
-			tr.db.DeleteOAuthSession(sessionID)
+			tr.db.DeleteOAuthSession(r.Context(), sessionID)
 			return nil, fmt.Errorf("%w: %v", ErrSessionInvalid, rerr)
 		}
 		return refreshed, nil
@@ -108,7 +97,7 @@ func (tr *TokenRefresher) refreshSession(r *http.Request, sessionID string) (*Se
 	var result *SessionData
 
 	lockErr := tr.db.WithAdvisoryLock(context.Background(), "oauth_refresh:"+sessionID, func(ctx context.Context) error {
-		fresh, err := tr.db.GetOAuthSessionByID(sessionID)
+		fresh, err := tr.db.GetOAuthSessionByID(ctx, sessionID)
 		if err != nil {
 			return err
 		}
@@ -122,7 +111,7 @@ func (tr *TokenRefresher) refreshSession(r *http.Request, sessionID string) (*Se
 			return err
 		}
 		meta := &oauth.AuthServerMetadata{Issuer: fresh.Issuer, TokenEndpoint: fresh.TokenEndpoint}
-		tok, err := tr.oauthClient(r).RefreshToken(ctx, meta, fresh.RefreshToken, dpopKey)
+		tok, err := tr.oauthClient().RefreshToken(ctx, meta, fresh.RefreshToken, dpopKey)
 		if err != nil {
 			return err
 		}
@@ -135,7 +124,7 @@ func (tr *TokenRefresher) refreshSession(r *http.Request, sessionID string) (*Se
 		if tok.ExpiresIn > 0 {
 			atExpiry = time.Now().Add(time.Duration(tok.ExpiresIn) * time.Second)
 		}
-		if err := tr.db.UpdateOAuthSessionTokens(sessionID, tok.AccessToken, newRefresh, atExpiry); err != nil {
+		if err := tr.db.UpdateOAuthSessionTokens(ctx, sessionID, tok.AccessToken, newRefresh, atExpiry); err != nil {
 			logger.Error("persist refreshed tokens for %s: %v", fresh.DID, err)
 		}
 
@@ -189,7 +178,7 @@ func (tr *TokenRefresher) ExecuteWithAutoRefresh(
 	newSession, refreshErr := tr.refreshSession(r, session.ID)
 	if refreshErr != nil {
 		logger.Error("Token refresh failed for user %s, invalidating session: %v", session.Handle, refreshErr)
-		tr.db.DeleteOAuthSession(session.ID)
+		tr.db.DeleteOAuthSession(r.Context(), session.ID)
 		return fmt.Errorf("%w: %v", ErrSessionInvalid, refreshErr)
 	}
 

@@ -1,293 +1,215 @@
 package db
 
-import "time"
+import (
+	"context"
+	"time"
 
-func (db *DB) CreateCollection(c *Collection) error {
-	_, err := db.Exec(`
-		INSERT INTO collections (uri, author_did, name, description, icon, created_at, indexed_at)
-		VALUES ($1, $2, $3, $4, $5, $6, $7)
-		ON CONFLICT(uri) DO UPDATE SET
-			name = EXCLUDED.name,
-			description = EXCLUDED.description,
-			icon = EXCLUDED.icon,
-			indexed_at = EXCLUDED.indexed_at
-	`, c.URI, c.AuthorDID, c.Name, c.Description, c.Icon, c.CreatedAt, c.IndexedAt)
-	return err
+	"github.com/jackc/pgx/v5/pgtype"
+	"margin.at/internal/db/sqlcdb"
+)
+
+func (db *DB) CreateCollection(ctx context.Context, c *Collection) error {
+	return db.q.CreateCollection(ctx, sqlcdb.CreateCollectionParams{
+		Uri:         c.URI,
+		AuthorDid:   c.AuthorDID,
+		Name:        c.Name,
+		Description: c.Description,
+		Icon:        c.Icon,
+		CreatedAt:   c.CreatedAt,
+		IndexedAt:   c.IndexedAt,
+	})
 }
 
-func (db *DB) GetCollectionsByAuthor(authorDID string) ([]Collection, error) {
-	rows, err := db.Query(`
-		SELECT uri, author_did, name, description, icon, created_at, indexed_at
-		FROM collections
-		WHERE author_did = $1
-		ORDER BY created_at DESC
-	`, authorDID)
+func (db *DB) GetCollectionsByAuthor(ctx context.Context, authorDID string) ([]Collection, error) {
+	rows, err := db.q.GetCollectionsByAuthor(ctx, authorDID)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-
 	var collections []Collection
-	for rows.Next() {
-		var c Collection
-		if err := rows.Scan(&c.URI, &c.AuthorDID, &c.Name, &c.Description, &c.Icon, &c.CreatedAt, &c.IndexedAt); err != nil {
-			return nil, err
-		}
-		collections = append(collections, c)
+	for _, r := range rows {
+		collections = append(collections, mapCollection(r))
 	}
 	return collections, nil
 }
 
-func (db *DB) GetCollectionByURI(uri string) (*Collection, error) {
-	var c Collection
-	err := db.QueryRow(`
-		SELECT uri, author_did, name, description, icon, created_at, indexed_at
-		FROM collections
-		WHERE uri = $1
-	`, uri).Scan(&c.URI, &c.AuthorDID, &c.Name, &c.Description, &c.Icon, &c.CreatedAt, &c.IndexedAt)
+func (db *DB) GetCollectionByURI(ctx context.Context, uri string) (*Collection, error) {
+	r, err := db.q.GetCollectionByURI(ctx, uri)
 	if err != nil {
 		return nil, err
 	}
+	c := mapCollection(r)
 	return &c, nil
 }
 
-func (db *DB) DeleteCollection(uri string) error {
-	db.Exec(`DELETE FROM collection_items WHERE collection_uri = $1`, uri)
-	_, err := db.Exec(`DELETE FROM collections WHERE uri = $1`, uri)
-	return err
+func (db *DB) DeleteCollection(ctx context.Context, uri string) error {
+	db.q.DeleteCollectionItemsByCollection(ctx, uri)
+	return db.q.DeleteCollection(ctx, uri)
 }
 
-func (db *DB) AddToCollection(item *CollectionItem) error {
-	_, err := db.Exec(`
-		INSERT INTO collection_items (uri, author_did, collection_uri, annotation_uri, position, created_at, indexed_at)
-		VALUES ($1, $2, $3, $4, $5, $6, $7)
-		ON CONFLICT(uri) DO UPDATE SET
-			position = EXCLUDED.position,
-			indexed_at = EXCLUDED.indexed_at
-	`, item.URI, item.AuthorDID, item.CollectionURI, item.AnnotationURI, item.Position, item.CreatedAt, item.IndexedAt)
-	return err
+func (db *DB) AddToCollection(ctx context.Context, item *CollectionItem) error {
+	return db.q.AddToCollection(ctx, sqlcdb.AddToCollectionParams{
+		Uri:           item.URI,
+		AuthorDid:     item.AuthorDID,
+		CollectionUri: item.CollectionURI,
+		AnnotationUri: item.AnnotationURI,
+		Position:      pgtype.Int4{Int32: int32(item.Position), Valid: true},
+		CreatedAt:     item.CreatedAt,
+		IndexedAt:     item.IndexedAt,
+	})
 }
 
-func (db *DB) GetCollectionItems(collectionURI string) ([]CollectionItem, error) {
-	rows, err := db.Query(`
-		SELECT uri, author_did, collection_uri, annotation_uri, position, created_at, indexed_at
-		FROM collection_items
-		WHERE collection_uri = $1
-		ORDER BY position ASC, created_at DESC
-	`, collectionURI)
+func (db *DB) GetCollectionItems(ctx context.Context, collectionURI string) ([]CollectionItem, error) {
+	rows, err := db.q.GetCollectionItems(ctx, collectionURI)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-
 	var items []CollectionItem
-	for rows.Next() {
-		var item CollectionItem
-		if err := rows.Scan(&item.URI, &item.AuthorDID, &item.CollectionURI, &item.AnnotationURI, &item.Position, &item.CreatedAt, &item.IndexedAt); err != nil {
-			return nil, err
-		}
-		items = append(items, item)
+	for _, r := range rows {
+		items = append(items, mapCollectionItem(r))
 	}
 	return items, nil
 }
 
-func (db *DB) RemoveFromCollection(uri string) error {
-	_, err := db.Exec(`DELETE FROM collection_items WHERE uri = $1`, uri)
-	return err
+func (db *DB) RemoveFromCollection(ctx context.Context, uri string) error {
+	return db.q.RemoveFromCollection(ctx, uri)
 }
 
-func (db *DB) GetRecentCollectionItems(limit, offset int) ([]CollectionItem, error) {
-	rows, err := db.Query(`
-		SELECT uri, author_did, collection_uri, annotation_uri, position, created_at, indexed_at
-		FROM collection_items
-		ORDER BY created_at DESC
-		LIMIT $1 OFFSET $2
-	`, limit, offset)
+func (db *DB) GetRecentCollectionItems(ctx context.Context, limit, offset int) ([]CollectionItem, error) {
+	rows, err := db.q.GetRecentCollectionItems(ctx, sqlcdb.GetRecentCollectionItemsParams{
+		Limit:  int32(limit),
+		Offset: int32(offset),
+	})
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-
-	return scanCollectionItems(rows)
+	return mapCollectionItems(rows), nil
 }
 
-func (db *DB) GetPopularCollectionItems(limit, offset int) ([]CollectionItem, error) {
+func (db *DB) GetPopularCollectionItems(ctx context.Context, limit, offset int) ([]CollectionItem, error) {
 	since := time.Now().AddDate(0, 0, -14)
-	rows, err := db.Query(`
-		SELECT
-			c.uri, c.author_did, c.collection_uri, c.annotation_uri,
-			c.position, c.created_at, c.indexed_at
-		FROM collection_items c
-		LEFT JOIN LATERAL (
-			SELECT COUNT(*) as cnt FROM likes WHERE subject_uri = c.annotation_uri
-		) l ON true
-		LEFT JOIN LATERAL (
-			SELECT COUNT(*) as cnt FROM replies WHERE root_uri = c.annotation_uri
-		) r ON true
-		WHERE c.created_at > $1 AND (l.cnt + r.cnt) > 0
-		ORDER BY (l.cnt + r.cnt) DESC, c.created_at DESC
-		LIMIT $2 OFFSET $3
-	`, since, limit, offset)
+	rows, err := db.q.GetPopularCollectionItems(ctx, sqlcdb.GetPopularCollectionItemsParams{
+		CreatedAt: since,
+		Limit:     int32(limit),
+		Offset:    int32(offset),
+	})
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-
-	return scanCollectionItems(rows)
+	return mapCollectionItems(rows), nil
 }
 
-func (db *DB) GetShelvedCollectionItems(limit, offset int) ([]CollectionItem, error) {
+func (db *DB) GetShelvedCollectionItems(ctx context.Context, limit, offset int) ([]CollectionItem, error) {
 	olderThan := time.Now().AddDate(0, 0, -1)
 	since := time.Now().AddDate(0, 0, -14)
-	rows, err := db.Query(`
-		SELECT
-			c.uri, c.author_did, c.collection_uri, c.annotation_uri,
-			c.position, c.created_at, c.indexed_at
-		FROM collection_items c
-		WHERE c.created_at < $1 AND c.created_at > $2
-			AND NOT EXISTS (SELECT 1 FROM likes WHERE subject_uri = c.annotation_uri)
-			AND NOT EXISTS (SELECT 1 FROM replies WHERE root_uri = c.annotation_uri)
-		ORDER BY RANDOM()
-		LIMIT $3 OFFSET $4
-	`, olderThan, since, limit, offset)
+	rows, err := db.q.GetShelvedCollectionItems(ctx, sqlcdb.GetShelvedCollectionItemsParams{
+		CreatedAt:   olderThan,
+		CreatedAt_2: since,
+		Limit:       int32(limit),
+		Offset:      int32(offset),
+	})
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-
-	return scanCollectionItems(rows)
+	return mapCollectionItems(rows), nil
 }
 
-func (db *DB) GetCollectionItemsByAuthor(authorDID string) ([]CollectionItem, error) {
-	rows, err := db.Query(`
-		SELECT uri, author_did, collection_uri, annotation_uri, position, created_at, indexed_at
-		FROM collection_items
-		WHERE author_did = $1
-		ORDER BY created_at DESC
-	`, authorDID)
+func (db *DB) GetCollectionItemsByAuthor(ctx context.Context, authorDID string) ([]CollectionItem, error) {
+	rows, err := db.q.GetCollectionItemsByAuthor(ctx, authorDID)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-
-	return scanCollectionItems(rows)
+	return mapCollectionItems(rows), nil
 }
 
-func (db *DB) GetCollectionURIsForAnnotation(annotationURI string) ([]string, error) {
-	rows, err := db.Query(`
-		SELECT collection_uri FROM collection_items WHERE annotation_uri = $1
-	`, annotationURI)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var uris []string
-	for rows.Next() {
-		var uri string
-		if err := rows.Scan(&uri); err != nil {
-			return nil, err
-		}
-		uris = append(uris, uri)
-	}
-	return uris, nil
+func (db *DB) GetCollectionURIsForAnnotation(ctx context.Context, annotationURI string) ([]string, error) {
+	return db.q.GetCollectionURIsForAnnotation(ctx, annotationURI)
 }
 
-func (db *DB) GetCollectionItemCounts(uris []string) (map[string]int, error) {
+func (db *DB) GetCollectionItemCounts(ctx context.Context, uris []string) (map[string]int, error) {
 	if len(uris) == 0 {
 		return map[string]int{}, nil
 	}
 
-	rows, err := db.Query(`
-		SELECT collection_uri, COUNT(*)
-		FROM collection_items
-		WHERE collection_uri = ANY($1)
-		GROUP BY collection_uri
-	`, pqStringArray(uris))
+	rows, err := db.q.GetCollectionItemCounts(ctx, uris)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
 
 	counts := make(map[string]int)
-	for rows.Next() {
-		var uri string
-		var count int
-		if err := rows.Scan(&uri, &count); err != nil {
-			return nil, err
-		}
-		counts[uri] = count
+	for _, r := range rows {
+		counts[r.CollectionUri] = int(r.Count)
 	}
 	return counts, nil
 }
 
-func (db *DB) GetCollectionsForNoteURIs(noteURIs []string) (map[string]Collection, error) {
+func (db *DB) GetCollectionsForNoteURIs(ctx context.Context, noteURIs []string) (map[string]Collection, error) {
 	if len(noteURIs) == 0 {
 		return map[string]Collection{}, nil
 	}
-	rows, err := db.Query(`
-		SELECT DISTINCT ON (ci.annotation_uri)
-			ci.annotation_uri,
-			c.uri, c.author_did, c.name, c.description, c.icon, c.created_at, c.indexed_at
-		FROM collection_items ci
-		JOIN collections c ON c.uri = ci.collection_uri
-		WHERE ci.annotation_uri = ANY($1)
-		ORDER BY ci.annotation_uri, ci.created_at ASC
-	`, pqStringArray(noteURIs))
+	rows, err := db.q.GetCollectionsForNoteURIs(ctx, noteURIs)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
 
 	result := make(map[string]Collection)
-	for rows.Next() {
-		var noteURI string
-		var c Collection
-		if err := rows.Scan(&noteURI, &c.URI, &c.AuthorDID, &c.Name, &c.Description, &c.Icon, &c.CreatedAt, &c.IndexedAt); err != nil {
-			return nil, err
+	for _, r := range rows {
+		result[r.AnnotationUri] = Collection{
+			URI:         r.Uri,
+			AuthorDID:   r.AuthorDid,
+			Name:        r.Name,
+			Description: r.Description,
+			Icon:        r.Icon,
+			CreatedAt:   r.CreatedAt,
+			IndexedAt:   r.IndexedAt,
 		}
-		result[noteURI] = c
 	}
 	return result, nil
 }
 
-func (db *DB) GetCollectionsByURIs(uris []string) ([]Collection, error) {
+func (db *DB) GetCollectionsByURIs(ctx context.Context, uris []string) ([]Collection, error) {
 	if len(uris) == 0 {
 		return []Collection{}, nil
 	}
 
-	rows, err := db.Query(`
-		SELECT uri, author_did, name, description, icon, created_at, indexed_at
-		FROM collections
-		WHERE uri = ANY($1)
-	`, pqStringArray(uris))
+	rows, err := db.q.GetCollectionsByURIs(ctx, uris)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-
 	var collections []Collection
-	for rows.Next() {
-		var c Collection
-		if err := rows.Scan(&c.URI, &c.AuthorDID, &c.Name, &c.Description, &c.Icon, &c.CreatedAt, &c.IndexedAt); err != nil {
-			return nil, err
-		}
-		collections = append(collections, c)
+	for _, r := range rows {
+		collections = append(collections, mapCollection(r))
 	}
 	return collections, nil
 }
 
-func scanCollectionItems(rows interface {
-	Next() bool
-	Scan(...interface{}) error
-}) ([]CollectionItem, error) {
-	var items []CollectionItem
-	for rows.Next() {
-		var item CollectionItem
-		if err := rows.Scan(&item.URI, &item.AuthorDID, &item.CollectionURI, &item.AnnotationURI, &item.Position, &item.CreatedAt, &item.IndexedAt); err != nil {
-			return nil, err
-		}
-		items = append(items, item)
+func mapCollection(r sqlcdb.Collection) Collection {
+	return Collection{
+		URI:         r.Uri,
+		AuthorDID:   r.AuthorDid,
+		Name:        r.Name,
+		Description: r.Description,
+		Icon:        r.Icon,
+		CreatedAt:   r.CreatedAt,
+		IndexedAt:   r.IndexedAt,
 	}
-	return items, nil
+}
+
+func mapCollectionItem(r sqlcdb.CollectionItem) CollectionItem {
+	return CollectionItem{
+		URI:           r.Uri,
+		AuthorDID:     r.AuthorDid,
+		CollectionURI: r.CollectionUri,
+		AnnotationURI: r.AnnotationUri,
+		Position:      int(r.Position.Int32),
+		CreatedAt:     r.CreatedAt,
+		IndexedAt:     r.IndexedAt,
+	}
+}
+
+func mapCollectionItems(rows []sqlcdb.CollectionItem) []CollectionItem {
+	var items []CollectionItem
+	for _, r := range rows {
+		items = append(items, mapCollectionItem(r))
+	}
+	return items
 }

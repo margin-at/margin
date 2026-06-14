@@ -20,7 +20,7 @@ func NewEngagementRepository(db DB) *EngagementRepository {
 
 func (r *EngagementRepository) GetLikeCount(ctx context.Context, uri string) (int, error) {
 	var count int
-	err := r.db.QueryRowContext(ctx,
+	err := r.db.QueryRow(ctx,
 		`SELECT COUNT(*) FROM likes WHERE subject_uri = $1`, uri,
 	).Scan(&count)
 	return count, err
@@ -30,7 +30,7 @@ func (r *EngagementRepository) GetLikeCounts(ctx context.Context, uris []string)
 	if len(uris) == 0 {
 		return map[string]int{}, nil
 	}
-	rows, err := r.db.QueryContext(ctx,
+	rows, err := r.db.Query(ctx,
 		`SELECT subject_uri, COUNT(*) FROM likes WHERE subject_uri = ANY($1) GROUP BY subject_uri`,
 		pqArray(uris),
 	)
@@ -55,7 +55,7 @@ func (r *EngagementRepository) GetReplyCounts(ctx context.Context, uris []string
 	if len(uris) == 0 {
 		return map[string]int{}, nil
 	}
-	rows, err := r.db.QueryContext(ctx,
+	rows, err := r.db.Query(ctx,
 		`SELECT root_uri, COUNT(*) FROM replies WHERE root_uri = ANY($1) GROUP BY root_uri`,
 		pqArray(uris),
 	)
@@ -89,7 +89,7 @@ func (r *EngagementRepository) GetViewerLikes(ctx context.Context, viewerDID str
 		args[i+1] = uri
 	}
 
-	rows, err := r.db.QueryContext(ctx,
+	rows, err := r.db.Query(ctx,
 		`SELECT subject_uri FROM likes WHERE author_did = $1 AND subject_uri IN (`+
 			strings.Join(placeholders, ", ")+`)`,
 		args...,
@@ -134,7 +134,7 @@ func (r *EngagementRepository) queryLabels(ctx context.Context, subjects []strin
 	}
 	query += ` ORDER BY created_at DESC`
 
-	rows, err := r.db.QueryContext(ctx, query, args...)
+	rows, err := r.db.Query(ctx, query, args...)
 	if err != nil {
 		return result, err
 	}
@@ -162,7 +162,7 @@ func (r *EngagementRepository) GetLatestEditTimes(ctx context.Context, uris []st
 		args[i] = uri
 	}
 
-	rows, err := r.db.QueryContext(ctx,
+	rows, err := r.db.Query(ctx,
 		`SELECT uri, MAX(edited_at) FROM edit_history WHERE uri IN (`+
 			strings.Join(placeholders, ",")+`) GROUP BY uri`,
 		args...,

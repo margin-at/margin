@@ -68,8 +68,8 @@ func ensureSembleCardsIndexed(ctx context.Context, database *db.DB, uris []strin
 		return
 	}
 
-	existingAnnos, _ := database.GetAnnotationsByURIs(deduped)
-	existingBooks, _ := database.GetBookmarksByURIs(deduped)
+	existingAnnos, _ := database.GetAnnotationsByURIs(ctx, deduped)
+	existingBooks, _ := database.GetBookmarksByURIs(ctx, deduped)
 
 	foundSet := make(map[string]bool, len(existingAnnos)+len(existingBooks))
 	for _, a := range existingAnnos {
@@ -235,7 +235,7 @@ func indexSembleCard(database *db.DB, uri, did string, card *xrpc.SembleCard) er
 			CreatedAt:    createdAt,
 			IndexedAt:    time.Now(),
 		}
-		return database.CreateAnnotation(annotation)
+		return database.CreateAnnotation(context.Background(), annotation)
 
 	case "URL":
 		urlContent, ok := content.(*xrpc.SembleURLContent)
@@ -264,7 +264,7 @@ func indexSembleCard(database *db.DB, uri, did string, card *xrpc.SembleCard) er
 			CreatedAt:  createdAt,
 			IndexedAt:  time.Now(),
 		}
-		return database.CreateBookmark(bookmark)
+		return database.CreateBookmark(context.Background(), bookmark)
 	}
 
 	return nil

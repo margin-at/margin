@@ -31,12 +31,13 @@ export type AnalyticsEvents = {
   };
   item_deleted: { type: "annotation" | "highlight" | "bookmark" };
   item_shared: {
-    method: "copy" | "bluesky" | "twitter" | "mastodon" | "email";
+    method: "copy_link" | "social_app";
+    destination?: string;
     item_type?: string;
   };
   item_added_to_collection: Record<string, never>;
 
-  collection_created: { name: string };
+  collection_created: { has_description: boolean };
   collection_deleted: Record<string, never>;
 
   extension_installed: { version: string; browser: string };

@@ -300,40 +300,40 @@ func (i *Ingester) triggerLazySync(did string) {
 func (i *Ingester) handleDelete(collection, uri string) {
 	switch collection {
 	case CollectionAnnotation:
-		i.db.DeleteAnnotation(uri)
+		i.db.DeleteAnnotation(context.Background(), uri)
 	case CollectionHighlight:
-		i.db.DeleteHighlight(uri)
+		i.db.DeleteHighlight(context.Background(), uri)
 	case CollectionBookmark:
-		i.db.DeleteBookmark(uri)
+		i.db.DeleteBookmark(context.Background(), uri)
 	case CollectionReply:
-		i.db.DeleteReply(uri)
+		i.db.DeleteReply(context.Background(), uri)
 	case CollectionLike:
-		i.db.DeleteLike(uri)
+		i.db.DeleteLike(context.Background(), uri)
 	case CollectionCollection:
-		i.db.DeleteCollection(uri)
+		i.db.DeleteCollection(context.Background(), uri)
 	case CollectionCollectionItem:
-		i.db.RemoveFromCollection(uri)
+		i.db.RemoveFromCollection(context.Background(), uri)
 	case CollectionProfile:
-		i.db.DeleteProfile(uri)
+		i.db.DeleteProfile(context.Background(), uri)
 	case CollectionAPIKey:
-		i.db.DeleteAPIKeyByURI(uri)
+		i.db.DeleteAPIKeyByURI(context.Background(), uri)
 	case CollectionPreferences:
-		i.db.DeletePreferences(uri)
+		i.db.DeletePreferences(context.Background(), uri)
 	case CollectionSembleCard:
-		i.db.DeleteAnnotation(uri)
-		i.db.DeleteBookmark(uri)
+		i.db.DeleteAnnotation(context.Background(), uri)
+		i.db.DeleteBookmark(context.Background(), uri)
 	case CollectionSembleCollection:
-		i.db.DeleteCollection(uri)
+		i.db.DeleteCollection(context.Background(), uri)
 	case xrpc.CollectionSembleCollectionLink:
-		i.db.RemoveFromCollection(uri)
+		i.db.RemoveFromCollection(context.Background(), uri)
 	case CollectionDocument:
-		i.db.DeleteDocument(uri)
+		i.db.DeleteDocument(context.Background(), uri)
 	case xrpc.CollectionNote:
-		i.db.DeleteNote(uri)
+		i.db.DeleteNote(context.Background(), uri)
 	case xrpc.CollectionCommunityBookmark:
-		i.db.DeleteNote(uri)
+		i.db.DeleteNote(context.Background(), uri)
 	case xrpc.CollectionLichenBookmark:
-		i.db.DeleteBookmark(uri)
+		i.db.DeleteBookmark(context.Background(), uri)
 	}
 }
 
@@ -455,7 +455,7 @@ func (i *Ingester) handleAnnotation(event *FirehoseEvent) {
 		IndexedAt:    time.Now(),
 	}
 
-	if err := i.db.CreateAnnotation(annotation); err != nil {
+	if err := i.db.CreateAnnotation(context.Background(), annotation); err != nil {
 		logger.Error("Failed to index annotation: %v", err)
 	} else {
 		logger.Info("Indexed annotation from %s on %s", event.Repo, targetSource)
@@ -559,7 +559,7 @@ func (i *Ingester) handleNote(event *FirehoseEvent) {
 		IndexedAt:    time.Now(),
 	}
 
-	if err := i.db.CreateNote(note); err != nil {
+	if err := i.db.CreateNote(context.Background(), note); err != nil {
 		logger.Error("Failed to index note: %v", err)
 	} else {
 		logger.Info("Indexed note from %s on %s", event.Repo, targetSource)
@@ -590,7 +590,7 @@ func (i *Ingester) handleCommunityBookmark(event *FirehoseEvent) {
 
 	targetHash := db.HashURL(record.Subject)
 
-	if exists, err := i.db.MarginNoteBookmarkExists(event.Repo, targetHash); err == nil && exists {
+	if exists, err := i.db.MarginNoteBookmarkExists(context.Background(), event.Repo, targetHash); err == nil && exists {
 		return
 	}
 
@@ -612,7 +612,7 @@ func (i *Ingester) handleCommunityBookmark(event *FirehoseEvent) {
 		IndexedAt:    time.Now(),
 	}
 
-	if err := i.db.CreateNote(note); err != nil {
+	if err := i.db.CreateNote(context.Background(), note); err != nil {
 		logger.Error("Failed to index community bookmark: %v", err)
 	} else {
 		logger.Info("Indexed community bookmark from %s on %s", event.Repo, record.Subject)
@@ -652,7 +652,7 @@ func (i *Ingester) handleReply(event *FirehoseEvent) {
 		IndexedAt: time.Now(),
 	}
 
-	i.db.CreateReply(reply)
+	i.db.CreateReply(context.Background(), reply)
 }
 
 func (i *Ingester) handleLike(event *FirehoseEvent) {
@@ -682,7 +682,7 @@ func (i *Ingester) handleLike(event *FirehoseEvent) {
 		IndexedAt:  time.Now(),
 	}
 
-	i.db.CreateLike(like)
+	i.db.CreateLike(context.Background(), like)
 }
 
 func (i *Ingester) handleHighlight(event *FirehoseEvent) {
@@ -744,7 +744,7 @@ func (i *Ingester) handleHighlight(event *FirehoseEvent) {
 		IndexedAt:    time.Now(),
 	}
 
-	if err := i.db.CreateHighlight(highlight); err != nil {
+	if err := i.db.CreateHighlight(context.Background(), highlight); err != nil {
 		logger.Error("Failed to index highlight: %v", err)
 	} else {
 		logger.Info("Indexed highlight from %s on %s", event.Repo, record.Target.Source)
@@ -805,7 +805,7 @@ func (i *Ingester) handleBookmark(event *FirehoseEvent) {
 		IndexedAt:   time.Now(),
 	}
 
-	if err := i.db.CreateBookmark(bookmark); err != nil {
+	if err := i.db.CreateBookmark(context.Background(), bookmark); err != nil {
 		logger.Error("Failed to index bookmark: %v", err)
 	} else {
 		logger.Info("Indexed bookmark from %s: %s", event.Repo, record.Source)
@@ -849,7 +849,7 @@ func (i *Ingester) handleCollection(event *FirehoseEvent) {
 		IndexedAt:   time.Now(),
 	}
 
-	if err := i.db.CreateCollection(collection); err != nil {
+	if err := i.db.CreateCollection(context.Background(), collection); err != nil {
 		logger.Error("Failed to index collection: %v", err)
 	} else {
 		logger.Info("Indexed collection from %s: %s", event.Repo, record.Name)
@@ -885,7 +885,7 @@ func (i *Ingester) handleCollectionItem(event *FirehoseEvent) {
 		IndexedAt:     time.Now(),
 	}
 
-	if err := i.db.AddToCollection(item); err != nil {
+	if err := i.db.AddToCollection(context.Background(), item); err != nil {
 		logger.Error("Failed to index collection item: %v", err)
 	} else {
 		logger.Info("Indexed collection item from %s", event.Repo)
@@ -943,7 +943,7 @@ func (i *Ingester) handleProfile(event *FirehoseEvent) {
 		IndexedAt:   time.Now(),
 	}
 
-	if err := i.db.UpsertProfile(profile); err != nil {
+	if err := i.db.UpsertProfile(context.Background(), profile); err != nil {
 		logger.Error("Failed to index profile: %v", err)
 	} else {
 		logger.Info("Indexed profile from %s", event.Repo)
@@ -984,7 +984,7 @@ func (i *Ingester) handleAPIKey(event *FirehoseEvent) {
 		IndexedAt: time.Now(),
 	}
 
-	if err := i.db.CreateAPIKey(apiKey); err != nil {
+	if err := i.db.CreateAPIKey(context.Background(), apiKey); err != nil {
 		logger.Error("Failed to index API key: %v", err)
 	} else {
 		logger.Info("Indexed API key from %s: %s", event.Repo, record.Name)
@@ -1053,7 +1053,7 @@ func (i *Ingester) handlePreferences(event *FirehoseEvent) {
 		CID:                          cidPtr,
 	}
 
-	if err := i.db.UpsertPreferences(prefs); err != nil {
+	if err := i.db.UpsertPreferences(context.Background(), prefs); err != nil {
 		logger.Error("Failed to index preferences: %v", err)
 	} else {
 		logger.Info("Indexed preferences from %s", event.Repo)
@@ -1122,7 +1122,7 @@ func (i *Ingester) handleSembleCard(event *FirehoseEvent) {
 			CreatedAt:    createdAt,
 			IndexedAt:    time.Now(),
 		}
-		if err := i.db.CreateAnnotation(annotation); err != nil {
+		if err := i.db.CreateAnnotation(context.Background(), annotation); err != nil {
 			logger.Error("Failed to index Semble NOTE as annotation: %v", err)
 		} else {
 			if card.ParentCard != nil {
@@ -1159,7 +1159,7 @@ func (i *Ingester) handleSembleCard(event *FirehoseEvent) {
 			CreatedAt:  createdAt,
 			IndexedAt:  time.Now(),
 		}
-		if err := i.db.CreateBookmark(bookmark); err != nil {
+		if err := i.db.CreateBookmark(context.Background(), bookmark); err != nil {
 			logger.Error("Failed to index Semble URL as bookmark: %v", err)
 		} else {
 			logger.Info("Indexed Semble URL from %s: %s", event.Repo, source)
@@ -1196,7 +1196,7 @@ func (i *Ingester) handleSembleCollection(event *FirehoseEvent) {
 		IndexedAt:   time.Now(),
 	}
 
-	if err := i.db.CreateCollection(collection); err != nil {
+	if err := i.db.CreateCollection(context.Background(), collection); err != nil {
 		logger.Error("Failed to index Semble collection: %v", err)
 	} else {
 		logger.Info("Indexed Semble collection from %s: %s", event.Repo, record.Name)
@@ -1225,7 +1225,7 @@ func (i *Ingester) handleSembleCollectionLink(event *FirehoseEvent) {
 		IndexedAt:     time.Now(),
 	}
 
-	if err := i.db.AddToCollection(item); err != nil {
+	if err := i.db.AddToCollection(context.Background(), item); err != nil {
 		logger.Error("Failed to index Semble collection link: %v", err)
 	} else {
 		logger.Info("Indexed Semble collection link from %s", event.Repo)
@@ -1295,7 +1295,7 @@ func (i *Ingester) handleDocument(event *FirehoseEvent) {
 	}
 
 	verification.VerifyDocumentAsync(canonicalURL, uri, func(verifiedURI string) {
-		if err := i.db.UpsertDocument(doc); err != nil {
+		if err := i.db.UpsertDocument(context.Background(), doc); err != nil {
 			logger.Error("Failed to index document: %v", err)
 		} else {
 			logger.Info("Indexed verified document from %s: %s", event.Repo, record.Title)
@@ -1331,7 +1331,7 @@ func (i *Ingester) handleLichenBookmark(event *FirehoseEvent) {
 		CreatedAt:  createdAt,
 		IndexedAt:  time.Now(),
 	}
-	if err := i.db.CreateBookmark(bookmark); err != nil {
+	if err := i.db.CreateBookmark(context.Background(), bookmark); err != nil {
 		logger.Error("Failed to index Lichen bookmark: %v", err)
 	} else {
 		logger.Info("Indexed Lichen bookmark from %s: %s", event.Repo, source)

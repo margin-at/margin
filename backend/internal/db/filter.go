@@ -1,11 +1,12 @@
 package db
 
 import (
-	"database/sql"
+	"context"
 	"fmt"
 	"strings"
 	"time"
 
+	"github.com/jackc/pgx/v5"
 	"margin.at/internal/domain"
 )
 
@@ -20,7 +21,7 @@ const (
 	FeedTypeSemble  = domain.FeedTypeSemble
 )
 
-func (db *DB) ListNotes(f NoteFilter) ([]Note, error) {
+func (db *DB) ListNotes(ctx context.Context, f NoteFilter) ([]Note, error) {
 	var where []string
 	var args []interface{}
 	n := 1
@@ -123,7 +124,7 @@ func (db *DB) ListNotes(f NoteFilter) ([]Note, error) {
 
 	args = append(args, limit, f.Offset)
 
-	rows, err := db.Query(query, args...)
+	rows, err := db.pool.Query(ctx, query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -131,7 +132,7 @@ func (db *DB) ListNotes(f NoteFilter) ([]Note, error) {
 	return scanNotes(rows)
 }
 
-func (db *DB) GetNoteByURIFromUnified(uri string) (*Note, error) {
+func (db *DB) GetNoteByURIFromUnified(ctx context.Context, uri string) (*Note, error) {
 	query := `
 		SELECT uri, author_did, motivation, color, description, body_value, body_format, body_uri,
 		       target_source, target_hash, target_title, selector_json, tags_json, created_at, indexed_at, cid
@@ -139,13 +140,13 @@ func (db *DB) GetNoteByURIFromUnified(uri string) (*Note, error) {
 		WHERE uri = $1
 	`
 	var note Note
-	err := db.QueryRow(query, uri).Scan(
+	err := db.pool.QueryRow(ctx, query, uri).Scan(
 		&note.URI, &note.AuthorDID, &note.Motivation, &note.Color, &note.Description,
 		&note.BodyValue, &note.BodyFormat, &note.BodyURI,
 		&note.TargetSource, &note.TargetHash, &note.TargetTitle,
 		&note.SelectorJSON, &note.TagsJSON, &note.CreatedAt, &note.IndexedAt, &note.CID,
 	)
-	if err == sql.ErrNoRows {
+	if err == pgx.ErrNoRows {
 		return nil, nil
 	}
 	if err != nil {
@@ -174,8 +175,8 @@ func scanNotes(rows interface {
 	return notes, nil
 }
 
-func (db *DB) MigrateUnifiedNotes() {
-	db.Exec(`
+func (db *DB) MigrateUnifiedNotes(ctx context.Context) {
+	db.pool.Exec(ctx, `
 		CREATE OR REPLACE VIEW unified_notes AS
 		-- New notes table (primary path)
 		SELECT

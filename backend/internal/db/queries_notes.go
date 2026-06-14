@@ -1,72 +1,52 @@
 package db
 
 import (
-	"database/sql"
-	"fmt"
-	"strings"
+	"context"
 	"time"
+
+	"github.com/jackc/pgx/v5"
+	"margin.at/internal/db/sqlcdb"
 )
 
-func (db *DB) CreateNote(n *Note) error {
-	query := `
-		INSERT INTO notes (
-			uri, author_did, motivation, color, description, body_value, body_format, body_uri,
-			target_source, target_hash, target_title, selector_json, tags_json, created_at, indexed_at, cid
-		) VALUES (
-			$1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16
-		) ON CONFLICT (uri) DO UPDATE SET
-			motivation = EXCLUDED.motivation,
-			color = EXCLUDED.color,
-			description = EXCLUDED.description,
-			body_value = EXCLUDED.body_value,
-			body_format = EXCLUDED.body_format,
-			body_uri = EXCLUDED.body_uri,
-			target_source = EXCLUDED.target_source,
-			target_hash = EXCLUDED.target_hash,
-			target_title = EXCLUDED.target_title,
-			selector_json = EXCLUDED.selector_json,
-			tags_json = EXCLUDED.tags_json,
-			indexed_at = EXCLUDED.indexed_at,
-			cid = EXCLUDED.cid
-	`
-	_, err := db.Exec(query,
-		n.URI, n.AuthorDID, n.Motivation, n.Color, n.Description, n.BodyValue, n.BodyFormat, n.BodyURI,
-		n.TargetSource, n.TargetHash, n.TargetTitle, n.SelectorJSON, n.TagsJSON, n.CreatedAt, n.IndexedAt, n.CID,
-	)
-	return err
+func (db *DB) CreateNote(ctx context.Context, n *Note) error {
+	return db.q.CreateNote(ctx, sqlcdb.CreateNoteParams{
+		Uri:          n.URI,
+		AuthorDid:    n.AuthorDID,
+		Motivation:   &n.Motivation,
+		Color:        n.Color,
+		Description:  n.Description,
+		BodyValue:    n.BodyValue,
+		BodyFormat:   n.BodyFormat,
+		BodyUri:      n.BodyURI,
+		TargetSource: n.TargetSource,
+		TargetHash:   n.TargetHash,
+		TargetTitle:  n.TargetTitle,
+		SelectorJson: n.SelectorJSON,
+		TagsJson:     n.TagsJSON,
+		CreatedAt:    n.CreatedAt,
+		IndexedAt:    n.IndexedAt,
+		Cid:          n.CID,
+	})
 }
 
-func (db *DB) GetNoteByURI(uri string) (*Note, error) {
-	query := `
-		SELECT uri, author_did, motivation, color, description, body_value, body_format, body_uri,
-			target_source, target_hash, target_title, selector_json, tags_json, created_at, indexed_at, cid
-		FROM notes WHERE uri = $1
-	`
-	var n Note
-	err := db.QueryRow(query, uri).Scan(
-		&n.URI, &n.AuthorDID, &n.Motivation, &n.Color, &n.Description, &n.BodyValue, &n.BodyFormat, &n.BodyURI,
-		&n.TargetSource, &n.TargetHash, &n.TargetTitle, &n.SelectorJSON, &n.TagsJSON, &n.CreatedAt, &n.IndexedAt, &n.CID,
-	)
-	if err == sql.ErrNoRows {
+func (db *DB) GetNoteByURI(ctx context.Context, uri string) (*Note, error) {
+	r, err := db.q.GetNoteByURI(ctx, uri)
+	if err == pgx.ErrNoRows {
 		return nil, nil
 	}
 	if err != nil {
 		return nil, err
 	}
+	n := mapNote(r)
 	return &n, nil
 }
 
-func (db *DB) MarginNoteBookmarkExists(authorDID, targetHash string) (bool, error) {
-	var dummy int
-	err := db.QueryRow(`
-		SELECT 1 FROM notes
-		WHERE author_did = $1
-		  AND target_hash = $2
-		  AND motivation = 'bookmarking'
-		  AND uri LIKE 'at://%/at.margin.note/%'
-		LIMIT 1
-	`, authorDID, targetHash).Scan(&dummy)
-	if err == sql.ErrNoRows {
+func (db *DB) MarginNoteBookmarkExists(ctx context.Context, authorDID, targetHash string) (bool, error) {
+	_, err := db.q.MarginNoteBookmarkExists(ctx, sqlcdb.MarginNoteBookmarkExistsParams{
+		AuthorDid:  authorDID,
+		TargetHash: targetHash,
+	})
+	if err == pgx.ErrNoRows {
 		return false, nil
 	}
 	if err != nil {
@@ -75,41 +55,31 @@ func (db *DB) MarginNoteBookmarkExists(authorDID, targetHash string) (bool, erro
 	return true, nil
 }
 
-func (db *DB) SaveCommunityBookmarkRef(noteURI, communityURI string) error {
-	_, err := db.Exec(`
-		INSERT INTO community_bookmark_refs (note_uri, community_uri)
-		VALUES ($1, $2)
-		ON CONFLICT (note_uri) DO UPDATE SET community_uri = EXCLUDED.community_uri
-	`, noteURI, communityURI)
-	return err
+func (db *DB) SaveCommunityBookmarkRef(ctx context.Context, noteURI, communityURI string) error {
+	return db.q.SaveCommunityBookmarkRef(ctx, sqlcdb.SaveCommunityBookmarkRefParams{
+		NoteUri:      noteURI,
+		CommunityUri: communityURI,
+	})
 }
 
-func (db *DB) GetCommunityBookmarkURI(noteURI string) (string, error) {
-	var uri string
-	err := db.QueryRow(`
-		SELECT community_uri FROM community_bookmark_refs WHERE note_uri = $1
-	`, noteURI).Scan(&uri)
-	if err == sql.ErrNoRows {
+func (db *DB) GetCommunityBookmarkURI(ctx context.Context, noteURI string) (string, error) {
+	uri, err := db.q.GetCommunityBookmarkURI(ctx, noteURI)
+	if err == pgx.ErrNoRows {
 		return "", nil
 	}
 	return uri, err
 }
 
-func (db *DB) DeleteCommunityBookmarkRef(noteURI string) error {
-	_, err := db.Exec(`DELETE FROM community_bookmark_refs WHERE note_uri = $1`, noteURI)
-	return err
+func (db *DB) DeleteCommunityBookmarkRef(ctx context.Context, noteURI string) error {
+	return db.q.DeleteCommunityBookmarkRef(ctx, noteURI)
 }
 
-func (db *DB) CommunityBookmarkExists(authorDID, targetHash, tagsJSON string) (bool, error) {
-	var dummy int
-	err := db.QueryRow(`
-		SELECT 1 FROM community_bookmark_refs cbr
-		JOIN notes n ON n.uri = cbr.note_uri
-		WHERE n.author_did = $1
-		  AND n.target_hash = $2
-		LIMIT 1
-	`, authorDID, targetHash).Scan(&dummy)
-	if err == sql.ErrNoRows {
+func (db *DB) CommunityBookmarkExists(ctx context.Context, authorDID, targetHash, tagsJSON string) (bool, error) {
+	_, err := db.q.CommunityBookmarkExists(ctx, sqlcdb.CommunityBookmarkExistsParams{
+		AuthorDid:  authorDID,
+		TargetHash: targetHash,
+	})
+	if err == pgx.ErrNoRows {
 		return false, nil
 	}
 	if err != nil {
@@ -118,67 +88,76 @@ func (db *DB) CommunityBookmarkExists(authorDID, targetHash, tagsJSON string) (b
 	return true, nil
 }
 
-func (db *DB) GetNotesByURIs(uris []string) ([]Note, error) {
+func (db *DB) GetNotesByURIs(ctx context.Context, uris []string) ([]Note, error) {
 	if len(uris) == 0 {
 		return nil, nil
 	}
-	placeholders := make([]string, len(uris))
-	args := make([]interface{}, len(uris))
-	for i, u := range uris {
-		placeholders[i] = fmt.Sprintf("$%d", i+1)
-		args[i] = u
-	}
-	query := `
-		SELECT uri, author_did, motivation, color, description, body_value, body_format, body_uri,
-			target_source, target_hash, target_title, selector_json, tags_json, created_at, indexed_at, cid
-		FROM notes WHERE uri IN (` + strings.Join(placeholders, ",") + `)`
-	rows, err := db.Query(query, args...)
+	rows, err := db.q.GetNotesByURIs(ctx, uris)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
 	var notes []Note
-	for rows.Next() {
-		var n Note
-		if err := rows.Scan(
-			&n.URI, &n.AuthorDID, &n.Motivation, &n.Color, &n.Description, &n.BodyValue, &n.BodyFormat, &n.BodyURI,
-			&n.TargetSource, &n.TargetHash, &n.TargetTitle, &n.SelectorJSON, &n.TagsJSON, &n.CreatedAt, &n.IndexedAt, &n.CID,
-		); err != nil {
-			return nil, err
-		}
-		notes = append(notes, n)
+	for _, r := range rows {
+		notes = append(notes, mapNote(r))
 	}
 	return notes, nil
 }
 
-func (db *DB) DeleteNote(uri string) error {
-	_, err := db.Exec("DELETE FROM notes WHERE uri = $1", uri)
-	return err
+func (db *DB) DeleteNote(ctx context.Context, uri string) error {
+	return db.q.DeleteNote(ctx, uri)
 }
 
-func (db *DB) UpdateNoteAnnotation(uri, bodyValue, tagsJSON, cid string) error {
-	_, err := db.Exec(`
-		UPDATE notes
-		SET body_value = $1, tags_json = NULLIF($2, ''), cid = $3, indexed_at = $4
-		WHERE uri = $5
-	`, bodyValue, tagsJSON, cid, time.Now(), uri)
-	return err
+func (db *DB) UpdateNoteAnnotation(ctx context.Context, uri, bodyValue, tagsJSON, cid string) error {
+	return db.q.UpdateNoteAnnotation(ctx, sqlcdb.UpdateNoteAnnotationParams{
+		BodyValue: &bodyValue,
+		Column2:   tagsJSON,
+		Cid:       &cid,
+		IndexedAt: time.Now(),
+		Uri:       uri,
+	})
 }
 
-func (db *DB) UpdateNoteHighlight(uri, color, tagsJSON, cid string) error {
-	_, err := db.Exec(`
-		UPDATE notes
-		SET color = NULLIF($1, ''), tags_json = NULLIF($2, ''), cid = $3, indexed_at = $4
-		WHERE uri = $5
-	`, color, tagsJSON, cid, time.Now(), uri)
-	return err
+func (db *DB) UpdateNoteHighlight(ctx context.Context, uri, color, tagsJSON, cid string) error {
+	return db.q.UpdateNoteHighlight(ctx, sqlcdb.UpdateNoteHighlightParams{
+		Column1:   color,
+		Column2:   tagsJSON,
+		Cid:       &cid,
+		IndexedAt: time.Now(),
+		Uri:       uri,
+	})
 }
 
-func (db *DB) UpdateNoteBookmark(uri, title, description, tagsJSON, cid string) error {
-	_, err := db.Exec(`
-		UPDATE notes
-		SET target_title = NULLIF($1, ''), body_value = NULLIF($2, ''), tags_json = NULLIF($3, ''), cid = $4, indexed_at = $5
-		WHERE uri = $6
-	`, title, description, tagsJSON, cid, time.Now(), uri)
-	return err
+func (db *DB) UpdateNoteBookmark(ctx context.Context, uri, title, description, tagsJSON, cid string) error {
+	return db.q.UpdateNoteBookmark(ctx, sqlcdb.UpdateNoteBookmarkParams{
+		Column1:   title,
+		Column2:   description,
+		Column3:   tagsJSON,
+		Cid:       &cid,
+		IndexedAt: time.Now(),
+		Uri:       uri,
+	})
+}
+
+func mapNote(r sqlcdb.Note) Note {
+	n := Note{
+		URI:          r.Uri,
+		AuthorDID:    r.AuthorDid,
+		Color:        r.Color,
+		Description:  r.Description,
+		BodyValue:    r.BodyValue,
+		BodyFormat:   r.BodyFormat,
+		BodyURI:      r.BodyUri,
+		TargetSource: r.TargetSource,
+		TargetHash:   r.TargetHash,
+		TargetTitle:  r.TargetTitle,
+		SelectorJSON: r.SelectorJson,
+		TagsJSON:     r.TagsJson,
+		CreatedAt:    r.CreatedAt,
+		IndexedAt:    r.IndexedAt,
+		CID:          r.Cid,
+	}
+	if r.Motivation != nil {
+		n.Motivation = *r.Motivation
+	}
+	return n
 }

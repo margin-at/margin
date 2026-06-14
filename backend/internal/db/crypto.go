@@ -1,6 +1,7 @@
 package db
 
 import (
+	"context"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
@@ -77,12 +78,12 @@ func (db *DB) SetEncryptionKey(key []byte) error {
 	return nil
 }
 
-func (db *DB) GetOrCreateEncryptedKV(key, value string) (string, error) {
+func (db *DB) GetOrCreateEncryptedKV(ctx context.Context, key, value string) (string, error) {
 	enc, err := db.crypter.encrypt(value)
 	if err != nil {
 		return "", err
 	}
-	stored, err := db.GetOrCreateKV(key, enc)
+	stored, err := db.GetOrCreateKV(ctx, key, enc)
 	if err != nil {
 		return "", err
 	}

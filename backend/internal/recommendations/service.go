@@ -1,7 +1,7 @@
 package recommendations
 
 import (
-	"database/sql"
+	"context"
 	"encoding/json"
 	"math"
 	"sort"
@@ -10,6 +10,7 @@ import (
 	"time"
 	"unicode"
 
+	"github.com/jackc/pgx/v5"
 	"margin.at/internal/db"
 	"margin.at/internal/embeddings"
 	"margin.at/internal/logger"
@@ -49,12 +50,12 @@ func (s *Service) OnAnnotation(uri, authorDID, targetSource string, bodyValue, s
 	}
 
 	var documentURI *string
-	docURI, err := s.db.MatchAnnotationToDocument(targetSource)
+	docURI, err := s.db.MatchAnnotationToDocument(context.Background(), targetSource)
 	if err == nil && docURI != nil {
 		documentURI = docURI
 	}
 
-	if err := s.db.UpsertAnnotationEmbedding(uri, authorDID, documentURI, embedding); err != nil {
+	if err := s.db.UpsertAnnotationEmbedding(context.Background(), uri, authorDID, documentURI, embedding); err != nil {
 		logger.Error("Failed to store annotation embedding %s: %v", uri, err)
 		return
 	}
@@ -67,7 +68,7 @@ func (s *Service) OnDocument(documentURI string) {
 		return
 	}
 
-	doc, err := s.db.GetDocumentByURI(documentURI)
+	doc, err := s.db.GetDocumentByURI(context.Background(), documentURI)
 	if err != nil {
 		logger.Error("Failed to fetch document %s for embedding: %v", documentURI, err)
 		return
@@ -97,7 +98,7 @@ func (s *Service) OnDocument(documentURI string) {
 		return
 	}
 
-	if err := s.db.UpsertDocumentEmbedding(documentURI, embedding); err != nil {
+	if err := s.db.UpsertDocumentEmbedding(context.Background(), documentURI, embedding); err != nil {
 		logger.Error("Failed to store document embedding %s: %v", documentURI, err)
 	}
 }
@@ -107,8 +108,8 @@ func (s *Service) GetRecommendations(authorDID string, limit int) ([]Recommended
 		return nil, nil
 	}
 
-	profile, err := s.db.GetUserProfile(authorDID)
-	if err == sql.ErrNoRows {
+	profile, err := s.db.GetUserProfile(context.Background(), authorDID)
+	if err == pgx.ErrNoRows {
 		return nil, nil
 	}
 	if err != nil {
@@ -119,7 +120,7 @@ func (s *Service) GetRecommendations(authorDID string, limit int) ([]Recommended
 		return nil, nil
 	}
 
-	candidates, err := s.db.GetCandidateDocuments(authorDID, 500)
+	candidates, err := s.db.GetCandidateDocuments(context.Background(), authorDID, 500)
 	if err != nil {
 		return nil, err
 	}
@@ -165,7 +166,7 @@ func (s *Service) GetRecommendations(authorDID string, limit int) ([]Recommended
 		preList = preList[:shortlistSize]
 	}
 
-	annEmbeddings, _ := s.db.GetRecentAnnotationEmbeddingsByAuthor(authorDID, 30)
+	annEmbeddings, _ := s.db.GetRecentAnnotationEmbeddingsByAuthor(context.Background(), authorDID, 30)
 
 	topK := 3
 	if len(annEmbeddings) < topK {
@@ -258,7 +259,7 @@ func (s *Service) updateUserProfile(authorDID string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	annEmbeddings, err := s.db.GetAnnotationEmbeddingsByAuthor(authorDID)
+	annEmbeddings, err := s.db.GetAnnotationEmbeddingsByAuthor(context.Background(), authorDID)
 	if err != nil || len(annEmbeddings) == 0 {
 		return
 	}
@@ -288,7 +289,7 @@ func (s *Service) updateUserProfile(authorDID string) {
 		result[i] = float32(centroid[i] / totalWeight)
 	}
 
-	annotations, _ := s.db.GetAnnotationsByAuthor(authorDID, 500, 0)
+	annotations, _ := s.db.GetAnnotationsByAuthor(context.Background(), authorDID, 500, 0)
 	for _, ann := range annotations {
 		if ann.TagsJSON != nil {
 			var tags []string
@@ -298,7 +299,7 @@ func (s *Service) updateUserProfile(authorDID string) {
 			}
 		}
 	}
-	highlights, _ := s.db.GetHighlightsByAuthor(authorDID, 500, 0)
+	highlights, _ := s.db.GetHighlightsByAuthor(context.Background(), authorDID, 500, 0)
 	for _, h := range highlights {
 		if h.TagsJSON != nil {
 			var tags []string
@@ -321,7 +322,7 @@ func (s *Service) updateUserProfile(authorDID string) {
 		}
 	}
 
-	if err := s.db.UpsertUserProfile(authorDID, result, tagCounts, len(annEmbeddings)); err != nil {
+	if err := s.db.UpsertUserProfile(context.Background(), authorDID, result, tagCounts, len(annEmbeddings)); err != nil {
 		logger.Error("Failed to update user profile for %s: %v", authorDID, err)
 	}
 }
@@ -333,7 +334,7 @@ func (s *Service) BackfillDocumentEmbeddings(batchSize int) error {
 
 	total := 0
 	for {
-		docs, err := s.db.GetDocumentsWithoutEmbeddings(batchSize)
+		docs, err := s.db.GetDocumentsWithoutEmbeddings(context.Background(), batchSize)
 		if err != nil {
 			return err
 		}
@@ -365,7 +366,7 @@ func (s *Service) BackfillDocumentEmbeddings(batchSize int) error {
 		}
 
 		for i, doc := range docs {
-			if err := s.db.UpsertDocumentEmbedding(doc.URI, vecs[i]); err != nil {
+			if err := s.db.UpsertDocumentEmbedding(context.Background(), doc.URI, vecs[i]); err != nil {
 				logger.Error("Failed to store embedding for doc %s: %v", doc.URI, err)
 			}
 		}
@@ -391,7 +392,7 @@ func (s *Service) BackfillAnnotationEmbeddings(batchSize int) (int, error) {
 
 	total := 0
 	for {
-		anns, err := s.db.GetAnnotationsWithoutEmbeddings(batchSize)
+		anns, err := s.db.GetAnnotationsWithoutEmbeddings(context.Background(), batchSize)
 		if err != nil {
 			return total, err
 		}
@@ -417,10 +418,10 @@ func (s *Service) BackfillAnnotationEmbeddings(batchSize int) (int, error) {
 				continue
 			}
 			var documentURI *string
-			if docURI, err := s.db.MatchAnnotationToDocument(a.TargetSource); err == nil && docURI != nil {
+			if docURI, err := s.db.MatchAnnotationToDocument(context.Background(), a.TargetSource); err == nil && docURI != nil {
 				documentURI = docURI
 			}
-			if err := s.db.UpsertAnnotationEmbedding(a.URI, a.AuthorDID, documentURI, vecs[i]); err != nil {
+			if err := s.db.UpsertAnnotationEmbedding(context.Background(), a.URI, a.AuthorDID, documentURI, vecs[i]); err != nil {
 				logger.Error("Failed to store embedding for annotation %s: %v", a.URI, err)
 			} else {
 				batch++
@@ -448,7 +449,7 @@ func (s *Service) BackfillHighlightEmbeddings(batchSize int) (int, error) {
 
 	total := 0
 	for {
-		highlights, err := s.db.GetHighlightsWithoutEmbeddings(batchSize)
+		highlights, err := s.db.GetHighlightsWithoutEmbeddings(context.Background(), batchSize)
 		if err != nil {
 			return total, err
 		}
@@ -474,10 +475,10 @@ func (s *Service) BackfillHighlightEmbeddings(batchSize int) (int, error) {
 				continue
 			}
 			var documentURI *string
-			if docURI, err := s.db.MatchAnnotationToDocument(h.TargetSource); err == nil && docURI != nil {
+			if docURI, err := s.db.MatchAnnotationToDocument(context.Background(), h.TargetSource); err == nil && docURI != nil {
 				documentURI = docURI
 			}
-			if err := s.db.UpsertAnnotationEmbedding(h.URI, h.AuthorDID, documentURI, vecs[i]); err != nil {
+			if err := s.db.UpsertAnnotationEmbedding(context.Background(), h.URI, h.AuthorDID, documentURI, vecs[i]); err != nil {
 				logger.Error("Failed to store embedding for highlight %s: %v", h.URI, err)
 			} else {
 				batch++
@@ -503,7 +504,7 @@ func (s *Service) RebuildAllProfiles() (int, error) {
 		return 0, nil
 	}
 
-	dids, err := s.db.GetDistinctAnnotationAuthors()
+	dids, err := s.db.GetDistinctAnnotationAuthors(context.Background())
 	if err != nil {
 		return 0, err
 	}
@@ -665,8 +666,8 @@ func detectScript(text string) string {
 }
 
 func (s *Service) detectUserScript(authorDID string) string {
-	annotations, _ := s.db.GetAnnotationsByAuthor(authorDID, 100, 0)
-	highlights, _ := s.db.GetHighlightsByAuthor(authorDID, 100, 0)
+	annotations, _ := s.db.GetAnnotationsByAuthor(context.Background(), authorDID, 100, 0)
+	highlights, _ := s.db.GetHighlightsByAuthor(context.Background(), authorDID, 100, 0)
 
 	scriptCounts := make(map[string]int)
 	for _, a := range annotations {

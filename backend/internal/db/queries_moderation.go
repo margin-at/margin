@@ -1,152 +1,116 @@
 package db
 
 import (
-	"fmt"
-	"strings"
+	"context"
 	"time"
+
+	"margin.at/internal/db/sqlcdb"
 )
 
-func (db *DB) CreateBlock(actorDID, subjectDID string) error {
-	_, err := db.Exec(`
-		INSERT INTO blocks (actor_did, subject_did, created_at) VALUES ($1, $2, $3)
-		ON CONFLICT(actor_did, subject_did) DO NOTHING
-	`, actorDID, subjectDID, time.Now())
-	return err
+func (db *DB) CreateBlock(ctx context.Context, actorDID, subjectDID string) error {
+	return db.q.CreateBlock(ctx, sqlcdb.CreateBlockParams{
+		ActorDid:   actorDID,
+		SubjectDid: subjectDID,
+		CreatedAt:  time.Now(),
+	})
 }
 
-func (db *DB) DeleteBlock(actorDID, subjectDID string) error {
-	_, err := db.Exec(`DELETE FROM blocks WHERE actor_did = $1 AND subject_did = $2`, actorDID, subjectDID)
-	return err
+func (db *DB) DeleteBlock(ctx context.Context, actorDID, subjectDID string) error {
+	return db.q.DeleteBlock(ctx, sqlcdb.DeleteBlockParams{
+		ActorDid:   actorDID,
+		SubjectDid: subjectDID,
+	})
 }
 
-func (db *DB) GetBlocks(actorDID string) ([]Block, error) {
-	rows, err := db.Query(`SELECT id, actor_did, subject_did, created_at FROM blocks WHERE actor_did = $1 ORDER BY created_at DESC`, actorDID)
+func (db *DB) GetBlocks(ctx context.Context, actorDID string) ([]Block, error) {
+	rows, err := db.q.GetBlocks(ctx, actorDID)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-
 	var blocks []Block
-	for rows.Next() {
-		var b Block
-		if err := rows.Scan(&b.ID, &b.ActorDID, &b.SubjectDID, &b.CreatedAt); err != nil {
-			continue
-		}
-		blocks = append(blocks, b)
+	for _, r := range rows {
+		blocks = append(blocks, Block{
+			ID:         int(r.ID),
+			ActorDID:   r.ActorDid,
+			SubjectDID: r.SubjectDid,
+			CreatedAt:  r.CreatedAt,
+		})
 	}
 	return blocks, nil
 }
 
-func (db *DB) IsBlocked(actorDID, subjectDID string) (bool, error) {
-	var exists bool
-	err := db.QueryRow(`SELECT EXISTS(SELECT 1 FROM blocks WHERE actor_did = $1 AND subject_did = $2)`, actorDID, subjectDID).Scan(&exists)
-	return exists, err
+func (db *DB) IsBlocked(ctx context.Context, actorDID, subjectDID string) (bool, error) {
+	return db.q.IsBlocked(ctx, sqlcdb.IsBlockedParams{
+		ActorDid:   actorDID,
+		SubjectDid: subjectDID,
+	})
 }
 
-func (db *DB) IsBlockedEither(did1, did2 string) (bool, error) {
-	var exists bool
-	err := db.QueryRow(`SELECT EXISTS(SELECT 1 FROM blocks WHERE (actor_did = $1 AND subject_did = $2) OR (actor_did = $2 AND subject_did = $1))`, did1, did2).Scan(&exists)
-	return exists, err
+func (db *DB) IsBlockedEither(ctx context.Context, did1, did2 string) (bool, error) {
+	return db.q.IsBlockedEither(ctx, sqlcdb.IsBlockedEitherParams{
+		ActorDid:   did1,
+		SubjectDid: did2,
+	})
 }
 
-func (db *DB) GetBlockedDIDs(actorDID string) ([]string, error) {
-	rows, err := db.Query(`SELECT subject_did FROM blocks WHERE actor_did = $1`, actorDID)
+func (db *DB) GetBlockedDIDs(ctx context.Context, actorDID string) ([]string, error) {
+	return db.q.GetBlockedDIDs(ctx, actorDID)
+}
+
+func (db *DB) GetBlockedByDIDs(ctx context.Context, actorDID string) ([]string, error) {
+	return db.q.GetBlockedByDIDs(ctx, actorDID)
+}
+
+func (db *DB) CreateMute(ctx context.Context, actorDID, subjectDID string) error {
+	return db.q.CreateMute(ctx, sqlcdb.CreateMuteParams{
+		ActorDid:   actorDID,
+		SubjectDid: subjectDID,
+		CreatedAt:  time.Now(),
+	})
+}
+
+func (db *DB) DeleteMute(ctx context.Context, actorDID, subjectDID string) error {
+	return db.q.DeleteMute(ctx, sqlcdb.DeleteMuteParams{
+		ActorDid:   actorDID,
+		SubjectDid: subjectDID,
+	})
+}
+
+func (db *DB) GetMutes(ctx context.Context, actorDID string) ([]Mute, error) {
+	rows, err := db.q.GetMutes(ctx, actorDID)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-
-	var dids []string
-	for rows.Next() {
-		var did string
-		if err := rows.Scan(&did); err != nil {
-			continue
-		}
-		dids = append(dids, did)
-	}
-	return dids, nil
-}
-
-func (db *DB) GetBlockedByDIDs(actorDID string) ([]string, error) {
-	rows, err := db.Query(`SELECT actor_did FROM blocks WHERE subject_did = $1`, actorDID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var dids []string
-	for rows.Next() {
-		var did string
-		if err := rows.Scan(&did); err != nil {
-			continue
-		}
-		dids = append(dids, did)
-	}
-	return dids, nil
-}
-
-func (db *DB) CreateMute(actorDID, subjectDID string) error {
-	_, err := db.Exec(`
-		INSERT INTO mutes (actor_did, subject_did, created_at) VALUES ($1, $2, $3)
-		ON CONFLICT(actor_did, subject_did) DO NOTHING
-	`, actorDID, subjectDID, time.Now())
-	return err
-}
-
-func (db *DB) DeleteMute(actorDID, subjectDID string) error {
-	_, err := db.Exec(`DELETE FROM mutes WHERE actor_did = $1 AND subject_did = $2`, actorDID, subjectDID)
-	return err
-}
-
-func (db *DB) GetMutes(actorDID string) ([]Mute, error) {
-	rows, err := db.Query(`SELECT id, actor_did, subject_did, created_at FROM mutes WHERE actor_did = $1 ORDER BY created_at DESC`, actorDID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
 	var mutes []Mute
-	for rows.Next() {
-		var m Mute
-		if err := rows.Scan(&m.ID, &m.ActorDID, &m.SubjectDID, &m.CreatedAt); err != nil {
-			continue
-		}
-		mutes = append(mutes, m)
+	for _, r := range rows {
+		mutes = append(mutes, Mute{
+			ID:         int(r.ID),
+			ActorDID:   r.ActorDid,
+			SubjectDID: r.SubjectDid,
+			CreatedAt:  r.CreatedAt,
+		})
 	}
 	return mutes, nil
 }
 
-func (db *DB) IsMuted(actorDID, subjectDID string) (bool, error) {
-	var exists bool
-	err := db.QueryRow(`SELECT EXISTS(SELECT 1 FROM mutes WHERE actor_did = $1 AND subject_did = $2)`, actorDID, subjectDID).Scan(&exists)
-	return exists, err
+func (db *DB) IsMuted(ctx context.Context, actorDID, subjectDID string) (bool, error) {
+	return db.q.IsMuted(ctx, sqlcdb.IsMutedParams{
+		ActorDid:   actorDID,
+		SubjectDid: subjectDID,
+	})
 }
 
-func (db *DB) GetMutedDIDs(actorDID string) ([]string, error) {
-	rows, err := db.Query(`SELECT subject_did FROM mutes WHERE actor_did = $1`, actorDID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var dids []string
-	for rows.Next() {
-		var did string
-		if err := rows.Scan(&did); err != nil {
-			continue
-		}
-		dids = append(dids, did)
-	}
-	return dids, nil
+func (db *DB) GetMutedDIDs(ctx context.Context, actorDID string) ([]string, error) {
+	return db.q.GetMutedDIDs(ctx, actorDID)
 }
 
-func (db *DB) GetAllHiddenDIDs(actorDID string) (map[string]bool, error) {
+func (db *DB) GetAllHiddenDIDs(ctx context.Context, actorDID string) (map[string]bool, error) {
 	hidden := make(map[string]bool)
 	if actorDID == "" {
 		return hidden, nil
 	}
 
-	blocked, err := db.GetBlockedDIDs(actorDID)
+	blocked, err := db.GetBlockedDIDs(ctx, actorDID)
 	if err != nil {
 		return hidden, err
 	}
@@ -154,7 +118,7 @@ func (db *DB) GetAllHiddenDIDs(actorDID string) (map[string]bool, error) {
 		hidden[did] = true
 	}
 
-	blockedBy, err := db.GetBlockedByDIDs(actorDID)
+	blockedBy, err := db.GetBlockedByDIDs(ctx, actorDID)
 	if err != nil {
 		return hidden, err
 	}
@@ -162,7 +126,7 @@ func (db *DB) GetAllHiddenDIDs(actorDID string) (map[string]bool, error) {
 		hidden[did] = true
 	}
 
-	muted, err := db.GetMutedDIDs(actorDID)
+	muted, err := db.GetMutedDIDs(ctx, actorDID)
 	if err != nil {
 		return hidden, err
 	}
@@ -173,246 +137,277 @@ func (db *DB) GetAllHiddenDIDs(actorDID string) (map[string]bool, error) {
 	return hidden, nil
 }
 
-func (db *DB) GetViewerRelationship(viewerDID, subjectDID string) (blocked bool, muted bool, blockedBy bool, err error) {
+func (db *DB) GetViewerRelationship(ctx context.Context, viewerDID, subjectDID string) (blocked bool, muted bool, blockedBy bool, err error) {
 	if viewerDID == "" || subjectDID == "" {
 		return false, false, false, nil
 	}
 
-	blocked, err = db.IsBlocked(viewerDID, subjectDID)
+	blocked, err = db.IsBlocked(ctx, viewerDID, subjectDID)
 	if err != nil {
 		return
 	}
 
-	muted, err = db.IsMuted(viewerDID, subjectDID)
+	muted, err = db.IsMuted(ctx, viewerDID, subjectDID)
 	if err != nil {
 		return
 	}
 
-	blockedBy, err = db.IsBlocked(subjectDID, viewerDID)
+	blockedBy, err = db.IsBlocked(ctx, subjectDID, viewerDID)
 	return
 }
 
-func (db *DB) CreateReport(reporterDID, subjectDID string, subjectURI *string, reasonType string, reasonText *string) (int, error) {
-	var id int
-	err := db.QueryRow(`
-		INSERT INTO moderation_reports (reporter_did, subject_did, subject_uri, reason_type, reason_text, status, created_at)
-		VALUES ($1, $2, $3, $4, $5, 'pending', $6)
-		RETURNING id
-	`, reporterDID, subjectDID, subjectURI, reasonType, reasonText, time.Now()).Scan(&id)
-	return id, err
+func (db *DB) CreateReport(ctx context.Context, reporterDID, subjectDID string, subjectURI *string, reasonType string, reasonText *string) (int, error) {
+	id, err := db.q.CreateReport(ctx, sqlcdb.CreateReportParams{
+		ReporterDid: reporterDID,
+		SubjectDid:  subjectDID,
+		SubjectUri:  subjectURI,
+		ReasonType:  reasonType,
+		ReasonText:  reasonText,
+		CreatedAt:   time.Now(),
+	})
+	return int(id), err
 }
 
-func (db *DB) GetReports(status string, limit, offset int) ([]ModerationReport, error) {
-	query := `SELECT id, reporter_did, subject_did, subject_uri, reason_type, reason_text, status, created_at, resolved_at, resolved_by
-		FROM moderation_reports`
-	args := []interface{}{}
-	paramIdx := 1
-
+func (db *DB) GetReports(ctx context.Context, status string, limit, offset int) ([]ModerationReport, error) {
+	var rows []sqlcdb.ModerationReport
+	var err error
 	if status != "" {
-		query += ` WHERE status = $1`
-		args = append(args, status)
-		paramIdx = 2
+		rows, err = db.q.GetReportsByStatus(ctx, sqlcdb.GetReportsByStatusParams{
+			Status: status,
+			Limit:  int32(limit),
+			Offset: int32(offset),
+		})
+	} else {
+		rows, err = db.q.GetReports(ctx, sqlcdb.GetReportsParams{
+			Limit:  int32(limit),
+			Offset: int32(offset),
+		})
 	}
-
-	query += ` ORDER BY created_at DESC LIMIT $` + itoa(paramIdx) + ` OFFSET $` + itoa(paramIdx+1)
-	args = append(args, limit, offset)
-
-	rows, err := db.Query(query, args...)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
 
 	var reports []ModerationReport
-	for rows.Next() {
-		var r ModerationReport
-		if err := rows.Scan(&r.ID, &r.ReporterDID, &r.SubjectDID, &r.SubjectURI, &r.ReasonType, &r.ReasonText, &r.Status, &r.CreatedAt, &r.ResolvedAt, &r.ResolvedBy); err != nil {
-			continue
-		}
-		reports = append(reports, r)
+	for _, r := range rows {
+		reports = append(reports, ModerationReport{
+			ID:          int(r.ID),
+			ReporterDID: r.ReporterDid,
+			SubjectDID:  r.SubjectDid,
+			SubjectURI:  r.SubjectUri,
+			ReasonType:  r.ReasonType,
+			ReasonText:  r.ReasonText,
+			Status:      r.Status,
+			CreatedAt:   r.CreatedAt,
+			ResolvedAt:  r.ResolvedAt,
+			ResolvedBy:  r.ResolvedBy,
+		})
 	}
 	return reports, nil
 }
 
-func (db *DB) GetReport(id int) (*ModerationReport, error) {
-	var r ModerationReport
-	err := db.QueryRow(`SELECT id, reporter_did, subject_did, subject_uri, reason_type, reason_text, status, created_at, resolved_at, resolved_by FROM moderation_reports WHERE id = $1`, id).Scan(
-		&r.ID, &r.ReporterDID, &r.SubjectDID, &r.SubjectURI, &r.ReasonType, &r.ReasonText, &r.Status, &r.CreatedAt, &r.ResolvedAt, &r.ResolvedBy,
-	)
+func (db *DB) GetReport(ctx context.Context, id int) (*ModerationReport, error) {
+	r, err := db.q.GetReport(ctx, int32(id))
 	if err != nil {
 		return nil, err
 	}
-	return &r, nil
+	return &ModerationReport{
+		ID:          int(r.ID),
+		ReporterDID: r.ReporterDid,
+		SubjectDID:  r.SubjectDid,
+		SubjectURI:  r.SubjectUri,
+		ReasonType:  r.ReasonType,
+		ReasonText:  r.ReasonText,
+		Status:      r.Status,
+		CreatedAt:   r.CreatedAt,
+		ResolvedAt:  r.ResolvedAt,
+		ResolvedBy:  r.ResolvedBy,
+	}, nil
 }
 
-func (db *DB) ResolveReport(id int, resolvedBy string, status string) error {
-	_, err := db.Exec(`UPDATE moderation_reports SET status = $1, resolved_at = $2, resolved_by = $3 WHERE id = $4`, status, time.Now(), resolvedBy, id)
-	return err
+func (db *DB) ResolveReport(ctx context.Context, id int, resolvedBy string, status string) error {
+	now := time.Now()
+	return db.q.ResolveReport(ctx, sqlcdb.ResolveReportParams{
+		Status:     status,
+		ResolvedAt: &now,
+		ResolvedBy: &resolvedBy,
+		ID:         int32(id),
+	})
 }
 
-func (db *DB) CreateModerationAction(reportID int, actorDID, action string, comment *string) error {
-	_, err := db.Exec(`INSERT INTO moderation_actions (report_id, actor_did, action, comment, created_at) VALUES ($1, $2, $3, $4, $5)`, reportID, actorDID, action, comment, time.Now())
-	return err
+func (db *DB) CreateModerationAction(ctx context.Context, reportID int, actorDID, action string, comment *string) error {
+	return db.q.CreateModerationAction(ctx, sqlcdb.CreateModerationActionParams{
+		ReportID:  int32(reportID),
+		ActorDid:  actorDID,
+		Action:    action,
+		Comment:   comment,
+		CreatedAt: time.Now(),
+	})
 }
 
-func (db *DB) GetReportActions(reportID int) ([]ModerationAction, error) {
-	rows, err := db.Query(`SELECT id, report_id, actor_did, action, comment, created_at FROM moderation_actions WHERE report_id = $1 ORDER BY created_at DESC`, reportID)
+func (db *DB) GetReportActions(ctx context.Context, reportID int) ([]ModerationAction, error) {
+	rows, err := db.q.GetReportActions(ctx, int32(reportID))
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-
 	var actions []ModerationAction
-	for rows.Next() {
-		var a ModerationAction
-		if err := rows.Scan(&a.ID, &a.ReportID, &a.ActorDID, &a.Action, &a.Comment, &a.CreatedAt); err != nil {
-			continue
-		}
-		actions = append(actions, a)
+	for _, r := range rows {
+		actions = append(actions, ModerationAction{
+			ID:        int(r.ID),
+			ReportID:  int(r.ReportID),
+			ActorDID:  r.ActorDid,
+			Action:    r.Action,
+			Comment:   r.Comment,
+			CreatedAt: r.CreatedAt,
+		})
 	}
 	return actions, nil
 }
 
-func (db *DB) GetReportCount(status string) (int, error) {
-	query := `SELECT COUNT(*) FROM moderation_reports`
-	args := []interface{}{}
+func (db *DB) GetReportCount(ctx context.Context, status string) (int, error) {
 	if status != "" {
-		query += ` WHERE status = $1`
-		args = append(args, status)
+		n, err := db.q.GetReportCountByStatus(ctx, status)
+		return int(n), err
 	}
-	var count int
-	err := db.QueryRow(query, args...).Scan(&count)
-	return count, err
+	n, err := db.q.GetReportCount(ctx)
+	return int(n), err
 }
 
-func (db *DB) CreateContentLabel(src, uri, val, createdBy string) error {
-	_, err := db.Exec(`INSERT INTO content_labels (src, uri, val, neg, created_by, created_at) VALUES ($1, $2, $3, 0, $4, $5)`, src, uri, val, createdBy, time.Now())
-	return err
+func (db *DB) CreateContentLabel(ctx context.Context, src, uri, val, createdBy string) error {
+	return db.q.CreateContentLabel(ctx, sqlcdb.CreateContentLabelParams{
+		Src:       src,
+		Uri:       uri,
+		Val:       val,
+		CreatedBy: createdBy,
+		CreatedAt: time.Now(),
+	})
 }
 
-func (db *DB) SyncSelfLabels(authorDID, uri string, labels []string) error {
-	_, err := db.Exec(`DELETE FROM content_labels WHERE src = $1 AND uri = $2 AND created_by = $3`, authorDID, uri, authorDID)
-	if err != nil {
+func (db *DB) SyncSelfLabels(ctx context.Context, authorDID, uri string, labels []string) error {
+	if err := db.q.DeleteSelfLabels(ctx, sqlcdb.DeleteSelfLabelsParams{
+		Src:       authorDID,
+		Uri:       uri,
+		CreatedBy: authorDID,
+	}); err != nil {
 		return err
 	}
 	for _, val := range labels {
-		if err := db.CreateContentLabel(authorDID, uri, val, authorDID); err != nil {
+		if err := db.CreateContentLabel(ctx, authorDID, uri, val, authorDID); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func (db *DB) NegateContentLabel(id int) error {
-	_, err := db.Exec(`UPDATE content_labels SET neg = 1 WHERE id = $1`, id)
-	return err
+func (db *DB) NegateContentLabel(ctx context.Context, id int) error {
+	return db.q.NegateContentLabel(ctx, int32(id))
 }
 
-func (db *DB) DeleteContentLabel(id int) error {
-	_, err := db.Exec(`DELETE FROM content_labels WHERE id = $1`, id)
-	return err
+func (db *DB) DeleteContentLabel(ctx context.Context, id int) error {
+	return db.q.DeleteContentLabel(ctx, int32(id))
 }
 
-func (db *DB) GetContentLabelsForURIs(uris []string, labelerDIDs []string) (map[string][]ContentLabel, error) {
+func (db *DB) GetContentLabelsForURIs(ctx context.Context, uris []string, labelerDIDs []string) (map[string][]ContentLabel, error) {
 	result := make(map[string][]ContentLabel)
 	if len(uris) == 0 {
 		return result, nil
 	}
 
-	query := `SELECT id, src, uri, val, neg, created_by, created_at FROM content_labels
-		WHERE uri = ANY($1) AND neg = 0`
-	args := []interface{}{pqStringArray(uris)}
-
+	var rows []sqlcdb.ContentLabel
+	var err error
 	if len(labelerDIDs) > 0 {
-		query += ` AND src = ANY($2)`
-		args = append(args, pqStringArray(labelerDIDs))
+		rows, err = db.q.GetContentLabelsForURIsBySrc(ctx, sqlcdb.GetContentLabelsForURIsBySrcParams{
+			Column1: uris,
+			Column2: labelerDIDs,
+		})
+	} else {
+		rows, err = db.q.GetContentLabelsForURIs(ctx, uris)
 	}
-
-	query += ` ORDER BY created_at DESC`
-
-	rows, err := db.Query(query, args...)
 	if err != nil {
 		return result, err
 	}
-	defer rows.Close()
 
-	for rows.Next() {
-		var l ContentLabel
-		if err := rows.Scan(&l.ID, &l.Src, &l.URI, &l.Val, &l.Neg, &l.CreatedBy, &l.CreatedAt); err != nil {
-			continue
+	for _, r := range rows {
+		l := ContentLabel{
+			ID:        int(r.ID),
+			Src:       r.Src,
+			URI:       r.Uri,
+			Val:       r.Val,
+			Neg:       r.Neg != 0,
+			CreatedBy: r.CreatedBy,
+			CreatedAt: r.CreatedAt,
 		}
 		result[l.URI] = append(result[l.URI], l)
 	}
 	return result, nil
 }
 
-func (db *DB) GetContentLabelsForDIDs(dids []string, labelerDIDs []string) (map[string][]ContentLabel, error) {
+func (db *DB) GetContentLabelsForDIDs(ctx context.Context, dids []string, labelerDIDs []string) (map[string][]ContentLabel, error) {
 	result := make(map[string][]ContentLabel)
 	if len(dids) == 0 {
 		return result, nil
 	}
 
-	query := `SELECT id, src, uri, val, neg, created_by, created_at FROM content_labels
-		WHERE uri = ANY($1) AND neg = 0`
-	args := []interface{}{pqStringArray(dids)}
-
+	var rows []sqlcdb.ContentLabel
+	var err error
 	if len(labelerDIDs) > 0 {
-		query += ` AND src = ANY($2)`
-		args = append(args, pqStringArray(labelerDIDs))
+		rows, err = db.q.GetContentLabelsForURIsBySrc(ctx, sqlcdb.GetContentLabelsForURIsBySrcParams{
+			Column1: dids,
+			Column2: labelerDIDs,
+		})
+	} else {
+		rows, err = db.q.GetContentLabelsForURIs(ctx, dids)
 	}
-
-	query += ` ORDER BY created_at DESC`
-
-	rows, err := db.Query(query, args...)
 	if err != nil {
 		return result, err
 	}
-	defer rows.Close()
 
-	for rows.Next() {
-		var l ContentLabel
-		if err := rows.Scan(&l.ID, &l.Src, &l.URI, &l.Val, &l.Neg, &l.CreatedBy, &l.CreatedAt); err != nil {
-			continue
+	for _, r := range rows {
+		l := ContentLabel{
+			ID:        int(r.ID),
+			Src:       r.Src,
+			URI:       r.Uri,
+			Val:       r.Val,
+			Neg:       r.Neg != 0,
+			CreatedBy: r.CreatedBy,
+			CreatedAt: r.CreatedAt,
 		}
 		result[l.URI] = append(result[l.URI], l)
 	}
 	return result, nil
 }
 
-func (db *DB) GetAllContentLabels(limit, offset int) ([]ContentLabel, error) {
-	rows, err := db.Query(`SELECT id, src, uri, val, neg, created_by, created_at FROM content_labels ORDER BY created_at DESC LIMIT $1 OFFSET $2`, limit, offset)
+func (db *DB) GetAllContentLabels(ctx context.Context, limit, offset int) ([]ContentLabel, error) {
+	rows, err := db.q.GetAllContentLabels(ctx, sqlcdb.GetAllContentLabelsParams{
+		Limit:  int32(limit),
+		Offset: int32(offset),
+	})
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-
 	var labels []ContentLabel
-	for rows.Next() {
-		var l ContentLabel
-		if err := rows.Scan(&l.ID, &l.Src, &l.URI, &l.Val, &l.Neg, &l.CreatedBy, &l.CreatedAt); err != nil {
-			continue
-		}
-		labels = append(labels, l)
+	for _, r := range rows {
+		labels = append(labels, ContentLabel{
+			ID:        int(r.ID),
+			Src:       r.Src,
+			URI:       r.Uri,
+			Val:       r.Val,
+			Neg:       r.Neg != 0,
+			CreatedBy: r.CreatedBy,
+			CreatedAt: r.CreatedAt,
+		})
 	}
 	return labels, nil
 }
 
-func itoa(i int) string {
-	return strings.Repeat("", 0) + fmt.Sprintf("%d", i)
+func (db *DB) MarkTakenDown(ctx context.Context, uri string) error {
+	return db.q.MarkTakenDown(ctx, sqlcdb.MarkTakenDownParams{
+		Uri:         uri,
+		TakenDownAt: time.Now(),
+	})
 }
 
-func (db *DB) MarkTakenDown(uri string) error {
-	_, err := db.Exec(`
-		INSERT INTO taken_down_uris (uri, taken_down_at) VALUES ($1, $2)
-		ON CONFLICT(uri) DO NOTHING
-	`, uri, time.Now())
-	return err
-}
-
-func (db *DB) IsTakenDown(uri string) (bool, error) {
-	var exists bool
-	err := db.QueryRow(`SELECT EXISTS(SELECT 1 FROM taken_down_uris WHERE uri = $1)`, uri).Scan(&exists)
-	return exists, err
+func (db *DB) IsTakenDown(ctx context.Context, uri string) (bool, error) {
+	return db.q.IsTakenDown(ctx, uri)
 }
 
 type BannedAccount struct {
@@ -422,58 +417,40 @@ type BannedAccount struct {
 	BannedAt time.Time `json:"bannedAt"`
 }
 
-func (db *DB) BanAccount(did, bannedBy string, reason *string) error {
-	_, err := db.Exec(`
-		INSERT INTO banned_accounts (did, reason, banned_by, banned_at)
-		VALUES ($1, $2, $3, $4)
-		ON CONFLICT(did) DO UPDATE SET reason = EXCLUDED.reason, banned_by = EXCLUDED.banned_by, banned_at = EXCLUDED.banned_at
-	`, did, reason, bannedBy, time.Now())
-	return err
+func (db *DB) BanAccount(ctx context.Context, did, bannedBy string, reason *string) error {
+	return db.q.BanAccount(ctx, sqlcdb.BanAccountParams{
+		Did:      did,
+		Reason:   reason,
+		BannedBy: bannedBy,
+		BannedAt: time.Now(),
+	})
 }
 
-func (db *DB) UnbanAccount(did string) error {
-	_, err := db.Exec(`DELETE FROM banned_accounts WHERE did = $1`, did)
-	return err
+func (db *DB) UnbanAccount(ctx context.Context, did string) error {
+	return db.q.UnbanAccount(ctx, did)
 }
 
-func (db *DB) IsBanned(did string) (bool, error) {
-	var exists bool
-	err := db.QueryRow(`SELECT EXISTS(SELECT 1 FROM banned_accounts WHERE did = $1)`, did).Scan(&exists)
-	return exists, err
+func (db *DB) IsBanned(ctx context.Context, did string) (bool, error) {
+	return db.q.IsBanned(ctx, did)
 }
 
-func (db *DB) GetBannedAccounts() ([]BannedAccount, error) {
-	rows, err := db.Query(`SELECT did, reason, banned_by, banned_at FROM banned_accounts ORDER BY banned_at DESC`)
+func (db *DB) GetBannedAccounts(ctx context.Context) ([]BannedAccount, error) {
+	rows, err := db.q.GetBannedAccounts(ctx)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-
 	var accounts []BannedAccount
-	for rows.Next() {
-		var a BannedAccount
-		if err := rows.Scan(&a.DID, &a.Reason, &a.BannedBy, &a.BannedAt); err != nil {
-			continue
-		}
-		accounts = append(accounts, a)
+	for _, r := range rows {
+		accounts = append(accounts, BannedAccount{
+			DID:      r.Did,
+			Reason:   r.Reason,
+			BannedBy: r.BannedBy,
+			BannedAt: r.BannedAt,
+		})
 	}
 	return accounts, nil
 }
 
-func (db *DB) GetBannedDIDs() ([]string, error) {
-	rows, err := db.Query(`SELECT did FROM banned_accounts`)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var dids []string
-	for rows.Next() {
-		var did string
-		if err := rows.Scan(&did); err != nil {
-			continue
-		}
-		dids = append(dids, did)
-	}
-	return dids, nil
+func (db *DB) GetBannedDIDs(ctx context.Context) ([]string, error) {
+	return db.q.GetBannedDIDs(ctx)
 }

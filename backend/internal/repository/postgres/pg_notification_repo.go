@@ -16,7 +16,7 @@ func NewNotificationRepository(db DB) *NotificationRepository {
 }
 
 func (r *NotificationRepository) CreateNotification(ctx context.Context, n *domain.Notification) error {
-	_, err := r.db.ExecContext(ctx, `
+	_, err := r.db.Exec(ctx, `
 		INSERT INTO notifications (recipient_did, actor_did, type, subject_uri, created_at)
 		VALUES ($1, $2, $3, $4, $5)
 	`, n.RecipientDID, n.ActorDID, n.Type, n.SubjectURI, n.CreatedAt)
@@ -24,7 +24,7 @@ func (r *NotificationRepository) CreateNotification(ctx context.Context, n *doma
 }
 
 func (r *NotificationRepository) GetNotifications(ctx context.Context, recipientDID string, limit, offset int) ([]domain.Notification, error) {
-	rows, err := r.db.QueryContext(ctx, `
+	rows, err := r.db.Query(ctx, `
 		SELECT id, recipient_did, actor_did, type, subject_uri, created_at, read_at
 		FROM notifications
 		WHERE recipient_did = $1
@@ -49,14 +49,14 @@ func (r *NotificationRepository) GetNotifications(ctx context.Context, recipient
 
 func (r *NotificationRepository) GetUnreadNotificationCount(ctx context.Context, recipientDID string) (int, error) {
 	var count int
-	err := r.db.QueryRowContext(ctx, `
+	err := r.db.QueryRow(ctx, `
 		SELECT COUNT(*) FROM notifications WHERE recipient_did = $1 AND read_at IS NULL
 	`, recipientDID).Scan(&count)
 	return count, err
 }
 
 func (r *NotificationRepository) MarkNotificationsRead(ctx context.Context, recipientDID string) error {
-	_, err := r.db.ExecContext(ctx, `
+	_, err := r.db.Exec(ctx, `
 		UPDATE notifications SET read_at = $1 WHERE recipient_did = $2 AND read_at IS NULL
 	`, time.Now(), recipientDID)
 	return err

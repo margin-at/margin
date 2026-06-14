@@ -30,14 +30,19 @@ type Handler struct {
 }
 
 func NewHandler(database *db.DB, syncService *internal_sync.Service, ac *analytics.Client) (*Handler, error) {
-	signingKey, err := LoadSigningKey(database)
+	base := getBaseURLEnv()
+	if u, err := url.Parse(base); err != nil || u.Scheme == "" || u.Host == "" {
+		return nil, fmt.Errorf("BASE_URL=%q must be a valid absolute URL (e.g. https://margin.at); the OAuth client_id and redirect_uri are derived from it and must be identical across all replicas", base)
+	}
+
+	signingKey, err := LoadSigningKey(context.Background(), database)
 	if err != nil {
 		return nil, fmt.Errorf("failed to load signing key: %w", err)
 	}
 
 	return &Handler{
 		db:                database,
-		configuredBaseURL: getBaseURLEnv(),
+		configuredBaseURL: base,
 		signingKey:        signingKey,
 		syncService:       syncService,
 		analytics:         ac,
@@ -48,23 +53,12 @@ func getBaseURLEnv() string {
 	return strings.TrimRight(strings.TrimSpace(os.Getenv("BASE_URL")), "/")
 }
 
-func (h *Handler) baseURL(r *http.Request) string {
-	if h.configuredBaseURL != "" {
-		return h.configuredBaseURL
-	}
-	scheme := "http"
-	if r.TLS != nil || r.Header.Get("X-Forwarded-Proto") == "https" {
-		scheme = "https"
-	}
-	host := r.Header.Get("X-Forwarded-Host")
-	if host == "" {
-		host = r.Host
-	}
-	return strings.TrimRight(fmt.Sprintf("%s://%s", scheme, host), "/")
+func (h *Handler) baseURL() string {
+	return h.configuredBaseURL
 }
 
-func (h *Handler) oauthClient(r *http.Request) *Client {
-	base := h.baseURL(r)
+func (h *Handler) oauthClient() *Client {
+	base := h.baseURL()
 	return NewClient(base+"/oauth-client-metadata.json", base+"/auth/callback", h.signingKey)
 }
 
@@ -76,7 +70,7 @@ func (h *Handler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := r.Context()
-	client := h.oauthClient(r)
+	client := h.oauthClient()
 
 	did, err := client.ResolveHandle(ctx, handle)
 	if err != nil {
@@ -106,7 +100,7 @@ func (h *Handler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.savePending(state, did, handle, pdsURL, meta, verifier, dpopKey, nonce); err != nil {
+	if err := h.savePending(ctx, state, did, handle, pdsURL, meta, verifier, dpopKey, nonce); err != nil {
 		http.Error(w, "Failed to save pending auth", http.StatusInternalServerError)
 		return
 	}
@@ -133,7 +127,7 @@ func (h *Handler) HandleStart(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := r.Context()
-	client := h.oauthClient(r)
+	client := h.oauthClient()
 
 	did, err := client.ResolveHandle(ctx, handle)
 	if err != nil {
@@ -164,7 +158,7 @@ func (h *Handler) HandleStart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.savePending(state, did, handle, pdsURL, meta, verifier, dpopKey, nonce); err != nil {
+	if err := h.savePending(ctx, state, did, handle, pdsURL, meta, verifier, dpopKey, nonce); err != nil {
 		writeJSONError(w, http.StatusInternalServerError, "Failed to save pending auth")
 		return
 	}
@@ -191,7 +185,7 @@ func (h *Handler) HandleSignup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := r.Context()
-	client := h.oauthClient(r)
+	client := h.oauthClient()
 
 	meta, err := client.GetAuthServerMetadataForSignup(ctx, pdsURL)
 	if err != nil {
@@ -216,7 +210,7 @@ func (h *Handler) HandleSignup(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if err := h.savePending(state, "", "", pdsURL, meta, verifier, dpopKey, nonce); err != nil {
+	if err := h.savePending(ctx, state, "", "", pdsURL, meta, verifier, dpopKey, nonce); err != nil {
 		writeJSONError(w, http.StatusInternalServerError, "Failed to save pending auth")
 		return
 	}
@@ -224,9 +218,9 @@ func (h *Handler) HandleSignup(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]any{"authorizationUrl": client.AuthorizeURL(meta, par.RequestURI)})
 }
 
-func (h *Handler) savePending(state, did, handle, pdsURL string, meta *AuthServerMetadata, verifier string, dpopKey *ecdsa.PrivateKey, nonce string) error {
+func (h *Handler) savePending(ctx context.Context, state, did, handle, pdsURL string, meta *AuthServerMetadata, verifier string, dpopKey *ecdsa.PrivateKey, nonce string) error {
 	jwk := PrivateJWK(dpopKey)
-	return h.db.SavePendingAuthOAuth(db.PendingAuth{
+	return h.db.SavePendingAuthOAuth(ctx, db.PendingAuth{
 		State:         state,
 		DID:           did,
 		Handle:        handle,
@@ -242,13 +236,13 @@ func (h *Handler) savePending(state, did, handle, pdsURL string, meta *AuthServe
 
 func (h *Handler) HandleCallback(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	client := h.oauthClient(r)
+	client := h.oauthClient()
 
 	if oauthErr := r.URL.Query().Get("error"); oauthErr != "" {
 		errDesc := r.URL.Query().Get("error_description")
 		logger.Error("OAuth callback error: %s - %s", oauthErr, errDesc)
 		if state := r.URL.Query().Get("state"); state != "" {
-			h.db.DeletePendingAuthOAuth(state)
+			h.db.DeletePendingAuthOAuth(ctx, state)
 		}
 		http.Redirect(w, r, "/login?error="+url.QueryEscape(errDesc), http.StatusFound)
 		return
@@ -262,12 +256,12 @@ func (h *Handler) HandleCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pending, err := h.db.GetPendingAuthOAuth(state)
+	pending, err := h.db.GetPendingAuthOAuth(ctx, state)
 	if err != nil {
 		http.Error(w, "Invalid or expired state", http.StatusBadRequest)
 		return
 	}
-	h.db.DeletePendingAuthOAuth(state)
+	h.db.DeletePendingAuthOAuth(ctx, state)
 
 	if time.Since(pending.CreatedAt) > 10*time.Minute {
 		http.Error(w, "Authentication request expired", http.StatusBadRequest)
@@ -318,7 +312,7 @@ func (h *Handler) HandleCallback(w http.ResponseWriter, r *http.Request) {
 		handle = did
 	}
 
-	if banned, berr := h.db.IsBanned(did); berr == nil && banned {
+	if banned, berr := h.db.IsBanned(ctx, did); berr == nil && banned {
 		http.Redirect(w, r, "/login?error=banned", http.StatusFound)
 		return
 	}
@@ -330,7 +324,7 @@ func (h *Handler) HandleCallback(w http.ResponseWriter, r *http.Request) {
 	}
 	sessionExpiry := time.Now().Add(7 * 24 * time.Hour)
 
-	if err := h.db.CreateOAuthSession(db.OAuthSessionRow{
+	if err := h.db.CreateOAuthSession(ctx, db.OAuthSessionRow{
 		ID:                   sessionID,
 		DID:                  did,
 		Handle:               handle,
@@ -376,7 +370,7 @@ func (h *Handler) HandleCallback(w http.ResponseWriter, r *http.Request) {
 		if h.analytics == nil {
 			return
 		}
-		existingCount, _ := h.db.CountOAuthSessionsByDID(did)
+		existingCount, _ := h.db.CountOAuthSessionsByDID(context.Background(), did)
 		if existingCount <= 1 {
 			h.analytics.Capture(did, "account_created", map[string]interface{}{"pds": pdsURL})
 		} else {
@@ -386,7 +380,8 @@ func (h *Handler) HandleCallback(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) cleanupOrphanedReplies(did, accessToken string, dpopKey *ecdsa.PrivateKey, pds string) {
-	orphans, err := h.db.GetOrphanedRepliesByAuthor(did)
+	ctx := context.Background()
+	orphans, err := h.db.GetOrphanedRepliesByAuthor(ctx, did)
 	if err != nil || len(orphans) == 0 {
 		return
 	}
@@ -397,7 +392,7 @@ func (h *Handler) cleanupOrphanedReplies(did, accessToken string, dpopKey *ecdsa
 		}
 		rkey := uriParts[len(uriParts)-1]
 		deleteFromPDS(pds, accessToken, dpopKey, "at.margin.reply", did, rkey)
-		h.db.DeleteReply(reply.URI)
+		h.db.DeleteReply(ctx, reply.URI)
 	}
 }
 
@@ -431,7 +426,7 @@ func deleteFromPDS(pds, accessToken string, dpopKey *ecdsa.PrivateKey, collectio
 
 func (h *Handler) HandleLogout(w http.ResponseWriter, r *http.Request) {
 	if cookie, err := r.Cookie("margin_session"); err == nil {
-		h.db.DeleteOAuthSession(cookie.Value)
+		h.db.DeleteOAuthSession(r.Context(), cookie.Value)
 	}
 	for _, secure := range []bool{true, false} {
 		http.SetCookie(w, &http.Cookie{
@@ -459,7 +454,7 @@ func (h *Handler) HandleSession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sess, err := h.db.GetOAuthSessionByID(sessionID)
+	sess, err := h.db.GetOAuthSessionByID(r.Context(), sessionID)
 	if err != nil {
 		writeJSON(w, http.StatusOK, map[string]any{"authenticated": false})
 		return
@@ -473,7 +468,7 @@ func (h *Handler) HandleSession(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) HandleClientMetadata(w http.ResponseWriter, r *http.Request) {
-	base := h.baseURL(r)
+	base := h.baseURL()
 	writeJSON(w, http.StatusOK, map[string]any{
 		"client_id":                       base + "/oauth-client-metadata.json",
 		"client_name":                     "Margin",
@@ -494,7 +489,7 @@ func (h *Handler) HandleClientMetadata(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) HandleJWKS(w http.ResponseWriter, r *http.Request) {
-	writeJSON(w, http.StatusOK, h.oauthClient(r).PublicJWKS())
+	writeJSON(w, http.StatusOK, h.oauthClient().PublicJWKS())
 }
 
 func (h *Handler) GetSigningKey() *ecdsa.PrivateKey {

@@ -16,9 +16,11 @@ function i18nResourcesPlugin() {
   const resolvedId = "\0" + virtualId;
   return {
     name: "i18n-resources",
+    /** @param {string} id */
     resolveId(id) {
       if (id === virtualId) return resolvedId;
     },
+    /** @param {string} id */
     load(id) {
       if (id !== resolvedId) return;
       const localesDir = join(__dirname, "public/locales");
@@ -46,9 +48,11 @@ function i18nLanguagesPlugin() {
   const resolvedId = "\0" + virtualId;
   return {
     name: "i18n-languages",
+    /** @param {string} id */
     resolveId(id) {
       if (id === virtualId) return resolvedId;
     },
+    /** @param {string} id */
     load(id) {
       if (id !== resolvedId) return;
       const localesDir = join(__dirname, "public/locales");

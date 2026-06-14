@@ -1,59 +1,67 @@
 package db
 
 import (
+	"context"
 	"time"
+
+	"margin.at/internal/db/sqlcdb"
 )
 
-func (db *DB) CreateAPIKey(key *APIKey) error {
-	_, err := db.Exec(`
-		INSERT INTO api_keys (id, owner_did, name, key_hash, created_at, uri, cid)
-		VALUES ($1, $2, $3, $4, $5, $6, $7)
-		ON CONFLICT (id) DO UPDATE SET
-			name = EXCLUDED.name,
-			key_hash = EXCLUDED.key_hash,
-			uri = EXCLUDED.uri,
-			cid = EXCLUDED.cid
-	`, key.ID, key.OwnerDID, key.Name, key.KeyHash, key.CreatedAt, key.URI, key.CID)
-	return err
+func (db *DB) CreateAPIKey(ctx context.Context, key *APIKey) error {
+	var uri *string
+	if key.URI != "" {
+		u := key.URI
+		uri = &u
+	}
+	return db.q.CreateAPIKey(ctx, sqlcdb.CreateAPIKeyParams{
+		ID:        key.ID,
+		OwnerDid:  key.OwnerDID,
+		Name:      key.Name,
+		KeyHash:   key.KeyHash,
+		CreatedAt: key.CreatedAt,
+		Uri:       uri,
+		Cid:       key.CID,
+	})
 }
 
-func (db *DB) GetAPIKeysByOwner(ownerDID string) ([]APIKey, error) {
-	rows, err := db.Query(`
-		SELECT id, owner_did, name, key_hash, created_at, last_used_at
-		FROM api_keys
-		WHERE owner_did = $1
-		ORDER BY created_at DESC
-	`, ownerDID)
+func (db *DB) GetAPIKeysByOwner(ctx context.Context, ownerDID string) ([]APIKey, error) {
+	rows, err := db.q.GetAPIKeysByOwner(ctx, ownerDID)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-
-	var keys []APIKey
-	for rows.Next() {
-		var k APIKey
-		if err := rows.Scan(&k.ID, &k.OwnerDID, &k.Name, &k.KeyHash, &k.CreatedAt, &k.LastUsedAt); err != nil {
-			return nil, err
-		}
-		keys = append(keys, k)
+	keys := make([]APIKey, 0, len(rows))
+	for _, r := range rows {
+		keys = append(keys, APIKey{
+			ID:         r.ID,
+			OwnerDID:   r.OwnerDid,
+			Name:       r.Name,
+			KeyHash:    r.KeyHash,
+			CreatedAt:  r.CreatedAt,
+			LastUsedAt: r.LastUsedAt,
+		})
 	}
 	return keys, nil
 }
 
-func (db *DB) GetAPIKeyByHash(keyHash string) (*APIKey, error) {
-	var k APIKey
-	err := db.QueryRow(`
-		SELECT id, owner_did, name, key_hash, created_at, last_used_at
-		FROM api_keys
-		WHERE key_hash = $1
-	`, keyHash).Scan(&k.ID, &k.OwnerDID, &k.Name, &k.KeyHash, &k.CreatedAt, &k.LastUsedAt)
+func (db *DB) GetAPIKeyByHash(ctx context.Context, keyHash string) (*APIKey, error) {
+	r, err := db.q.GetAPIKeyByHash(ctx, keyHash)
 	if err != nil {
 		return nil, err
 	}
-	return &k, nil
+	return &APIKey{
+		ID:         r.ID,
+		OwnerDID:   r.OwnerDid,
+		Name:       r.Name,
+		KeyHash:    r.KeyHash,
+		CreatedAt:  r.CreatedAt,
+		LastUsedAt: r.LastUsedAt,
+	}, nil
 }
 
-func (db *DB) UpdateAPIKeyLastUsed(id string) error {
-	_, err := db.Exec(`UPDATE api_keys SET last_used_at = $1 WHERE id = $2`, time.Now(), id)
-	return err
+func (db *DB) UpdateAPIKeyLastUsed(ctx context.Context, id string) error {
+	now := time.Now()
+	return db.q.UpdateAPIKeyLastUsed(ctx, sqlcdb.UpdateAPIKeyLastUsedParams{
+		LastUsedAt: &now,
+		ID:         id,
+	})
 }

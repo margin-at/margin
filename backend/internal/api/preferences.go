@@ -37,7 +37,7 @@ func (h *Handler) GetPreferences(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	prefs, err := h.db.GetPreferences(session.DID)
+	prefs, err := h.db.GetPreferences(r.Context(), session.DID)
 	if err != nil {
 		WriteInternalError(w, "Failed to fetch preferences")
 		return
@@ -152,7 +152,7 @@ func (h *Handler) UpdatePreferences(w http.ResponseWriter, r *http.Request) {
 
 	uri := fmt.Sprintf("at://%s/%s/self", session.DID, xrpc.CollectionPreferences)
 
-	err = h.db.UpsertPreferences(&db.Preferences{
+	err = h.db.UpsertPreferences(r.Context(), &db.Preferences{
 		URI:                          uri,
 		AuthorDID:                    session.DID,
 		ExternalLinkSkippedHostnames: &hostnamesStr,

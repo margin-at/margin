@@ -1,147 +1,115 @@
 package db
 
-func (db *DB) CreateReply(r *Reply) error {
-	_, err := db.Exec(`
-		INSERT INTO replies (uri, author_did, parent_uri, root_uri, text, format, created_at, indexed_at, cid)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-		ON CONFLICT(uri) DO UPDATE SET
-			text = EXCLUDED.text,
-			format = EXCLUDED.format,
-			indexed_at = EXCLUDED.indexed_at,
-			cid = EXCLUDED.cid
-	`, r.URI, r.AuthorDID, r.ParentURI, r.RootURI, r.Text, r.Format, r.CreatedAt, r.IndexedAt, r.CID)
-	return err
+import (
+	"context"
+
+	"margin.at/internal/db/sqlcdb"
+)
+
+func (db *DB) CreateReply(ctx context.Context, r *Reply) error {
+	return db.q.CreateReply(ctx, sqlcdb.CreateReplyParams{
+		Uri:       r.URI,
+		AuthorDid: r.AuthorDID,
+		ParentUri: r.ParentURI,
+		RootUri:   r.RootURI,
+		Text:      r.Text,
+		Format:    r.Format,
+		CreatedAt: r.CreatedAt,
+		IndexedAt: r.IndexedAt,
+		Cid:       r.CID,
+	})
 }
 
-func (db *DB) GetRepliesByRoot(rootURI string) ([]Reply, error) {
-	rows, err := db.Query(`
-		SELECT uri, author_did, parent_uri, root_uri, text, format, created_at, indexed_at, cid
-		FROM replies
-		WHERE root_uri = $1
-		ORDER BY created_at ASC
-	`, rootURI)
+func (db *DB) GetRepliesByRoot(ctx context.Context, rootURI string) ([]Reply, error) {
+	rows, err := db.q.GetRepliesByRoot(ctx, rootURI)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-
-	return scanReplies(rows)
+	return mapReplies(rows), nil
 }
 
-func (db *DB) GetReplyByURI(uri string) (*Reply, error) {
-	var r Reply
-	err := db.QueryRow(`
-		SELECT uri, author_did, parent_uri, root_uri, text, format, created_at, indexed_at, cid
-		FROM replies
-		WHERE uri = $1
-	`, uri).Scan(&r.URI, &r.AuthorDID, &r.ParentURI, &r.RootURI, &r.Text, &r.Format, &r.CreatedAt, &r.IndexedAt, &r.CID)
+func (db *DB) GetReplyByURI(ctx context.Context, uri string) (*Reply, error) {
+	r, err := db.q.GetReplyByURI(ctx, uri)
 	if err != nil {
 		return nil, err
 	}
-	return &r, nil
+	reply := mapReply(r)
+	return &reply, nil
 }
 
-func (db *DB) DeleteReply(uri string) error {
-	_, err := db.Exec(`DELETE FROM replies WHERE uri = $1`, uri)
-	return err
+func (db *DB) DeleteReply(ctx context.Context, uri string) error {
+	return db.q.DeleteReply(ctx, uri)
 }
 
-func (db *DB) GetRepliesByAuthor(authorDID string) ([]Reply, error) {
-	rows, err := db.Query(`
-		SELECT uri, author_did, parent_uri, root_uri, text, format, created_at, indexed_at, cid
-		FROM replies
-		WHERE author_did = $1
-		ORDER BY created_at DESC
-	`, authorDID)
+func (db *DB) GetRepliesByAuthor(ctx context.Context, authorDID string) ([]Reply, error) {
+	rows, err := db.q.GetRepliesByAuthor(ctx, authorDID)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-
-	return scanReplies(rows)
+	return mapReplies(rows), nil
 }
 
-func (db *DB) GetOrphanedRepliesByAuthor(authorDID string) ([]Reply, error) {
-	rows, err := db.Query(`
-		SELECT r.uri, r.author_did, r.parent_uri, r.root_uri, r.text, r.format, r.created_at, r.indexed_at, r.cid
-		FROM replies r
-		LEFT JOIN annotations a ON r.root_uri = a.uri
-		WHERE r.author_did = $1 AND a.uri IS NULL
-	`, authorDID)
+func (db *DB) GetOrphanedRepliesByAuthor(ctx context.Context, authorDID string) ([]Reply, error) {
+	rows, err := db.q.GetOrphanedRepliesByAuthor(ctx, authorDID)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-
-	return scanReplies(rows)
+	return mapReplies(rows), nil
 }
 
-func (db *DB) GetReplyCount(rootURI string) (int, error) {
-	var count int
-	err := db.QueryRow(`SELECT COUNT(*) FROM replies WHERE root_uri = $1`, rootURI).Scan(&count)
-	return count, err
+func (db *DB) GetReplyCount(ctx context.Context, rootURI string) (int, error) {
+	count, err := db.q.GetReplyCount(ctx, rootURI)
+	return int(count), err
 }
 
-func (db *DB) GetReplyCounts(rootURIs []string) (map[string]int, error) {
+func (db *DB) GetReplyCounts(ctx context.Context, rootURIs []string) (map[string]int, error) {
 	if len(rootURIs) == 0 {
 		return map[string]int{}, nil
 	}
 
-	query := `
-		SELECT root_uri, COUNT(*)
-		FROM replies
-		WHERE root_uri = ANY($1)
-		GROUP BY root_uri
-	`
-
-	rows, err := db.Query(query, pqStringArray(rootURIs))
+	rows, err := db.q.GetReplyCounts(ctx, rootURIs)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
 
 	counts := make(map[string]int)
-	for rows.Next() {
-		var uri string
-		var count int
-		if err := rows.Scan(&uri, &count); err != nil {
-			return nil, err
-		}
-		counts[uri] = count
+	for _, r := range rows {
+		counts[r.RootUri] = int(r.Count)
 	}
 
 	return counts, nil
 }
 
-func (db *DB) GetRepliesByURIs(uris []string) ([]Reply, error) {
+func (db *DB) GetRepliesByURIs(ctx context.Context, uris []string) ([]Reply, error) {
 	if len(uris) == 0 {
 		return []Reply{}, nil
 	}
 
-	rows, err := db.Query(`
-		SELECT uri, author_did, parent_uri, root_uri, text, format, created_at, indexed_at, cid
-		FROM replies
-		WHERE uri = ANY($1)
-	`, pqStringArray(uris))
+	rows, err := db.q.GetRepliesByURIs(ctx, uris)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-
-	return scanReplies(rows)
+	return mapReplies(rows), nil
 }
 
-func scanReplies(rows interface {
-	Next() bool
-	Scan(...interface{}) error
-}) ([]Reply, error) {
-	var replies []Reply
-	for rows.Next() {
-		var r Reply
-		if err := rows.Scan(&r.URI, &r.AuthorDID, &r.ParentURI, &r.RootURI, &r.Text, &r.Format, &r.CreatedAt, &r.IndexedAt, &r.CID); err != nil {
-			return nil, err
-		}
-		replies = append(replies, r)
+func mapReply(r sqlcdb.Reply) Reply {
+	return Reply{
+		URI:       r.Uri,
+		AuthorDID: r.AuthorDid,
+		ParentURI: r.ParentUri,
+		RootURI:   r.RootUri,
+		Text:      r.Text,
+		Format:    r.Format,
+		CreatedAt: r.CreatedAt,
+		IndexedAt: r.IndexedAt,
+		CID:       r.Cid,
 	}
-	return replies, nil
+}
+
+func mapReplies(rows []sqlcdb.Reply) []Reply {
+	var replies []Reply
+	for _, r := range rows {
+		replies = append(replies, mapReply(r))
+	}
+	return replies
 }

@@ -11,21 +11,10 @@ function serverFetch(path: string, cookie?: string): Promise<Response> {
   return fetch(`${API_URL}${path}`, { headers });
 }
 
-const sessionCache = new Map<string, { user: UserProfile; expires: number }>();
-
-export function clearSessionCacheForCookie(cookie: string) {
-  const cacheKey = cookie.match(/margin_session=([^;]+)/)?.[1] || "";
-  if (cacheKey) sessionCache.delete(cacheKey);
-}
+export function clearSessionCacheForCookie(_cookie: string) {}
 
 export async function getSession(cookie: string): Promise<UserProfile | null> {
   try {
-    const cacheKey = cookie.match(/margin_session=([^;]+)/)?.[1] || "";
-    const cached = sessionCache.get(cacheKey);
-    if (cached && Date.now() < cached.expires) {
-      return cached.user;
-    }
-
     const res = await serverFetch("/auth/session", cookie);
     if (!res.ok) return null;
     const data = await res.json();
@@ -43,19 +32,6 @@ export async function getSession(cookie: string): Promise<UserProfile | null> {
       followsCount: data.followsCount,
       postsCount: data.postsCount,
     };
-
-    if (cacheKey) {
-      sessionCache.set(cacheKey, {
-        user: profile,
-        expires: Date.now() + 5 * 60_000,
-      });
-      if (sessionCache.size > 100) {
-        const now = Date.now();
-        for (const [k, v] of sessionCache) {
-          if (now > v.expires) sessionCache.delete(k);
-        }
-      }
-    }
 
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 3000);

@@ -1,0 +1,28 @@
+version: "2"
+sql:
+  - engine: postgresql
+    queries: "internal/db/sqlc_queries"
+    schema: "internal/db/migrations"
+    gen:
+      go:
+        package: "sqlcdb"
+        out: "internal/db/sqlcdb"
+        sql_package: "pgx/v5"
+        emit_interface: true
+        emit_json_tags: true
+        json_tags_case_style: "camel"
+        overrides:
+          - db_type: "pg_catalog.timestamp"
+            go_type: "time.Time"
+            nullable: false
+          - db_type: "pg_catalog.timestamp"
+            go_type:
+              type: "Time"
+              import: "time"
+              pointer: true
+            nullable: true
+          - db_type: "text"
+            go_type:
+              type: "string"
+              pointer: true
+            nullable: true

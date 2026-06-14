@@ -15,7 +15,7 @@ func (h *Handler) HandleGetTrendingTags(w http.ResponseWriter, r *http.Request) 
 		}
 	}
 
-	tags, err := h.db.GetTrendingTags(limit)
+	tags, err := h.db.GetTrendingTags(r.Context(), limit)
 	if err != nil {
 		WriteInternalError(w, "Failed to fetch trending tags")
 		return
@@ -39,7 +39,7 @@ func (h *Handler) HandleGetUserTags(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	tags, err := h.db.GetUserTags(did, limit)
+	tags, err := h.db.GetUserTags(r.Context(), did, limit)
 	if err != nil {
 		WriteInternalError(w, "Failed to fetch user tags")
 		return

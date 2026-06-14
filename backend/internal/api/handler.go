@@ -87,7 +87,6 @@ type Handler struct {
 	noteRepo         domain.NoteRepository
 	engagementRepo   domain.EngagementRepository
 	notificationRepo domain.NotificationRepository
-	sessionRepo      domain.SessionRepository
 	noteWriter       *NoteWriteService
 	refresher        *TokenRefresher
 	apiKeys          *APIKeyHandler
@@ -102,13 +101,12 @@ type Handler struct {
 }
 
 func NewHandler(database *db.DB, noteWriter *NoteWriteService, refresher *TokenRefresher, syncService *internal_sync.Service, recService *recommendations.Service, ac *analytics.Client) *Handler {
-	noteRepo := postgres.NewNoteRepository(database.DB)
-	engagementRepo := postgres.NewEngagementRepository(database.DB)
-	notificationRepo := postgres.NewNotificationRepository(database.DB)
-	sessionRepo := postgres.NewSessionRepository(database.DB)
+	noteRepo := postgres.NewNoteRepository(database.Pool())
+	engagementRepo := postgres.NewEngagementRepository(database.Pool())
+	notificationRepo := postgres.NewNotificationRepository(database.Pool())
 	profileRepo := &fullProfileRepository{db: database}  // rich resolution: cache → DB → bsky.social
 	profileSvc := service.NewProfileService(profileRepo) // service-lifetime TTL cache on top
-	collectionRepo := postgres.NewCollectionRepository(database.DB)
+	collectionRepo := postgres.NewCollectionRepository(database.Pool())
 	hydration := service.NewHydrationService(engagementRepo, profileSvc, collectionRepo)
 	feedSvc := service.NewFeedService(noteRepo, hydration, database)
 
@@ -117,7 +115,6 @@ func NewHandler(database *db.DB, noteWriter *NoteWriteService, refresher *TokenR
 		noteRepo:         noteRepo,
 		engagementRepo:   engagementRepo,
 		notificationRepo: notificationRepo,
-		sessionRepo:      sessionRepo,
 		noteWriter:       noteWriter,
 		refresher:        refresher,
 		apiKeys:          NewAPIKeyHandler(database, refresher),
@@ -429,12 +426,12 @@ func (h *Handler) GetFeed(w http.ResponseWriter, r *http.Request) {
 	if feedType == db.FeedTypeRecent && motivation == "" && tag == "" {
 		var collItems []db.CollectionItem
 		if creator != "" {
-			collItems, _ = h.db.GetCollectionItemsByAuthor(creator)
+			collItems, _ = h.db.GetCollectionItemsByAuthor(r.Context(), creator)
 			if len(collItems) > fetchLimit {
 				collItems = collItems[:fetchLimit]
 			}
 		} else {
-			collItems, _ = h.db.GetRecentCollectionItems(fetchLimit, 0)
+			collItems, _ = h.db.GetRecentCollectionItems(r.Context(), fetchLimit, 0)
 		}
 
 		if len(collItems) > 0 {
@@ -686,14 +683,14 @@ func (h *Handler) DiscoverForURL(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	localAnnotations, _ := h.db.GetAnnotationsByURIs(annotationURIs)
-	localHighlights, _ := h.db.GetHighlightsByURIs(highlightURIs)
-	localBookmarks, _ := h.db.GetBookmarksByURIs(bookmarkURIs)
+	localAnnotations, _ := h.db.GetAnnotationsByURIs(r.Context(), annotationURIs)
+	localHighlights, _ := h.db.GetHighlightsByURIs(r.Context(), highlightURIs)
+	localBookmarks, _ := h.db.GetBookmarksByURIs(r.Context(), bookmarkURIs)
 
 	urlHash := db.HashURL(source)
-	dbAnnotations, _ := h.db.GetAnnotationsByTargetHash(urlHash, 100, 0)
-	dbHighlights, _ := h.db.GetHighlightsByTargetHash(urlHash, 100, 0)
-	dbBookmarks, _ := h.db.GetBookmarksByTargetHash(urlHash, 100, 0)
+	dbAnnotations, _ := h.db.GetAnnotationsByTargetHash(r.Context(), urlHash, 100, 0)
+	dbHighlights, _ := h.db.GetHighlightsByTargetHash(r.Context(), urlHash, 100, 0)
+	dbBookmarks, _ := h.db.GetBookmarksByTargetHash(r.Context(), urlHash, 100, 0)
 
 	annoMap := make(map[string]db.Annotation)
 	for _, a := range localAnnotations {
@@ -1002,7 +999,7 @@ func (h *Handler) GetReplies(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	replies, err := h.db.GetRepliesByRoot(uri)
+	replies, err := h.db.GetRepliesByRoot(r.Context(), uri)
 	if err != nil {
 		WriteInternalError(w, "Internal server error")
 		return
@@ -1057,7 +1054,7 @@ func (h *Handler) GetEditHistory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	history, err := h.db.GetEditHistory(uri)
+	history, err := h.db.GetEditHistory(r.Context(), uri)
 	if err != nil {
 		WriteInternalError(w, "Failed to fetch edit history")
 		return
@@ -1366,7 +1363,7 @@ func (h *Handler) getViewerDID(r *http.Request) string {
 	if err != nil {
 		return ""
 	}
-	sess, err := h.db.GetOAuthSessionByID(cookie.Value)
+	sess, err := h.db.GetOAuthSessionByID(r.Context(), cookie.Value)
 	if err != nil {
 		return ""
 	}
@@ -1391,12 +1388,12 @@ func (r *fullProfileRepository) GetProfiles(_ context.Context, dids []string) (m
 	return result, nil
 }
 
-func (r *fullProfileRepository) GetProfile(_ context.Context, did string) (*domain.Profile, error) {
-	return r.db.GetProfile(did)
+func (r *fullProfileRepository) GetProfile(ctx context.Context, did string) (*domain.Profile, error) {
+	return r.db.GetProfile(ctx, did)
 }
 
-func (r *fullProfileRepository) UpsertProfile(_ context.Context, p *domain.Profile) error {
-	return r.db.UpsertProfile(p)
+func (r *fullProfileRepository) UpsertProfile(ctx context.Context, p *domain.Profile) error {
+	return r.db.UpsertProfile(ctx, p)
 }
 
 func (h *Handler) Search(w http.ResponseWriter, r *http.Request) {
@@ -1480,9 +1477,9 @@ func (h *Handler) GetDocuments(w http.ResponseWriter, r *http.Request) {
 
 	switch sort {
 	case "popular":
-		docs, err = h.db.GetPopularDocuments(limit, offset)
+		docs, err = h.db.GetPopularDocuments(r.Context(), limit, offset)
 	default:
-		docs, err = h.db.GetRecentDocuments(limit, offset)
+		docs, err = h.db.GetRecentDocuments(r.Context(), limit, offset)
 	}
 
 	if err != nil {
@@ -1526,7 +1523,7 @@ func (h *Handler) GetDocuments(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	total, _ := h.db.GetDocumentCount()
+	total, _ := h.db.GetDocumentCount(r.Context())
 
 	WriteSuccess(w, map[string]interface{}{
 		"items":      items,
@@ -1584,7 +1581,7 @@ func (h *Handler) AdminBackfill(w http.ResponseWriter, r *http.Request) {
 	}
 	res.ProfilesRebuilt = profileCount
 
-	docCount, _ := h.db.GetDocumentCount()
+	docCount, _ := h.db.GetDocumentCount(r.Context())
 	res.Documents = docCount
 
 	WriteSuccess(w, res)
