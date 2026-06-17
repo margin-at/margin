@@ -29,11 +29,14 @@ export default function RightSidebar({ onNavigate }: RightSidebarProps) {
     else window.location.href = path;
   };
   const [tags, setTags] = useState<Tag[]>([]);
-  const [browser] = useState<"chrome" | "firefox" | "edge" | "other">(() => {
+  const [browser] = useState<
+    "chrome" | "firefox" | "edge" | "safari" | "other"
+  >(() => {
     if (typeof navigator === "undefined") return "other";
     const ua = navigator.userAgent;
     if (/Edg\//i.test(ua)) return "edge";
     if (/Firefox/i.test(ua)) return "firefox";
+    if (/^((?!chrome|android).)*safari/i.test(ua)) return "safari";
     if (/Chrome/i.test(ua)) return "chrome";
     return "other";
   });
@@ -142,7 +145,9 @@ export default function RightSidebar({ onNavigate }: RightSidebarProps) {
       ? "https://addons.mozilla.org/en-US/firefox/addon/margin/"
       : browser === "edge"
         ? "https://microsoftedge.microsoft.com/addons/detail/margin/nfjnmllpdgcdnhmmggjihjbidmeadddn"
-        : "https://chromewebstore.google.com/detail/margin/cgpmbiiagnehkikhcbnhiagfomajncpa";
+        : browser === "safari"
+          ? "https://apps.apple.com/us/app/margin-for-safari/id6773549512"
+          : "https://chromewebstore.google.com/detail/margin/cgpmbiiagnehkikhcbnhiagfomajncpa";
 
   return (
     <aside className="hidden xl:block w-[320px] shrink-0 sticky top-0 h-screen overflow-y-auto px-6 py-6">
@@ -219,7 +224,9 @@ export default function RightSidebar({ onNavigate }: RightSidebarProps) {
               ? t("sidebar.downloadForFirefox")
               : browser === "edge"
                 ? t("sidebar.downloadForEdge")
-                : t("sidebar.downloadForChrome")}
+                : browser === "safari"
+                  ? t("sidebar.downloadForSafari")
+                  : t("sidebar.downloadForChrome")}
           </a>
         </div>
 

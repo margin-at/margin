@@ -30,7 +30,7 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { AppleIcon, TangledIcon } from "../components/common/Icons";
-import { FaFirefox, FaEdge } from "react-icons/fa";
+import { FaFirefox, FaEdge, FaSafari } from "react-icons/fa";
 const noteLexiconText = `{
   "lexicon": 1,
   "id": "at.margin.note",
@@ -354,6 +354,7 @@ const STORE_LINKS = {
     "https://chromewebstore.google.com/detail/margin/cgpmbiiagnehkikhcbnhiagfomajncpa",
   firefox: "https://addons.mozilla.org/en-US/firefox/addon/margin/",
   edge: "https://microsoftedge.microsoft.com/addons/detail/margin/nfjnmllpdgcdnhmmggjihjbidmeadddn",
+  safari: "https://apps.apple.com/us/app/margin-for-safari/id6773549512",
   ios: "https://www.icloud.com/shortcuts/1e33ebf52f55431fae1e187cfe9738c3",
 } as const;
 
@@ -364,19 +365,29 @@ export default function About() {
   const [browser] = React.useState<Browser>(detectBrowser);
 
   const primaryStore: keyof typeof STORE_LINKS =
-    browser === "firefox" ? "firefox" : browser === "edge" ? "edge" : "chrome";
+    browser === "firefox"
+      ? "firefox"
+      : browser === "edge"
+        ? "edge"
+        : browser === "safari"
+          ? "safari"
+          : "chrome";
   const PrimaryIcon =
     primaryStore === "firefox"
       ? FaFirefox
       : primaryStore === "edge"
         ? FaEdge
-        : Chrome;
+        : primaryStore === "safari"
+          ? FaSafari
+          : Chrome;
   const primaryLabel =
     primaryStore === "firefox"
       ? "Firefox"
       : primaryStore === "edge"
         ? "Edge"
-        : "Chrome";
+        : primaryStore === "safari"
+          ? "Safari"
+          : "Chrome";
 
   const capabilities: { icon: LucideIcon; title: string; desc: string }[] = [
     {
@@ -680,6 +691,13 @@ export default function About() {
               icon={<FaEdge size={17} />}
               label="Edge"
               active={primaryStore === "edge"}
+            />
+            ,{" "}
+            <InstallLink
+              href={STORE_LINKS.safari}
+              icon={<FaSafari size={17} />}
+              label="Safari"
+              active={primaryStore === "safari"}
             />
             ,{" "}
             <span className="text-surface-500 dark:text-surface-400">
