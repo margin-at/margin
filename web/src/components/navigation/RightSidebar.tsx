@@ -281,7 +281,7 @@ export default function RightSidebar({ onNavigate }: RightSidebarProps) {
               Terms
             </a>
             <a
-              href="https://github.com/margin-at/margin"
+              href="https://github.com/paddinglabs/margin"
               target="_blank"
               rel="noreferrer"
               className="hover:underline hover:text-surface-600 dark:hover:text-surface-300"
