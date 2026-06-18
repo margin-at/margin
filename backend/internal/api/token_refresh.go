@@ -83,9 +83,13 @@ func (tr *TokenRefresher) GetSessionWithAutoRefresh(r *http.Request) (*SessionDa
 	if time.Until(sess.AccessTokenExpiresAt) < time.Minute {
 		refreshed, rerr := tr.refreshSession(r, sessionID)
 		if rerr != nil {
-			logger.Error("Proactive token refresh failed for %s: %v", sess.DID, rerr)
-			tr.db.DeleteOAuthSession(r.Context(), sessionID)
-			return nil, fmt.Errorf("%w: %v", ErrSessionInvalid, rerr)
+			if isRefreshTokenDead(rerr) {
+				logger.Error("Proactive token refresh failed for %s, invalidating session: %v", sess.DID, rerr)
+				tr.db.DeleteOAuthSession(r.Context(), sessionID)
+				return nil, fmt.Errorf("%w: %v", ErrSessionInvalid, rerr)
+			}
+			logger.Error("Proactive token refresh failed transiently for %s, keeping session: %v", sess.DID, rerr)
+			return sessionFromRow(sess)
 		}
 		return refreshed, nil
 	}
@@ -126,6 +130,7 @@ func (tr *TokenRefresher) refreshSession(r *http.Request, sessionID string) (*Se
 		}
 		if err := tr.db.UpdateOAuthSessionTokens(ctx, sessionID, tok.AccessToken, newRefresh, atExpiry); err != nil {
 			logger.Error("persist refreshed tokens for %s: %v", fresh.DID, err)
+			return fmt.Errorf("persist refreshed tokens: %w", err)
 		}
 
 		result = &SessionData{
@@ -144,6 +149,17 @@ func (tr *TokenRefresher) refreshSession(r *http.Request, sessionID string) (*Se
 		return nil, lockErr
 	}
 	return result, nil
+}
+
+func isRefreshTokenDead(err error) bool {
+	if err == nil {
+		return false
+	}
+	s := strings.ToLower(err.Error())
+	return strings.Contains(s, "invalid_grant") ||
+		strings.Contains(s, "invalid_token") ||
+		strings.Contains(s, "invalid_client") ||
+		strings.Contains(s, "invalid_dpop_proof")
 }
 
 func IsTokenExpiredError(err error) bool {
@@ -177,9 +193,13 @@ func (tr *TokenRefresher) ExecuteWithAutoRefresh(
 
 	newSession, refreshErr := tr.refreshSession(r, session.ID)
 	if refreshErr != nil {
-		logger.Error("Token refresh failed for user %s, invalidating session: %v", session.Handle, refreshErr)
-		tr.db.DeleteOAuthSession(r.Context(), session.ID)
-		return fmt.Errorf("%w: %v", ErrSessionInvalid, refreshErr)
+		if isRefreshTokenDead(refreshErr) {
+			logger.Error("Token refresh failed for user %s, invalidating session: %v", session.Handle, refreshErr)
+			tr.db.DeleteOAuthSession(r.Context(), session.ID)
+			return fmt.Errorf("%w: %v", ErrSessionInvalid, refreshErr)
+		}
+		logger.Error("Token refresh failed transiently for user %s, keeping session: %v", session.Handle, refreshErr)
+		return refreshErr
 	}
 
 	client = xrpc.NewClient(newSession.PDS, newSession.AccessToken, newSession.DPoPKey)
