@@ -293,7 +293,7 @@ function LexiconBlock() {
             {copied ? "Copied" : "Copy"}
           </button>
           <a
-            href="https://github.com/margin-at/margin/blob/main/lexicons/at/margin/note.json"
+            href="https://github.com/paddinglabs/margin/blob/main/lexicons/at/margin/note.json"
             target="_blank"
             rel="noreferrer"
             className="inline-flex items-center gap-1 hover:text-surface-300 transition-colors"
@@ -628,7 +628,7 @@ export default function About() {
 
             <aside className="lg:pt-12 flex flex-col gap-3 self-start">
               <a
-                href="https://github.com/margin-at"
+                href="https://github.com/paddinglabs"
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex items-center justify-between gap-3 text-[13px] font-medium text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white transition-colors py-1.5 border-b border-surface-200 dark:border-surface-800"
@@ -733,7 +733,7 @@ export default function About() {
               />
             </a>
             <a
-              href="https://github.com/margin-at"
+              href="https://github.com/paddinglabs"
               target="_blank"
               rel="noreferrer"
               className="inline-flex items-center gap-1.5 text-[14px] font-medium text-surface-500 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white transition-colors"
