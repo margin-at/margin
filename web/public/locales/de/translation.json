@@ -1,23 +1,10 @@
 {
-  "pageTitles": {
-    "highlights": "Markierungen — Margin",
-    "home": "Startseite — Margin",
-    "bookmarks": "Lesezeichen — Margin",
-    "annotations": "Anmerkungen — Margin",
-    "discover": "Entdecken — Margin",
-    "search": "Suche — Margin",
-    "notifications": "Benachrichtigungen — Margin",
-    "new": "Neue Anmerkung — Margin",
-    "settings": "Einstellungen — Margin",
-    "collections": "Sammlungen — Margin",
-    "admin": "Admin — Margin"
-  },
   "appTitle": "Margin",
   "nav": {
     "feed": "Feed",
-    "highlights": "Highlights",
     "discover": "Entdecken",
     "annotations": "Anmerkungen",
+    "highlights": "Markierungen",
     "bookmarks": "Lesezeichen",
     "collections": "Sammlungen",
     "activity": "Aktivität",
@@ -29,12 +16,26 @@
     "themeDark": "Dunkel",
     "themeSystem": "System"
   },
+  "pageTitles": {
+    "home": "Startseite — Margin",
+    "bookmarks": "Lesezeichen — Margin",
+    "highlights": "Markierungen — Margin",
+    "annotations": "Anmerkungen — Margin",
+    "discover": "Entdecken — Margin",
+    "search": "Suche — Margin",
+    "notifications": "Benachrichtigungen — Margin",
+    "new": "Neue Anmerkung — Margin",
+    "settings": "Einstellungen — Margin",
+    "collections": "Sammlungen — Margin",
+    "admin": "Admin — Margin"
+  },
   "sidebar": {
+    "getExtension": "Hol dir die Erweiterung",
+    "extensionTagline": "Markiere, kommentiere und speichere Lesezeichen von jeder Seite aus.",
     "downloadForFirefox": "Für Firefox herunterladen",
     "downloadForEdge": "Für Edge herunterladen",
     "downloadForSafari": "Für Safari herunterladen",
     "downloadForChrome": "Für Chrome herunterladen",
-    "getExtension": "Hol dir die Erweiterung",
     "trending": "Im Trend",
     "nothingTrending": "Gerade trendet nichts.",
     "searchPlaceholder": "Suche nach Leuten, Schlagworten, URLs …",
@@ -50,87 +51,762 @@
     "welcomeTagline": "Ein ruhiger Ort, um zu kommentieren, zu markieren und zu speichern, was du im Web liest.",
     "getStarted": "Fang an",
     "learnMore": "Erfahre mehr",
-        "tabs": {
-            "recent": "Aktuell",
-            "popular": "Beliebt",
-            "shelved": "Zurückgestellt",
-            "margin": "Margin",
-            "semble": "Semble"
-        },
-        "filters": {
-            "all": "Alle",
-            "annotations": "Anmerkungen",
-            "highlights": "Markierungen",
-            "bookmarks": "Lesezeichen"
-        },
-        "itemsWithTag": "Elemente mit Schlagwort:",
-        "clearFilter": "Filter löschen",
-        "everyone": "Jede:r",
-        "mine": "Meine",
-        "defaultEmptyMessage": "Noch nichts hier – deine Anmerkungen und die von Personen, denen du folgst, werden hier angezeigt.",
-        "nothingHereYet": "Noch nichts hier",
-        "loading": "Laden …"
+    "tabs": {
+      "recent": "Aktuell",
+      "popular": "Beliebt",
+      "shelved": "Zurückgestellt",
+      "margin": "Margin",
+      "semble": "Semble"
     },
-    "discover": {
-        "tabs": {
-            "new": "Neu",
-            "popular": "Beliebt",
-            "forYou": "Für dich"
-        },
-        "comingSoon": "In Kürze",
-        "forYouNotAvailable": "Persönliche Empfehlungen sind auf diesem Server noch nicht verfügbar.",
-        "noDocumentsYet": "Bisher wurden keine Dokumente entdeckt. Komm bald wieder!",
-        "startAnnotating": "Beginn mit dem Kommentieren und Markieren, um personalisierte Empfehlungen zu erhalten.",
-        "loadMore": "Mehr laden"
+    "filters": {
+      "all": "Alle",
+      "annotations": "Anmerkungen",
+      "highlights": "Markierungen",
+      "bookmarks": "Lesezeichen"
     },
-    "search": {
-        "placeholder": "Suche Anmerkungen, Markierungen, Lesezeichen …",
-        "noResults": "Keine Ergebnisse gefunden",
-        "noResultsMessage": "Keine Übereinstimmungen für „{{query}}“. Versuch andere Suchbegriffe.",
-        "emptyTitle": "Durchsuche deine Bibliothek",
-        "emptyMessage": "Finde Anmerkungen, Markierungen und Lesezeichen nach Suchbegriff, URL oder Schlagwort.",
-        "filters": {
-            "all": "Alle",
-            "annotations": "Anmerkungen",
-            "highlights": "Markierungen",
-            "bookmarks": "Lesezeichen",
-            "mine": "Meine"
-        },
-        "resultCount": "{{count}}{{hasMore}} Ergebnisse für „{{query}}“",
-        "loadMore": "Mehr laden"
+    "itemsWithTag": "Elemente mit Schlagwort:",
+    "clearFilter": "Filter löschen",
+    "everyone": "Jede:r",
+    "mine": "Meine",
+    "defaultEmptyMessage": "Noch nichts hier – deine Anmerkungen und die von Personen, denen du folgst, werden hier angezeigt.",
+    "nothingHereYet": "Noch nichts hier",
+    "loading": "Laden …"
+  },
+  "discover": {
+    "tabs": {
+      "new": "Neu",
+      "popular": "Beliebt",
+      "forYou": "Für dich"
     },
-    "notifications": {
-        "title": "Aktivität",
-        "noActivity": "Noch keine Aktivität",
-        "noActivityMessage": "Interaktionen mit deinen Inhalten werden hier angezeigt.",
-        "likedAnnotation": "gefällt deine Anmerkung",
-        "likedHighlight": "gefällt deine Markierung",
-        "likedBookmark": "gefällt dein Lesezeichen",
-        "likedReply": "gefällt deine Antwort",
-        "likedPost": "gefällt dein Post",
-        "repliedToReply": "hat deine Antwort beantwortet",
-        "repliedToAnnotation": "hat deine Anmerkung beantwortet",
-        "mentionedInAnnotation": "hat dich in einer Anmerkung erwähnt",
-        "followedYou": "folgt dir",
-        "highlightedPage": "hat auf deiner Seite markiert",
-        "inReplyTo": "als Antwort auf",
-        "aReply": "eine Antwort",
-        "anAnnotation": "eine Anmerkung"
+    "comingSoon": "In Kürze",
+    "forYouNotAvailable": "Persönliche Empfehlungen sind auf diesem Server noch nicht verfügbar.",
+    "noDocumentsYet": "Bisher wurden keine Dokumente entdeckt. Komm bald wieder!",
+    "startAnnotating": "Beginn mit dem Kommentieren und Markieren, um personalisierte Empfehlungen zu erhalten.",
+    "loadMore": "Mehr laden"
+  },
+  "search": {
+    "placeholder": "Suche Anmerkungen, Markierungen, Lesezeichen …",
+    "noResults": "Keine Ergebnisse gefunden",
+    "noResultsMessage": "Keine Übereinstimmungen für „{{query}}“. Versuch andere Suchbegriffe.",
+    "emptyTitle": "Durchsuche deine Bibliothek",
+    "emptyMessage": "Finde Anmerkungen, Markierungen und Lesezeichen nach Suchbegriff, URL oder Schlagwort.",
+    "filters": {
+      "all": "Alle",
+      "annotations": "Anmerkungen",
+      "highlights": "Markierungen",
+      "bookmarks": "Lesezeichen",
+      "mine": "Meine"
     },
-    "collections": {
+    "resultCount": "{{count}}{{hasMore}} Ergebnisse für „{{query}}“",
+    "loadMore": "Mehr laden"
+  },
+  "notifications": {
+    "title": "Aktivität",
+    "noActivity": "Noch keine Aktivität",
+    "noActivityMessage": "Interaktionen mit deinen Inhalten werden hier angezeigt.",
+    "likedAnnotation": "gefällt deine Anmerkung",
+    "likedHighlight": "gefällt deine Markierung",
+    "likedBookmark": "gefällt dein Lesezeichen",
+    "likedReply": "gefällt deine Antwort",
+    "likedPost": "gefällt dein Post",
+    "repliedToReply": "hat deine Antwort beantwortet",
+    "repliedToAnnotation": "hat deine Anmerkung beantwortet",
+    "mentionedInAnnotation": "hat dich in einer Anmerkung erwähnt",
+    "followedYou": "folgt dir",
+    "highlightedPage": "hat auf deiner Seite markiert",
+    "inReplyTo": "als Antwort auf",
+    "aReply": "eine Antwort",
+    "anAnnotation": "eine Anmerkung"
+  },
+  "collections": {
+    "title": "Sammlungen",
+    "subtitle": "Organisiere deine Anmerkungen und Markierungen",
+    "none": "Noch keine Sammlungen",
+    "noneMessage": "Erstelle eine Sammlung, um deine Markierungen und Anmerkungen zu organisieren.",
+    "createButton": "Sammlung erstellen",
+    "newTitle": "Neue Sammlung",
+    "editTitle": "Sammlung bearbeiten",
+    "namePlaceholder": "Meine Sammlung",
+    "namePlaceholderEdit": "Sammlungsname",
+    "nameLabel": "Name",
+    "iconLabel": "Symbol",
+    "iconsTab": "Symbole",
+    "emojisTab": "Emojis",
+    "selectedIcon": "Ausgewählt:",
+    "descriptionLabel": "Beschreibung (optional)",
+    "descriptionPlaceholder": "Wofür ist diese Sammlung?",
+    "descriptionPlaceholderEdit": "Worum geht es in dieser Sammlung?",
+    "cancel": "Abbrechen",
+    "create": "Sammlung erstellen",
+    "creating": "Wird erstellt …",
+    "save": "Änderungen speichern",
+    "saving": "Wird gespeichert …",
+    "deleteConfirm": "Diese Sammlung löschen?",
+    "failedUpdate": "Sammlung konnte nicht aktualisiert werden",
+    "errorUpdating": "Beim Aktualisieren ist ein Fehler aufgetreten",
+    "itemCount_one": "{{count}} Element",
+    "itemCount_other": "{{count}} Elemente"
+  },
+  "collectionDetail": {
+    "backLink": "Sammlungen",
+    "by": "von",
+    "edit": "Sammlung bearbeiten",
+    "delete": "Sammlung löschen",
+    "removeFromCollection": "Aus Sammlung entfernen",
+    "viewInSemble": "In Semble ansehen",
+    "empty": "Sammlung ist leer",
+    "notFound": "Sammlung nicht gefunden",
+    "failedToLoad": "Sammlung konnte nicht geladen werden",
+    "deleteConfirm": "Diese Sammlung löschen?",
+    "removeConfirm": "Aus Sammlung entfernen?"
+  },
+  "profile": {
+    "notFound": "Benutzer:in nicht gefunden",
+    "notFoundMessage": "Dieses Profil existiert nicht oder konnte nicht geladen werden.",
+    "edit": "Bearbeiten",
+    "viewInBluesky": "Profil in Bluesky ansehen",
+    "unblock": "Blockierung von @{{handle}} aufheben",
+    "block": "@{{handle}} blockieren",
+    "unmute": "Stummschaltung von @{{handle}} aufheben",
+    "mute": "@{{handle}} stummschalten",
+    "report": "Melden",
+    "accountLabeled": "Konto gekennzeichnet: {{description}}",
+    "labelApplied": "Diese Kennzeichnung wurde von einem Moderationsdienst angewendet, den du abonniert hast.",
+    "show": "Anzeigen",
+    "hide": "Ausblenden",
+    "blockedBanner": "Du hast @{{handle}} blockiert",
+    "blockedMessage": "Ihre Inhalte sind in deinen Feeds ausgeblendet.",
+    "mutedBanner": "Du hast @{{handle}} stummgeschaltet",
+    "mutedMessage": "Ihre Inhalte sind in deinen Feeds ausgeblendet.",
+    "blockedByBanner": "@{{handle}} hat dich blockiert. Du kannst nicht mit ihren Inhalten interagieren.",
+    "unblock_action": "Blockierung aufheben",
+    "unmute_action": "Stummschaltung aufheben",
+    "emptyCollectionsOwn": "Du hast noch keine Sammlungen erstellt.",
+    "emptyCollectionsOther": "Keine Sammlungen",
+    "itemCount_one": "{{count}} Element",
+    "itemCount_other": "{{count}} Elemente",
+    "emptyTabOwn": "Deine {{tab}} werden hier angezeigt.",
+    "emptyTabOther": "Hier gibt es noch nichts zu sehen."
+  },
+  "login": {
+    "signInWith": "Melde dich mit deinem",
+    "handleSuffix": "Handle an",
+    "handlePlaceholder": "handle.margin.cafe",
+    "connecting": "Wird verbunden …",
+    "continue": "Weiter",
+    "createAccount": "Neues Konto erstellen",
+    "or": "oder",
+    "termsPrefix": "Mit der Anmeldung stimmst du unseren",
+    "termsLink": "Nutzungsbedingungen",
+    "termsAnd": "und",
+    "privacyLink": "Datenschutzrichtlinie",
+    "bannedTitle": "Dein Konto wurde gesperrt",
+    "bannedMessage": "Dieses Konto wurde von Margin gesperrt und kann sich nicht mehr anmelden.",
+    "bannedAppeal": "Wenn du glaubst, dass dies ein Fehler ist, kannst du Einspruch per E-Mail einlegen an",
+    "bannedSignOut": "Abmelden"
+  },
+  "signUp": {
+    "title": "Erstelle dein Konto",
+    "subtitle": "Margin folgt dem",
+    "atProtocol": "AT Protocol",
+    "subtitleSuffix": ". Wähle einen Anbieter, der dein Konto hostet.",
+    "customPdsTitle": "Eigenes PDS verwenden",
+    "customPdsSubtitle": "Gib die Adresse des PDS ein, das dein Konto hostet.",
+    "pdsAddressLabel": "PDS-Adresse",
+    "pdsAddressPlaceholder": "pds.example.com",
+    "connecting": "Wird verbunden …",
+    "back": "Zurück",
+    "continue": "Weiter",
+    "invite": "Einladung",
+    "moreOptions": "Weitere Optionen",
+    "atmosphereNote": "Du hast bereits ein Atmosphere-Konto? Dann melde dich einfach an!",
+    "providerError": "Verbindung zu diesem Anbieter nicht möglich. Bitte versuch es erneut.",
+    "customPdsError": "Verbindung zu diesem PDS nicht möglich. Überprüf die Adresse.",
+    "providers": {
+      "margin": {
+        "name": "Margin",
+        "description": "Der einfachste Weg, um loszulegen"
+      },
+      "bluesky": {
+        "name": "Bluesky",
+        "description": "Die größte Atmosphere-Community"
+      },
+      "blacksky": {
+        "name": "Blacksky",
+        "description": "Eine Community in Schwarzem Besitz"
+      },
+      "eurosky": {
+        "name": "Eurosky",
+        "description": "Dein europäisches Zuhause in der Atmosphere"
+      },
+      "selfhostedSocial": {
+        "name": "selfhosted.social",
+        "description": "Ein Zuhause für Bastler:innen, Tüftler:innen und Neugierige"
+      },
+      "northsky": {
+        "name": "Northsky",
+        "description": "Eine kanadische Instanz in queerem Besitz"
+      },
+      "tophhie": {
+        "name": "Tophhie",
+        "description": "Eine britische Community"
+      },
+      "customPds": {
+        "name": "Eigenes PDS verwenden",
+        "description": "Du hast bereits ein PDS? Gib seine Adresse ein."
+      }
+    }
+  },
+  "composer": {
+    "newHighlight": "Neue Markierung",
+    "newAnnotation": "Neue Anmerkung",
+    "newNote": "Neue Notiz",
+    "saveHighlight": "Markierung speichern",
+    "postAnnotation": "Anmerkung veröffentlichen",
+    "postNote": "Notiz veröffentlichen",
+    "highlightHint": "Du speicherst eine Passage ohne Kommentar. Füg unten Text hinzu, um daraus eine Anmerkung zu machen.",
+    "addQuote": "+ Zitat von der Seite hinzufügen",
+    "quotePlaceholder": "Füg den Text ein, den du kommentierst, oder tipp ihn …",
+    "removeQuote": "Zitat entfernen",
+    "thoughtsPlaceholder": "Füg deine Gedanken zu dieser Passage hinzu …",
+    "mindPlaceholder": "Was beschäftigt dich?",
+    "tagsPlaceholder": "Schlagworte hinzufügen …",
+    "contentWarning": "Inhaltswarnung",
+    "contentWarningCount": "Inhaltswarnung ({{count}})",
+    "cancel": "Abbrechen",
+    "failedToPost": "Veröffentlichen fehlgeschlagen",
+    "labels": {
+      "sexual": "Sexuell",
+      "nudity": "Nacktheit",
+      "violence": "Gewalt",
+      "gore": "Blut und Gewalt",
+      "spam": "Spam",
+      "misleading": "Irreführend"
+    }
+  },
+  "card": {
+    "addedTo": "Hinzugefügt zu",
+    "addedToLower": "hinzugefügt zu",
+    "and": "und",
+    "communityBookmark": "Community-Lesezeichen",
+    "lichenBookmark": "Lichen-Lesezeichen",
+    "openInSemble": "In Semble öffnen",
+    "deleteConfirm": "Dieses Element löschen?",
+    "hideContent": "Inhalt ausblenden",
+    "show": "Anzeigen",
+    "edited": "(bearbeitet)",
+    "annotate": "Kommentieren",
+    "untitledBookmark": "Lesezeichen ohne Titel",
+    "addNotePlaceholder": "Füg deine Notiz hinzu, um diese Markierung in eine Anmerkung umzuwandeln …",
+    "addToCollectionTitle": "Zur Sammlung hinzufügen",
+    "annotateTitle": "Diese Markierung kommentieren",
+    "editTitle": "Bearbeiten",
+    "deleteTitle": "Löschen",
+    "report": "Melden",
+    "muteUser": "@{{handle}} stummschalten",
+    "blockUser": "@{{handle}} blockieren",
+    "convertToAnnotation": "In Anmerkung umwandeln",
+    "justNow": "gerade eben",
+    "labelDescriptions": {
+      "sexual": "Sexueller Inhalt",
+      "nudity": "Nacktheit",
+      "violence": "Gewalt",
+      "gore": "Drastischer Inhalt",
+      "spam": "Spam",
+      "misleading": "Irreführend"
+    }
+  },
+  "profileHoverCard": {
+    "viewProfile": "Profil ansehen",
+    "notFound": "Profil nicht gefunden"
+  },
+  "replyList": {
+    "noReplies": "Noch keine Antworten"
+  },
+  "shareMenu": {
+    "sembleIntegration": "Semble-Integration",
+    "openOnSemble": "In Semble öffnen",
+    "copySembleLink": "Semble-Link kopieren",
+    "copyLink": "Link kopieren",
+    "shareViaApp": "Über App teilen",
+    "copyUniversalLink": "Universellen Link kopieren",
+    "moreOptions": "Weitere Optionen …",
+    "copied": "Kopiert!"
+  },
+  "addToCollection": {
+    "title": "Zur Sammlung hinzufügen",
+    "loading": "Sammlungen werden geladen …",
+    "collectionNameLabel": "Sammlungsname",
+    "namePlaceholder": "Meine Sammlung",
+    "descriptionLabel": "Beschreibung (optional)",
+    "descriptionPlaceholder": "Worum geht es in dieser Sammlung?",
+    "iconLabel": "Symbol",
+    "iconsTab": "Symbole",
+    "emojisTab": "Emojis",
+    "selected": "Ausgewählt:",
+    "back": "Zurück",
+    "create": "Erstellen",
+    "creating": "Wird erstellt …",
+    "newCollectionButton": "Neue Sammlung",
+    "createNewDescription": "Eine neue Sammlung erstellen",
+    "none": "Noch keine Sammlungen",
+    "done": "Fertig",
+    "failedLoad": "Sammlungen konnten nicht geladen werden",
+    "failedAdd": "Hinzufügen zur Sammlung fehlgeschlagen",
+    "failedCreate": "Sammlung konnte nicht erstellt werden"
+  },
+  "editItem": {
+    "editAnnotation": "Anmerkung bearbeiten",
+    "editHighlight": "Markierung bearbeiten",
+    "editBookmark": "Lesezeichen bearbeiten",
+    "textLabel": "Text",
+    "textPlaceholder": "Schreib deine Anmerkung …",
+    "colorLabel": "Farbe",
+    "tagsLabel": "Schlagworte",
+    "tagPlaceholder": "Schlagwort hinzufügen …",
+    "contentWarning": "Inhaltswarnung",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "saving": "Wird gespeichert …",
+    "failedSave": "Änderungen konnten nicht gespeichert werden. Bitte versuch es erneut.",
+    "titleLabel": "Titel",
+    "titlePlaceholder": "Lesezeichen-Titel",
+    "descriptionLabel": "Beschreibung",
+    "descriptionPlaceholder": "Optionale Beschreibung …"
+  },
+  "editCollection": {
+    "title": "Sammlung bearbeiten",
+    "nameLabel": "Sammlungsname",
+    "namePlaceholder": "Meine Sammlung",
+    "descriptionLabel": "Beschreibung (optional)",
+    "descriptionPlaceholder": "Worum geht es in dieser Sammlung?",
+    "iconLabel": "Symbol",
+    "iconsTab": "Symbole",
+    "emojisTab": "Emojis",
+    "selected": "Ausgewählt:",
+    "cancel": "Abbrechen",
+    "save": "Änderungen speichern",
+    "saving": "Wird gespeichert …",
+    "failedUpdate": "Sammlung konnte nicht aktualisiert werden",
+    "errorUpdating": "Beim Aktualisieren ist ein Fehler aufgetreten"
+  },
+  "externalLink": {
+    "title": "Margin verlassen",
+    "message": "Du bist im Begriff, eine externe Seite zu besuchen.",
+    "alwaysAllow": "Links zu {{hostname}} immer erlauben",
+    "cancel": "Abbrechen",
+    "open": "Link öffnen"
+  },
+  "report": {
+    "submitted": "Meldung gesendet",
+    "submittedMessage": "Danke. Wir werden das in Kürze prüfen.",
+    "titleUser": "@{{handle}} melden",
+    "titleGeneric": "Benutzer:in melden",
+    "reportingContent": "Bestimmten Inhalt melden",
+    "issueLabel": "Worum geht es?",
+    "cancel": "Abbrechen",
+    "submit": "Meldung senden",
+    "submitting": "Wird gesendet …",
+    "detailsPlaceholder": "Zusätzliche Details (optional)",
+    "reasons": {
+      "spam": "Spam",
+      "ruleViolation": "Regelverstoß",
+      "misleading": "Irreführend",
+      "rudeOrHarassing": "Unhöflich oder belästigend",
+      "inappropriateContent": "Unangemessener Inhalt",
+      "other": "Sonstiges"
+    }
+  },
+  "editProfile": {
+    "title": "Profil bearbeiten",
+    "avatarLabel": "Avatar",
+    "uploadButton": "Hochladen",
+    "uploading": "Wird hochgeladen …",
+    "displayNameLabel": "Anzeigename",
+    "bioLabel": "Bio",
+    "websiteLabel": "Webseite",
+    "linksLabel": "Links",
+    "addLinkPlaceholder": "Link hinzufügen …",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "saving": "Wird gespeichert …",
+    "avatarTypeError": "Bitte wähl ein JPEG- oder PNG-Bild",
+    "avatarSizeError": "Das Bild muss kleiner als 2 MB sein",
+    "avatarUploadError": "Hochladen fehlgeschlagen: {{message}}"
+  },
+  "iosShortcut": {
+    "title": "Aus iOS Safari speichern",
+    "howTo": "So verwendest du den Kurzbefehl",
+    "step1Title": "Kurzbefehl installieren",
+    "step1Link": "iOS Kurzbefehl holen",
+    "step2Title": "Einen API-Schlüssel generieren",
+    "step2Description": "Erstell auf dieser Einstellungsseite einen neuen Schlüssel und kopier ihn.",
+    "step3Title": "Kurzbefehl konfigurieren",
+    "step3Description": "Tippe in der Kurzbefehle-App auf das Menü des Kurzbefehls „Save to Margin“ und füg deinen API-Schlüssel in die Text-Aktion direkt unter dem Setup-Kommentar ein.",
+    "step4Title": "Eine Seite als Lesezeichen speichern",
+    "step4Description": "Wähl keinen Text aus. Tippe in Safari auf das Menü, drück auf Teilen und wähl „Save to Margin“.",
+    "step5Title": "Text markieren",
+    "step5Description": "Wähl Text auf der Seite aus, tippe auf das Menü, drück auf Teilen und wähl „Save to Margin“. Lass das Notizfeld leer.",
+    "step6Title": "Eine Anmerkung hinzufügen",
+    "step6Description": "Wähl Text aus, teil ihn über das Menü mit „Save to Margin“, gib deine eigene Notiz ins Notizfeld ein und drück auf Fertig!",
+    "gotIt": "Verstanden"
+  },
+  "editHistory": {
+    "title": "Bearbeitungsverlauf",
+    "noHistory": "Kein Bearbeitungsverlauf gefunden.",
+    "currentVersion": "Aktuelle Version",
+    "previousVersion": "Vorherige Version",
+    "editedAgo": "Bearbeitet vor {{time}}",
+    "postedAgo": "Veröffentlicht vor {{time}}",
+    "timeAgo": "vor {{time}}",
+    "close": "Schließen",
+    "failedLoad": "Bearbeitungsverlauf konnte nicht geladen werden"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "sections": {
+      "profile": "Profil",
+      "appearance": "Erscheinungsbild",
+      "language": "Sprache",
+      "batchImport": "Markierungen stapelweise importieren",
+      "apiKeys": "API-Schlüssel",
+      "moderation": "Moderation",
+      "contentFiltering": "Inhaltsfilterung",
+      "iosShortcut": "iOS Kurzbefehl"
+    },
+    "language": {
+      "label": "Oberflächensprache",
+      "description": "Wähl die Sprache für die Margin-Oberfläche."
+    },
+    "appearance": {
+      "disableExternalLinkWarning": "Warnung bei externen Links deaktivieren",
+      "disableExternalLinkWarningDesc": "Beim Öffnen externer Links nicht nach Bestätigung fragen",
+      "communityBookmarks": "Lesezeichen im Community-Feed teilen",
+      "communityBookmarksDesc": "Deine gespeicherten Lesezeichen werden im Community-Lesezeichen-Feed angezeigt"
+    },
+    "batchImport": {
+      "description": "Lade Markierungen aus einer CSV hoch. Erforderlich: url, text. Optional: title, tags, color, created_at"
+    },
+    "apiKeys": {
+      "description": "Für den iOS Kurzbefehl und andere Apps",
+      "keyNamePlaceholder": "Schlüsselname, z. B. iOS Kurzbefehl",
+      "generate": "Generieren",
+      "copyNow": "Jetzt kopieren – du wirst ihn nicht noch einmal sehen!",
+      "empty": "Noch keine API-Schlüssel. Erstell einen, um ihn mit der Browser-Erweiterung zu verwenden.",
+      "created": "Erstellt am {{date}}",
+      "revokeConfirm": "Diesen Schlüssel widerrufen? Apps, die ihn verwenden, funktionieren dann nicht mehr."
+    },
+    "moderation": {
+      "description": "Blockierte und stummgeschaltete Konten verwalten",
+      "blockedAccounts": "Blockierte Konten ({{count}})",
+      "noBlocked": "Keine blockierten Konten",
+      "unblock": "Blockierung aufheben",
+      "mutedAccounts": "Stummgeschaltete Konten ({{count}})",
+      "noMuted": "Keine stummgeschalteten Konten",
+      "unmute": "Stummschaltung aufheben"
+    },
+    "contentFiltering": {
+      "description": "Abonniere Labeler und konfiguriere, wie gekennzeichnete Inhalte angezeigt werden",
+      "subscribedLabelers": "Abonnierte Labeler",
+      "noLabelers": "Keine Labeler abonniert",
+      "labelerDidPlaceholder": "did:plc:… (Labeler-DID)",
+      "remove": "Entfernen",
+      "add": "Hinzufügen",
+      "labelVisibility": "Sichtbarkeit von Kennzeichnungen",
+      "labelVisibilityDesc": "Wähl, wie jeder Kennzeichnungstyp behandelt wird: „Warnen“ zeigt eine Unschärfe-Überlagerung, „Ausblenden“ entfernt den Inhalt vollständig, „Ignorieren“ zeigt den Inhalt normal an.",
+      "warn": "Warnen",
+      "hide": "Ausblenden",
+      "ignore": "Ignorieren"
+    },
+    "iosShortcut": {
+      "description": "Speichere Seiten in Margin aus Safari auf iPhone und iPad",
+      "setupButton": "iOS Kurzbefehl einrichten"
+    },
+    "logout": "Abmelden"
+  },
+  "new": {
+    "signInRequired": "Zum Erstellen anmelden",
+    "needsAccount": "Du brauchst ein Bluesky-Konto",
+    "signInButton": "Mit Bluesky anmelden",
+    "composeTitle": "Verfassen",
+    "composeTagline": "Markiere eine Passage, hinterlass eine Notiz oder kommentiere eine Seite – alles von hier aus.",
+    "urlLabel": "Zu kommentierende URL",
+    "urlPlaceholder": "https://example.com/artikel"
+  },
+  "annotationDetail": {
+    "back": "Zurück",
+    "replies": "Antworten ({{count}})",
+    "replyingTo": "Antwort an",
+    "replyPlaceholder": "Schreib eine Antwort …",
+    "reply": "Antworten",
+    "signInToReply": "Zum Antworten anmelden",
+    "logIn": "Anmelden",
+    "notFound": "Nicht gefunden",
+    "mayBeDeleted": "Dies wurde möglicherweise gelöscht.",
+    "backToFeed": "Zurück zum Feed",
+    "deleteReplyConfirm": "Diese Antwort löschen?",
+    "failedReply": "Antwort konnte nicht veröffentlicht werden: {{message}}",
+    "failedDelete": "Löschen fehlgeschlagen: {{message}}",
+    "failedResolve": "Handle konnte nicht aufgelöst werden: {{message}}"
+  },
+  "urlPage": {
+    "title": "URL-Anmerkungen",
+    "description": "Gib eine URL ein, um alle öffentlichen Anmerkungen und Markierungen der Margin-Community zu sehen.",
+    "urlPlaceholder": "https://example.com/artikel",
+    "view": "Ansehen",
+    "myAnnotations": "Meine Anmerkungen",
+    "share": "Teilen",
+    "copied": "Kopiert!",
+    "contributor_one": "{{count}} Mitwirkende:r",
+    "contributor_other": "{{count}} Mitwirkende",
+    "loadingAnnotations": "Anmerkungen werden geladen …",
+    "blankCanvas": "Diese Seite ist eine leere Leinwand",
+    "blankCanvasMessage": "Hier hat noch niemand Notizen hinterlassen. Möchtest du die:der Erste sein? Hol dir die Margin-Erweiterung und teil deine Gedanken.",
+    "tabs": {
+      "all": "Alle",
+      "annotations": "Anmerkungen",
+      "highlights": "Markierungen",
+      "bookmarks": "Lesezeichen",
+      "collections": "Sammlungen"
+    },
+    "noAnnotationsYet": "Noch keine Anmerkungen",
+    "noAnnotationsMessage": "Niemand hat auf dieser Seite eine schriftliche Notiz hinterlassen.",
+    "noHighlightsYet": "Noch keine Markierungen",
+    "noHighlightsMessage": "Niemand hat eine Passage auf dieser Seite markiert.",
+    "loadMore": "Mehr laden",
+    "loading": "Laden …",
+    "failedLoadMore": "Mehr konnte nicht geladen werden: {{message}}"
+  },
+  "userUrlPage": {
+    "on": "auf",
+    "loadingAnnotations": "Anmerkungen werden geladen …",
+    "noUrl": "Keine URL angegeben",
+    "noUrlMessage": "Bitte gib eine URL an, um Anmerkungen anzuzeigen.",
+    "noItems": "Keine Elemente gefunden",
+    "noItemsMessage": "{{name}} hat diese Seite noch nicht kommentiert.",
+    "noAnnotations": "Keine Anmerkungen",
+    "noHighlights": "Keine Markierungen",
+    "loadMore": "Mehr laden",
+    "loading": "Laden …",
+    "failedLoadMore": "Mehr konnte nicht geladen werden: {{message}}"
+  },
+  "adminModeration": {
+    "accessDenied": "Zugriff verweigert",
+    "accessDeniedMessage": "Du hast keine Berechtigung, auf das Moderations-Dashboard zuzugreifen.",
+    "title": "Moderation",
+    "stats": "{{pending}} ausstehend · {{total}} Meldungen insgesamt",
+    "tabs": {
+      "reports": "Meldungen",
+      "actions": "Aktionen",
+      "labels": "Kennzeichnungen"
+    },
+    "filters": {
+      "all": "Alle",
+      "pending": "Ausstehend",
+      "resolved": "Erledigt",
+      "dismissed": "Abgelehnt",
+      "escalated": "Eskaliert"
+    },
+    "reports": {
+      "empty": "Keine Meldungen",
+      "emptyPending": "Keine ausstehenden Meldungen zur Prüfung.",
+      "emptyFiltered": "Keine {{status}} Meldungen gefunden.",
+      "reportedUser": "Gemeldete:r Benutzer:in",
+      "reporter": "Melder:in",
+      "details": "Details",
+      "contentUri": "Inhalts-URI",
+      "acknowledge": "Bestätigen",
+      "dismiss": "Ablehnen",
+      "takedown": "Entfernen"
+    },
+    "reasons": {
+      "spam": "Spam",
+      "violation": "Regelverstoß",
+      "misleading": "Irreführend",
+      "sexual": "Unangemessen",
+      "rude": "Unhöflich / Belästigend",
+      "other": "Sonstiges"
+    },
+    "actions": {
+      "applyWarning": "Inhaltswarnung anwenden",
+      "applyWarningDesc": "Füg einem bestimmten Post oder Konto eine Inhaltswarnung-Kennzeichnung hinzu. Benutzer:innen sehen eine Unschärfe-Überlagerung mit der Option zum Anzeigen.",
+      "accountDid": "Konto-DID",
+      "contentUri": "Inhalts-URI",
+      "contentUriOptional": "optional – für Kennzeichnung auf Kontoebene leer lassen",
+      "labelType": "Kennzeichnungstyp",
+      "applyLabel": "Kennzeichnung anwenden",
+      "labelApplied": "Kennzeichnung angewendet"
+    },
+    "labels": {
+      "empty": "Keine Kennzeichnungen",
+      "emptyMessage": "Es wurden noch keine Inhaltskennzeichnungen angewendet.",
+      "accountLevel": "Kennzeichnung auf Kontoebene",
+      "removeConfirm": "Diese Kennzeichnung entfernen?",
+      "removeTitle": "Kennzeichnung entfernen"
+    }
+  },
+  "highlightImporter": {
+    "clickToUpload": "Zum Hochladen der CSV klicken",
+    "processing": "Wird verarbeitet …",
+    "requiredColumns": "Erforderliche Spalten: url, text | Optional: title, tags, color, created_at",
+    "downloadTemplate": "Vorlage herunterladen",
+    "importProgress": "Importfortschritt",
+    "complete": "{{rate}}% abgeschlossen",
+    "failed_one": "{{count}} fehlgeschlagen",
+    "failed_other": "{{count}} fehlgeschlagen",
+    "importing": "Markierungen werden importiert …",
+    "success": "{{count}} Markierungen erfolgreich importiert!",
+    "errorsTitle": "{{count}} Fehler beim Import",
+    "row": "Zeile {{row}}: {{error}}",
+    "moreErrors": "+{{count}} weitere Fehler",
+    "importAnother": "Weitere Datei importieren",
+    "noHighlights": "Keine gültigen Markierungen in der CSV gefunden",
+    "csvMustHaveUrl": "Die CSV muss eine Spalte „url“ enthalten",
+    "csvMustHaveText": "Die CSV muss eine Spalte „text“ enthalten (passt auch zu: highlight, excerpt)",
+    "errorParsing": "Fehler beim Parsen der CSV: {{message}}"
+  },
+  "common": {
+    "loading": "Laden …",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "close": "Schließen",
+    "back": "Zurück",
+    "continue": "Weiter",
+    "error": "Fehler",
+    "retry": "Erneut versuchen",
+    "loadMore": "Mehr laden",
+    "new": "Neu"
+  },
+  "about": {
+    "nav": {
+      "getExtension": "Erweiterung holen",
+      "install": "Installieren"
+    },
+    "hero": {
+      "openSource": "Vollständig Open Source",
+      "headline": "Schreib an den Rändern",
+      "headlineAccent": "des Internets.",
+      "descriptionPre": "Margin ist eine offene Anmerkungsebene für das Internet. Markiere Text, hinterlass Notizen und speichere Seiten als Lesezeichen – alles auf deiner dezentralen Identität mit dem",
+      "atProtocol": "AT Protocol",
+      "descriptionPost": ". Nicht in einem Silo eingesperrt.",
+      "openApp": "App öffnen",
+      "getStarted": "Loslegen",
+      "installFor": "Für {{browser}} installieren"
+    },
+    "features": {
+      "title": "Alles, was du brauchst, um dich mit dem Web auseinanderzusetzen",
+      "subtitle": "Mehr als Lesezeichen. Ein komplettes Toolkit zum Lesen, Denken und Teilen im offenen Web.",
+      "annotations": {
+        "title": "Anmerkungen",
+        "description": "Hinterlass Notizen auf jeder Webseite. Starte Diskussionen, teil Erkenntnisse oder halt einfach deine Gedanken für später fest."
+      },
+      "highlights": {
+        "title": "Markierungen",
+        "description": "Wähl und markiere Text auf jeder Seite mit anpassbaren Farben. Deine Markierungen werden inline mit der CSS Highlights API gerendert."
+      },
+      "bookmarks": {
+        "title": "Lesezeichen",
+        "description": "Speichere Seiten mit einem Klick oder einem Tastaturkürzel. Alle deine Lesezeichen werden mit deiner AT Protocol-Identität synchronisiert."
+      },
+      "collections": {
         "title": "Sammlungen",
-        "subtitle": "Organisiere deine Anmerkungen und Markierungen",
-        "none": "Noch keine Sammlungen",
-        "noneMessage": "Erstelle eine Sammlung, um deine Markierungen und Anmerkungen zu organisieren.",
-        "createButton": "Sammlung erstellen",
-        "newTitle": "Neue Sammlung",
-        "editTitle": "Sammlung bearbeiten",
-        "namePlaceholder": "Meine Sammlung",
-        "namePlaceholderEdit": "Sammlungsname",
-        "iconLabel": "Symbol",
-        "iconsTab": "Symbole",
-        "emojisTab": "Emojis",
-        "selectedIcon": "Ausgewählt:",
-        "descriptionLabel": "Beschreibung (optional)"
+        "description": "Organisiere deine Anmerkungen, Markierungen und Lesezeichen in thematischen Sammlungen. Teil sie öffentlich oder behalt sie privat."
+      },
+      "socialDiscovery": {
+        "title": "Soziales Entdecken",
+        "description": "Sieh, was andere über die Seiten sagen, die du besuchst. Entdeck Anmerkungen, angesagte Schlagworte und vernetz dich mit anderen Leser:innen."
+      },
+      "tagsSearch": {
+        "title": "Schlagworte & Suche",
+        "description": "Versieh deine Anmerkungen mit Schlagworten, um sie leicht wiederzufinden. Suche nach URL, Schlagwort oder Inhalt, um genau das zu finden, was du suchst."
+      }
+    },
+    "extension": {
+      "badge": "Browser-Erweiterung",
+      "title": "Dein Anmerkungs-Toolkit,",
+      "titleLine2": "direkt im Browser",
+      "description": "Die Margin-Erweiterung bringt das volle Anmerkungserlebnis direkt auf jede Seite, die du besuchst. Einfach auswählen, kommentieren und weiter.",
+      "iosShortcut": "iOS Kurzbefehl",
+      "features": {
+        "inlineOverlay": {
+          "title": "Inline-Überlagerung",
+          "description": "Sieh Anmerkungen und Markierungen direkt auf der Seite gerendert. Verwendet die CSS Highlights API für schöne, nativ wirkende Textunterstreichungen."
+        },
+        "contextMenu": {
+          "title": "Kontextmenü & Auswahl",
+          "description": "Klick mit der rechten Maustaste auf eine Auswahl, um sie zu kommentieren oder zu markieren. Klick mit der rechten Maustaste irgendwo auf der Seite, um sie über das Margin-Untermenü als Lesezeichen zu speichern."
+        },
+        "keyboard": {
+          "title": "Tastaturkürzel",
+          "description": "Schalte die Überlagerung um, speichere die aktuelle Seite als Lesezeichen oder kommentiere ausgewählten Text, ohne zur Maus zu greifen."
+        },
+        "sidePanel": {
+          "title": "Seitenleiste",
+          "description": "Öffne die Margin-Seitenleiste, um Anmerkungen, Lesezeichen und Sammlungen zu durchstöbern, ohne die Seite zu verlassen, die du gerade liest."
+        }
+      }
+    },
+    "protocol": {
+      "badge": "Dezentral",
+      "title": "Deine Daten, deine Identität",
+      "descriptionPre": "Margin basiert auf dem",
+      "descriptionPost": ", dem offenen Protokoll, das Apps wie Bluesky antreibt. Deine Anmerkungen, Markierungen und Lesezeichen werden in deinem persönlichen Datenspeicher abgelegt, nicht in einem Silo eingesperrt.",
+      "point0": "Melde dich mit deinem AT Protocol-Handle an, kein neues Konto nötig",
+      "point1": "Deine Daten leben in deinem PDS, portabel und unter deiner Kontrolle",
+      "point2": "Eigene Lexicon-Schemata für Anmerkungen, Markierungen, Sammlungen und mehr",
+      "point3": "Vollständig Open Source, sieh dir den Code an und trag etwas bei"
+    },
+    "cta": {
+      "title": "Fang an, an den Rändern zu schreiben",
+      "description": "Tritt der offenen Anmerkungsebene bei. Melde dich mit deiner AT Protocol-Identität an und installiere die Erweiterung, um loszulegen.",
+      "signIn": "Anmelden",
+      "viewGitHub": "Auf GitHub ansehen",
+      "viewTangled": "Auf Tangled ansehen"
+    },
+    "footer": {
+      "privacy": "Datenschutz",
+      "terms": "Bedingungen",
+      "contact": "Kontakt"
+    },
+    "landing": {
+      "hero": {
+        "headPart1": "Schreib an den",
+        "headMargins": "Rändern",
+        "headPart2": "des",
+        "headInternet": "Internets",
+        "headEnd": ".",
+        "lede": "Margin ist eine offene Anmerkungsebene für das Web. Markiere, hinterlass Notizen und speichere jede Seite als Lesezeichen; alles auf deiner eigenen AT Protocol-Identität gespeichert, nicht in der Datenbank eines anderen."
+      },
+      "demo": {
+        "eyebrow": "Wie es sich anfühlt",
+        "card1Caption": "Markiere in deiner Wunschfarbe. Unterstreichungen werden inline über die CSS Highlights API gerendert; nichts schreibt das DOM der Seite um.",
+        "card1Sample": "Margin lässt die flüchtigen Leser:innen des Webs eine Spur hinterlassen.",
+        "card1Mark": "flüchtigen Leser:innen",
+        "card2Caption": "Heft eine Notiz an die Auswahl. Sie verankert sich am genauen Text, nicht an einem fragilen Zeichen-Offset, und übersteht so Layout-Änderungen.",
+        "card2Sample": "Eine Notiz am Rand ist ein Gespräch mit deinem zukünftigen Ich.",
+        "card2Mark": "Gespräch mit deinem zukünftigen Ich",
+        "card3Caption": "Speichere ein Lesezeichen mit einem Tastendruck oder einem Rechtsklick. Synchronisiert mit deinem AT Protocol-Repository neben allem anderen.",
+        "card3Url": "essays.example.com/marginalia",
+        "card3Saved": "Gespeichert"
+      },
+      "capabilities": {
+        "heading": "Was drinsteckt",
+        "subheading": "Die volle Bandbreite an Möglichkeiten, die Margin dir auf jeder Seite bietet."
+      },
+      "protocol": {
+        "heading": "Auf einem Protokoll gebaut, nicht auf einer Plattform",
+        "lede": "Margin läuft auf dem AT Protocol, demselben Netzwerk, das Bluesky antreibt. Deine Anmerkungen leben als öffentliche Datensätze in deinem Personal Data Server, und jede App, die das Lexicon spricht, kann sie lesen oder darauf aufbauen.",
+        "viewLexicon": "Das Lexicon ansehen"
+      },
+      "install": {
+        "lede": "Installieren für",
+        "or": "oder hol dir das"
+      },
+      "closer": {
+        "line": "Das Web liest sich besser mit Notizen am Rand.",
+        "signIn": "Mit deinem Handle anmelden",
+        "open": "Margin öffnen"
+      }
+    }
   }
 }

@@ -159,7 +159,7 @@ function AppLayout() {
       "/privacy",
       "/terms",
       "/brand",
-      "/impressum",
+      "/imprint",
       "/auth/",
       "/api/",
       "/og-image",

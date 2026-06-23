@@ -1,33 +1,33 @@
 {
   "appTitle": "Margin",
   "nav": {
-    "settings": "Ajustes",
+    "feed": "Feed",
+    "discover": "Descubrir",
     "annotations": "Anotaciones",
+    "highlights": "Resaltados",
+    "bookmarks": "Marcadores",
     "collections": "Colecciones",
     "activity": "Actividad",
+    "settings": "Ajustes",
+    "new": "Nuevo",
     "signIn": "Iniciar sesión",
     "logOut": "Cerrar sesión",
     "themeLight": "Claro",
     "themeDark": "Oscuro",
-    "themeSystem": "Sistema",
-    "bookmarks": "Marcadores",
-    "new": "Nuevo",
-    "feed": "Feed",
-    "highlights": "Resaltados",
-    "discover": ""
+    "themeSystem": "Sistema"
   },
   "pageTitles": {
     "home": "Inicio — Margin",
     "bookmarks": "Marcadores — Margin",
+    "highlights": "Resaltados — Margin",
     "annotations": "Anotaciones — Margin",
+    "discover": "Descubrir — Margin",
     "search": "Buscar — Margin",
     "notifications": "Notificaciones — Margin",
     "new": "Nueva anotación — Margin",
-    "settings": "Configuración — Margin",
+    "settings": "Ajustes — Margin",
     "collections": "Colecciones — Margin",
-    "admin": "Admin — Margin",
-    "highlights": "Resaltados — Margin",
-    "discover": ""
+    "admin": "Admin — Margin"
   },
   "sidebar": {
     "getExtension": "Obtén la extensión",
@@ -40,9 +40,8 @@
     "nothingTrending": "No hay nada en tendencia ahora mismo.",
     "searchPlaceholder": "Buscar personas, etiquetas, URLs…",
     "copyright": "© 2026 Padding Labs LLC",
-    "postCount_one": "",
-    "postCount_many": "",
-    "postCount_other": ""
+    "postCount_one": "{{count}} publicación",
+    "postCount_other": "{{count}} publicaciones"
   },
   "mobileNav": {
     "iosShortcut": "Atajo de iOS"
@@ -55,9 +54,9 @@
     "tabs": {
       "recent": "Recientes",
       "popular": "Popular",
+      "shelved": "Guardados",
       "margin": "Margin",
-      "semble": "Semble",
-      "shelved": ""
+      "semble": "Semble"
     },
     "filters": {
       "all": "Todo",
@@ -68,7 +67,7 @@
     "itemsWithTag": "Elementos con la etiqueta:",
     "clearFilter": "Limpiar filtro",
     "everyone": "Todos",
-    "mine": "Mío",
+    "mine": "Míos",
     "defaultEmptyMessage": "Todavía no hay nada aquí — las anotaciones tuyas y de las personas a las que sigues aparecerán aquí.",
     "nothingHereYet": "Aún no hay nada aquí",
     "loading": "Cargando…"
@@ -94,9 +93,9 @@
     "filters": {
       "all": "Todo",
       "annotations": "Anotaciones",
+      "highlights": "Resaltados",
       "bookmarks": "Marcadores",
-      "mine": "Mío",
-      "highlights": "Resaltados"
+      "mine": "Míos"
     },
     "resultCount": "{{count}}{{hasMore}} resultados para \"{{query}}\"",
     "loadMore": "Cargar más"
@@ -105,10 +104,10 @@
     "title": "Actividad",
     "noActivity": "Aún no hay actividad",
     "noActivityMessage": "Las interacciones con tu contenido aparecerán aquí.",
-    "likedAnnotation": "le gustó tu anotación",
+    "likedAnnotation": "le dio me gusta a tu anotación",
     "likedHighlight": "le dio me gusta a tu resaltado",
     "likedBookmark": "le dio me gusta a tu marcador",
-    "likedReply": "le gustó tu respuesta",
+    "likedReply": "le dio me gusta a tu respuesta",
     "likedPost": "le dio me gusta a tu publicación",
     "repliedToReply": "respondió a tu respuesta",
     "repliedToAnnotation": "respondió a tu anotación",
@@ -146,10 +145,10 @@
     "failedUpdate": "Error al actualizar la colección",
     "errorUpdating": "Ocurrió un error al actualizar",
     "itemCount_one": "{{count}} elemento",
-    "itemCount_many": "",
     "itemCount_other": "{{count}} elementos"
   },
   "collectionDetail": {
+    "backLink": "Colecciones",
     "by": "por",
     "edit": "Editar colección",
     "delete": "Eliminar colección",
@@ -159,34 +158,32 @@
     "notFound": "Colección no encontrada",
     "failedToLoad": "Error al cargar la colección",
     "deleteConfirm": "¿Eliminar esta colección?",
-    "removeConfirm": "¿Eliminar de la colección?",
-    "backLink": "Colecciones"
+    "removeConfirm": "¿Quitar de la colección?"
   },
   "profile": {
     "notFound": "Usuario no encontrado",
     "notFoundMessage": "Este perfil no existe o no se pudo cargar.",
     "edit": "Editar",
     "viewInBluesky": "Ver perfil en Bluesky",
-    "unblock": "Desbloquear a {{handle}}",
-    "block": "Bloquear a {{handle}}",
-    "unmute": "Desactivar silencio de {{handle}}",
-    "mute": "Silenciar a {{handle}}",
+    "unblock": "Desbloquear a @{{handle}}",
+    "block": "Bloquear a @{{handle}}",
+    "unmute": "Quitar silencio a @{{handle}}",
+    "mute": "Silenciar a @{{handle}}",
     "report": "Reportar",
     "accountLabeled": "Cuenta etiquetada: {{description}}",
     "labelApplied": "Esta etiqueta fue aplicada por un servicio de moderación al que estás suscrito.",
     "show": "Mostrar",
     "hide": "Ocultar",
-    "blockedBanner": "Has bloqueado a {{handle}}",
+    "blockedBanner": "Has bloqueado a @{{handle}}",
     "blockedMessage": "Su contenido está oculto de tus feeds.",
-    "mutedBanner": "Has silenciado a {{handle}}",
+    "mutedBanner": "Has silenciado a @{{handle}}",
     "mutedMessage": "Su contenido está oculto de tus feeds.",
-    "blockedByBanner": "{{handle}} te ha bloqueado. No puedes interactuar con su contenido.",
+    "blockedByBanner": "@{{handle}} te ha bloqueado. No puedes interactuar con su contenido.",
     "unblock_action": "Desbloquear",
-    "unmute_action": "Activar sonido",
+    "unmute_action": "Quitar silencio",
     "emptyCollectionsOwn": "Aún no has creado ninguna colección.",
     "emptyCollectionsOther": "Sin colecciones",
     "itemCount_one": "{{count}} elemento",
-    "itemCount_many": "",
     "itemCount_other": "{{count}} elementos",
     "emptyTabOwn": "Tus {{tab}} aparecerán aquí.",
     "emptyTabOther": "Aún no hay nada que ver aquí."
@@ -198,15 +195,15 @@
     "connecting": "Conectando…",
     "continue": "Continuar",
     "createAccount": "Crear cuenta nueva",
+    "or": "o",
     "termsPrefix": "Al iniciar sesión, aceptas nuestros",
     "termsLink": "Términos de servicio",
     "termsAnd": "y",
     "privacyLink": "Política de privacidad",
-    "bannedMessage": "",
-    "bannedSignOut": "",
-    "bannedAppeal": "",
-    "bannedTitle": "",
-    "or": ""
+    "bannedTitle": "Tu cuenta ha sido suspendida",
+    "bannedMessage": "Esta cuenta ha sido suspendida de Margin y ya no puede iniciar sesión.",
+    "bannedAppeal": "Si crees que esto es un error, puedes apelar enviando un correo a",
+    "bannedSignOut": "Cerrar sesión"
   },
   "signUp": {
     "title": "Crea tu cuenta",
@@ -221,24 +218,26 @@
     "back": "Volver",
     "continue": "Continuar",
     "invite": "Invitar",
+    "moreOptions": "Más opciones",
+    "atmosphereNote": "¿Ya tienes una cuenta de la atmosphere? ¡Solo inicia sesión!",
     "providerError": "No se pudo conectar con este proveedor. Por favor, inténtalo de nuevo.",
     "customPdsError": "No se pudo conectar con ese PDS. Revisa la dirección.",
     "providers": {
       "margin": {
-        "description": "La forma más fácil de empezar",
-        "name": "Margin"
+        "name": "Margin",
+        "description": "La forma más fácil de empezar"
       },
       "bluesky": {
         "name": "Bluesky",
-        "description": "La comunidad más grande y popular"
+        "description": "La comunidad más grande de la Atmosphere"
       },
       "blacksky": {
         "name": "Blacksky",
-        "description": "Para la cultura — un espacio seguro para usuarios y aliados"
+        "description": "Una comunidad de propiedad negra"
       },
       "eurosky": {
         "name": "Eurosky",
-        "description": "Eurosky es tu hogar europeo en la Atmosphere"
+        "description": "Tu hogar europeo en la Atmosphere"
       },
       "selfhostedSocial": {
         "name": "selfhosted.social",
@@ -246,19 +245,17 @@
       },
       "northsky": {
         "name": "Northsky",
-        "description": "Una cooperativa canadiense propiedad de los trabajadores"
+        "description": "Una instancia canadiense de propiedad queer"
       },
       "tophhie": {
         "name": "Tophhie",
-        "description": "Una comunidad acogedora y amable"
+        "description": "Una comunidad británica"
       },
       "customPds": {
         "name": "Usa un PDS personalizado",
         "description": "¿Ya tienes un PDS? Introduce su dirección."
       }
-    },
-    "moreOptions": "",
-    "atmosphereNote": ""
+    }
   },
   "composer": {
     "newHighlight": "Nuevo resaltado",
@@ -306,8 +303,8 @@
     "editTitle": "Editar",
     "deleteTitle": "Eliminar",
     "report": "Reportar",
-    "muteUser": "Silenciar a {{handle}}",
-    "blockUser": "Bloquear a {{handle}}",
+    "muteUser": "Silenciar a @{{handle}}",
+    "blockUser": "Bloquear a @{{handle}}",
     "convertToAnnotation": "Convertir en anotación",
     "justNow": "hace un momento",
     "labelDescriptions": {
@@ -389,389 +386,427 @@
     "selected": "Seleccionado:",
     "cancel": "Cancelar",
     "save": "Guardar cambios",
-    "saving": "",
-    "errorUpdating": "",
-    "failedUpdate": ""
-  },
-  "annotationDetail": {
-    "reply": "",
-    "mayBeDeleted": "",
-    "replyPlaceholder": "",
-    "back": "",
-    "signInToReply": "",
-    "failedReply": "",
-    "notFound": "",
-    "failedDelete": "",
-    "replyingTo": "",
-    "logIn": "",
-    "failedResolve": "",
-    "backToFeed": "",
-    "replies": "",
-    "deleteReplyConfirm": ""
-  },
-  "iosShortcut": {
-    "step6Title": "",
-    "step3Title": "",
-    "step4Title": "",
-    "step1Link": "",
-    "step2Title": "",
-    "step6Description": "",
-    "step2Description": "",
-    "gotIt": "",
-    "title": "",
-    "howTo": "",
-    "step5Description": "",
-    "step4Description": "",
-    "step1Title": "",
-    "step3Description": "",
-    "step5Title": ""
-  },
-  "settings": {
-    "apiKeys": {
-      "keyNamePlaceholder": "",
-      "created": "",
-      "copyNow": "",
-      "description": "",
-      "empty": "",
-      "revokeConfirm": "",
-      "generate": ""
-    },
-    "logout": "",
-    "contentFiltering": {
-      "noLabelers": "",
-      "add": "",
-      "remove": "",
-      "hide": "",
-      "description": "",
-      "labelerDidPlaceholder": "",
-      "ignore": "",
-      "labelVisibility": "",
-      "labelVisibilityDesc": "",
-      "warn": "",
-      "subscribedLabelers": ""
-    },
-    "moderation": {
-      "noBlocked": "",
-      "mutedAccounts": "",
-      "unblock": "",
-      "description": "",
-      "blockedAccounts": "",
-      "noMuted": "",
-      "unmute": ""
-    },
-    "iosShortcut": {
-      "description": "",
-      "setupButton": ""
-    },
-    "language": {
-      "label": "",
-      "description": ""
-    },
-    "sections": {
-      "appearance": "",
-      "language": "",
-      "contentFiltering": "",
-      "iosShortcut": "",
-      "moderation": "",
-      "batchImport": "",
-      "profile": "",
-      "apiKeys": ""
-    },
-    "appearance": {
-      "communityBookmarksDesc": "",
-      "communityBookmarks": "",
-      "disableExternalLinkWarningDesc": "",
-      "disableExternalLinkWarning": ""
-    },
-    "batchImport": {
-      "description": ""
-    },
-    "title": ""
-  },
-  "urlPage": {
-    "tabs": {
-      "all": "",
-      "highlights": "",
-      "annotations": "",
-      "collections": "",
-      "bookmarks": ""
-    },
-    "noHighlightsYet": "",
-    "noAnnotationsMessage": "",
-    "loading": "",
-    "loadingAnnotations": "",
-    "copied": "",
-    "noHighlightsMessage": "",
-    "loadMore": "",
-    "blankCanvasMessage": "",
-    "blankCanvas": "",
-    "noAnnotationsYet": "",
-    "urlPlaceholder": "",
-    "view": "",
-    "contributor_one": "",
-    "contributor_many": "",
-    "contributor_other": "",
-    "myAnnotations": "",
-    "description": "",
-    "share": "",
-    "title": "",
-    "failedLoadMore": ""
-  },
-  "about": {
-    "protocol": {
-      "point2": "",
-      "point3": "",
-      "descriptionPre": "",
-      "title": "",
-      "point1": "",
-      "point0": "",
-      "badge": "",
-      "descriptionPost": ""
-    },
-    "nav": {
-      "install": "",
-      "getExtension": ""
-    },
-    "features": {
-      "title": "",
-      "annotations": {
-        "title": "",
-        "description": ""
-      },
-      "collections": {
-        "title": "",
-        "description": ""
-      },
-      "highlights": {
-        "description": "",
-        "title": ""
-      },
-      "socialDiscovery": {
-        "description": "",
-        "title": ""
-      },
-      "tagsSearch": {
-        "description": "",
-        "title": ""
-      },
-      "bookmarks": {
-        "description": "",
-        "title": ""
-      },
-      "subtitle": ""
-    },
-    "cta": {
-      "viewTangled": "",
-      "signIn": "",
-      "title": "",
-      "description": "",
-      "viewGitHub": ""
-    },
-    "hero": {
-      "descriptionPost": "",
-      "openApp": "",
-      "descriptionPre": "",
-      "headline": "",
-      "installFor": "",
-      "openSource": "",
-      "headlineAccent": "",
-      "getStarted": "",
-      "atProtocol": ""
-    },
-    "extension": {
-      "features": {
-        "sidePanel": {
-          "description": "",
-          "title": ""
-        },
-        "keyboard": {
-          "title": "",
-          "description": ""
-        },
-        "contextMenu": {
-          "title": "",
-          "description": ""
-        },
-        "inlineOverlay": {
-          "description": "",
-          "title": ""
-        }
-      },
-      "description": "",
-      "title": "",
-      "titleLine2": "",
-      "iosShortcut": "",
-      "badge": ""
-    },
-    "footer": {
-      "contact": "",
-      "terms": "",
-      "privacy": ""
-    }
-  },
-  "adminModeration": {
-    "reasons": {
-      "spam": "",
-      "rude": "",
-      "misleading": "",
-      "other": "",
-      "violation": "",
-      "sexual": ""
-    },
-    "actions": {
-      "applyWarningDesc": "",
-      "applyWarning": "",
-      "labelApplied": "",
-      "contentUriOptional": "",
-      "applyLabel": "",
-      "accountDid": "",
-      "contentUri": "",
-      "labelType": ""
-    },
-    "reports": {
-      "empty": "",
-      "reportedUser": "",
-      "details": "",
-      "contentUri": "",
-      "emptyFiltered": "",
-      "takedown": "",
-      "reporter": "",
-      "acknowledge": "",
-      "emptyPending": "",
-      "dismiss": ""
-    },
-    "accessDeniedMessage": "",
-    "labels": {
-      "empty": "",
-      "accountLevel": "",
-      "removeConfirm": "",
-      "removeTitle": "",
-      "emptyMessage": ""
-    },
-    "accessDenied": "",
-    "tabs": {
-      "actions": "",
-      "labels": "",
-      "reports": ""
-    },
-    "filters": {
-      "pending": "",
-      "resolved": "",
-      "dismissed": "",
-      "escalated": "",
-      "all": ""
-    },
-    "stats": "",
-    "title": ""
-  },
-  "new": {
-    "composeTitle": "",
-    "needsAccount": "",
-    "composeTagline": "",
-    "urlLabel": "",
-    "signInRequired": "",
-    "signInButton": "",
-    "urlPlaceholder": ""
-  },
-  "report": {
-    "reasons": {
-      "spam": "",
-      "rudeOrHarassing": "",
-      "ruleViolation": "",
-      "inappropriateContent": "",
-      "misleading": "",
-      "other": ""
-    },
-    "submittedMessage": "",
-    "reportingContent": "",
-    "detailsPlaceholder": "",
-    "titleGeneric": "",
-    "titleUser": "",
-    "submitted": "",
-    "cancel": "",
-    "submit": "",
-    "submitting": "",
-    "issueLabel": ""
-  },
-  "editProfile": {
-    "uploadButton": "",
-    "bioLabel": "",
-    "addLinkPlaceholder": "",
-    "avatarUploadError": "",
-    "displayNameLabel": "",
-    "cancel": "",
-    "avatarTypeError": "",
-    "title": "",
-    "uploading": "",
-    "avatarLabel": "",
-    "avatarSizeError": "",
-    "linksLabel": "",
-    "save": "",
-    "websiteLabel": "",
-    "saving": ""
-  },
-  "userUrlPage": {
-    "noUrl": "",
-    "noItemsMessage": "",
-    "loadingAnnotations": "",
-    "loadMore": "",
-    "noAnnotations": "",
-    "on": "",
-    "failedLoadMore": "",
-    "noHighlights": "",
-    "noUrlMessage": "",
-    "loading": "",
-    "noItems": ""
-  },
-  "common": {
-    "loadMore": "",
-    "save": "",
-    "error": "",
-    "retry": "",
-    "cancel": "",
-    "back": "",
-    "new": "",
-    "continue": "",
-    "loading": "",
-    "close": ""
-  },
-  "highlightImporter": {
-    "complete": "",
-    "moreErrors": "",
-    "row": "",
-    "noHighlights": "",
-    "downloadTemplate": "",
-    "requiredColumns": "",
-    "success": "",
-    "importProgress": "",
-    "csvMustHaveText": "",
-    "csvMustHaveUrl": "",
-    "processing": "",
-    "importing": "",
-    "errorsTitle": "",
-    "importAnother": "",
-    "failed_one": "",
-    "failed_many": "",
-    "failed_other": "",
-    "clickToUpload": "",
-    "errorParsing": ""
-  },
-  "editHistory": {
-    "close": "",
-    "failedLoad": "",
-    "currentVersion": "",
-    "previousVersion": "",
-    "title": "",
-    "editedAgo": "",
-    "noHistory": "",
-    "timeAgo": "",
-    "postedAgo": ""
+    "saving": "Guardando…",
+    "failedUpdate": "Error al actualizar la colección",
+    "errorUpdating": "Ocurrió un error al actualizar"
   },
   "externalLink": {
-    "cancel": "",
-    "alwaysAllow": "",
-    "message": "",
-    "open": "",
-    "title": ""
+    "title": "Saliendo de Margin",
+    "message": "Estás a punto de visitar un sitio externo.",
+    "alwaysAllow": "Permitir siempre los enlaces a {{hostname}}",
+    "cancel": "Cancelar",
+    "open": "Abrir enlace"
+  },
+  "report": {
+    "submitted": "Reporte enviado",
+    "submittedMessage": "Gracias. Lo revisaremos en breve.",
+    "titleUser": "Reportar a @{{handle}}",
+    "titleGeneric": "Reportar usuario",
+    "reportingContent": "Reportando contenido específico",
+    "issueLabel": "¿Cuál es el problema?",
+    "cancel": "Cancelar",
+    "submit": "Enviar reporte",
+    "submitting": "Enviando…",
+    "detailsPlaceholder": "Detalles adicionales (opcional)",
+    "reasons": {
+      "spam": "Spam",
+      "ruleViolation": "Infracción de las normas",
+      "misleading": "Engañoso",
+      "rudeOrHarassing": "Grosero o acosador",
+      "inappropriateContent": "Contenido inapropiado",
+      "other": "Otro"
+    }
+  },
+  "editProfile": {
+    "title": "Editar perfil",
+    "avatarLabel": "Avatar",
+    "uploadButton": "Subir",
+    "uploading": "Subiendo…",
+    "displayNameLabel": "Nombre visible",
+    "bioLabel": "Biografía",
+    "websiteLabel": "Sitio web",
+    "linksLabel": "Enlaces",
+    "addLinkPlaceholder": "Añadir un enlace…",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "saving": "Guardando…",
+    "avatarTypeError": "Por favor, selecciona una imagen JPEG o PNG",
+    "avatarSizeError": "La imagen debe pesar menos de 2 MB",
+    "avatarUploadError": "Error al subir: {{message}}"
+  },
+  "iosShortcut": {
+    "title": "Guardar desde Safari en iOS",
+    "howTo": "Cómo usar el atajo",
+    "step1Title": "Instala el atajo",
+    "step1Link": "Obtener atajo de iOS",
+    "step2Title": "Genera una clave de API",
+    "step2Description": "Crea una nueva clave en esta página de ajustes y cópiala.",
+    "step3Title": "Configura el atajo",
+    "step3Description": "En la app Atajos, abre el menú del atajo Guardar en Margin y pega tu clave de API en la acción de Texto que está justo debajo del comentario de configuración.",
+    "step4Title": "Para guardar un marcador de una página",
+    "step4Description": "No selecciones ningún texto. Abre el menú en Safari, pulsa Compartir y selecciona Guardar en Margin.",
+    "step5Title": "Para resaltar texto",
+    "step5Description": "Selecciona texto en la página, abre el menú, pulsa Compartir y selecciona Guardar en Margin. Deja el campo Nota vacío.",
+    "step6Title": "Para añadir una anotación",
+    "step6Description": "Selecciona texto, compártelo a Guardar en Margin (desde el menú), escribe tu nota personalizada en el campo Nota y pulsa ¡Listo!",
+    "gotIt": "Entendido"
+  },
+  "editHistory": {
+    "title": "Historial de ediciones",
+    "noHistory": "No se encontró historial de ediciones.",
+    "currentVersion": "Versión actual",
+    "previousVersion": "Versión anterior",
+    "editedAgo": "Editado hace {{time}}",
+    "postedAgo": "Publicado hace {{time}}",
+    "timeAgo": "hace {{time}}",
+    "close": "Cerrar",
+    "failedLoad": "Error al cargar el historial de ediciones"
+  },
+  "settings": {
+    "title": "Ajustes",
+    "sections": {
+      "profile": "Perfil",
+      "appearance": "Apariencia",
+      "language": "Idioma",
+      "batchImport": "Importar resaltados por lotes",
+      "apiKeys": "Claves de API",
+      "moderation": "Moderación",
+      "contentFiltering": "Filtrado de contenido",
+      "iosShortcut": "Atajo de iOS"
+    },
+    "language": {
+      "label": "Idioma de la interfaz",
+      "description": "Elige el idioma de la interfaz de Margin."
+    },
+    "appearance": {
+      "disableExternalLinkWarning": "Desactivar advertencia de enlaces externos",
+      "disableExternalLinkWarningDesc": "No pedir confirmación al abrir enlaces externos",
+      "communityBookmarks": "Compartir marcadores en el feed de la comunidad",
+      "communityBookmarksDesc": "Tus marcadores guardados aparecerán en el feed de marcadores de la comunidad"
+    },
+    "batchImport": {
+      "description": "Sube resaltados desde un CSV. Obligatorio: url, text. Opcional: title, tags, color, created_at"
+    },
+    "apiKeys": {
+      "description": "Para el atajo de iOS y otras apps",
+      "keyNamePlaceholder": "Nombre de la clave, p. ej. Atajo de iOS",
+      "generate": "Generar",
+      "copyNow": "Cópiala ahora: ¡no volverás a verla!",
+      "empty": "Aún no hay claves de API. Crea una para usarla con la extensión del navegador.",
+      "created": "Creada el {{date}}",
+      "revokeConfirm": "¿Revocar esta clave? Las apps que la usen dejarán de funcionar."
+    },
+    "moderation": {
+      "description": "Gestiona las cuentas bloqueadas y silenciadas",
+      "blockedAccounts": "Cuentas bloqueadas ({{count}})",
+      "noBlocked": "No hay cuentas bloqueadas",
+      "unblock": "Desbloquear",
+      "mutedAccounts": "Cuentas silenciadas ({{count}})",
+      "noMuted": "No hay cuentas silenciadas",
+      "unmute": "Quitar silencio"
+    },
+    "contentFiltering": {
+      "description": "Suscríbete a etiquetadores y configura cómo aparece el contenido etiquetado",
+      "subscribedLabelers": "Etiquetadores suscritos",
+      "noLabelers": "No hay etiquetadores suscritos",
+      "labelerDidPlaceholder": "did:plc:… (DID del etiquetador)",
+      "remove": "Eliminar",
+      "add": "Añadir",
+      "labelVisibility": "Visibilidad de las etiquetas",
+      "labelVisibilityDesc": "Elige cómo gestionar cada tipo de etiqueta: Advertir muestra una capa difuminada, Ocultar elimina el contenido por completo, Ignorar muestra el contenido con normalidad.",
+      "warn": "Advertir",
+      "hide": "Ocultar",
+      "ignore": "Ignorar"
+    },
+    "iosShortcut": {
+      "description": "Guarda páginas en Margin desde Safari en iPhone y iPad",
+      "setupButton": "Configurar atajo de iOS"
+    },
+    "logout": "Cerrar sesión"
+  },
+  "new": {
+    "signInRequired": "Inicia sesión para crear",
+    "needsAccount": "Necesitas una cuenta de Bluesky",
+    "signInButton": "Iniciar sesión con Bluesky",
+    "composeTitle": "Redactar",
+    "composeTagline": "Resalta un pasaje, deja una nota o anota una página, todo desde aquí.",
+    "urlLabel": "URL para anotar",
+    "urlPlaceholder": "https://example.com/article"
+  },
+  "annotationDetail": {
+    "back": "Volver",
+    "replies": "Respuestas ({{count}})",
+    "replyingTo": "Respondiendo a",
+    "replyPlaceholder": "Escribe una respuesta…",
+    "reply": "Responder",
+    "signInToReply": "Inicia sesión para responder",
+    "logIn": "Iniciar sesión",
+    "notFound": "No encontrado",
+    "mayBeDeleted": "Es posible que esto se haya eliminado.",
+    "backToFeed": "Volver al feed",
+    "deleteReplyConfirm": "¿Eliminar esta respuesta?",
+    "failedReply": "Error al publicar la respuesta: {{message}}",
+    "failedDelete": "Error al eliminar: {{message}}",
+    "failedResolve": "Error al resolver el handle: {{message}}"
+  },
+  "urlPage": {
+    "title": "Anotaciones de URL",
+    "description": "Introduce una URL para ver todas las anotaciones y resaltados públicos de la comunidad de Margin.",
+    "urlPlaceholder": "https://example.com/article",
+    "view": "Ver",
+    "myAnnotations": "Mis anotaciones",
+    "share": "Compartir",
+    "copied": "¡Copiado!",
+    "contributor_one": "{{count}} colaborador",
+    "contributor_other": "{{count}} colaboradores",
+    "loadingAnnotations": "Cargando anotaciones…",
+    "blankCanvas": "Esta página es un lienzo en blanco",
+    "blankCanvasMessage": "Nadie ha dejado notas aquí todavía. ¿Quieres ser el primero? Consigue la extensión de Margin y comparte lo que piensas.",
+    "tabs": {
+      "all": "Todo",
+      "annotations": "Anotaciones",
+      "highlights": "Resaltados",
+      "bookmarks": "Marcadores",
+      "collections": "Colecciones"
+    },
+    "noAnnotationsYet": "Aún no hay anotaciones",
+    "noAnnotationsMessage": "Nadie ha dejado una nota escrita en esta página.",
+    "noHighlightsYet": "Aún no hay resaltados",
+    "noHighlightsMessage": "Nadie ha resaltado un pasaje de esta página.",
+    "loadMore": "Cargar más",
+    "loading": "Cargando…",
+    "failedLoadMore": "Error al cargar más: {{message}}"
+  },
+  "userUrlPage": {
+    "on": "en",
+    "loadingAnnotations": "Cargando anotaciones…",
+    "noUrl": "No se especificó ninguna URL",
+    "noUrlMessage": "Por favor, proporciona una URL para ver las anotaciones.",
+    "noItems": "No se encontraron elementos",
+    "noItemsMessage": "{{name}} aún no ha anotado esta página.",
+    "noAnnotations": "Sin anotaciones",
+    "noHighlights": "Sin resaltados",
+    "loadMore": "Cargar más",
+    "loading": "Cargando…",
+    "failedLoadMore": "Error al cargar más: {{message}}"
+  },
+  "adminModeration": {
+    "accessDenied": "Acceso denegado",
+    "accessDeniedMessage": "No tienes permiso para acceder al panel de moderación.",
+    "title": "Moderación",
+    "stats": "{{pending}} pendientes · {{total}} reportes en total",
+    "tabs": {
+      "reports": "Reportes",
+      "actions": "Acciones",
+      "labels": "Etiquetas"
+    },
+    "filters": {
+      "all": "Todos",
+      "pending": "Pendientes",
+      "resolved": "Resueltos",
+      "dismissed": "Descartados",
+      "escalated": "Escalados"
+    },
+    "reports": {
+      "empty": "No hay reportes",
+      "emptyPending": "No hay reportes pendientes por revisar.",
+      "emptyFiltered": "No se encontraron reportes {{status}}.",
+      "reportedUser": "Usuario reportado",
+      "reporter": "Reportante",
+      "details": "Detalles",
+      "contentUri": "URI del contenido",
+      "acknowledge": "Confirmar",
+      "dismiss": "Descartar",
+      "takedown": "Retirar"
+    },
+    "reasons": {
+      "spam": "Spam",
+      "violation": "Infracción de las normas",
+      "misleading": "Engañoso",
+      "sexual": "Inapropiado",
+      "rude": "Grosero / Acosador",
+      "other": "Otro"
+    },
+    "actions": {
+      "applyWarning": "Aplicar advertencia de contenido",
+      "applyWarningDesc": "Añade una etiqueta de advertencia de contenido a una publicación o cuenta específica. Los usuarios verán una capa difuminada con la opción de revelarla.",
+      "accountDid": "DID de la cuenta",
+      "contentUri": "URI del contenido",
+      "contentUriOptional": "opcional — déjalo vacío para una etiqueta a nivel de cuenta",
+      "labelType": "Tipo de etiqueta",
+      "applyLabel": "Aplicar etiqueta",
+      "labelApplied": "Etiqueta aplicada"
+    },
+    "labels": {
+      "empty": "No hay etiquetas",
+      "emptyMessage": "Aún no se han aplicado etiquetas de contenido.",
+      "accountLevel": "Etiqueta a nivel de cuenta",
+      "removeConfirm": "¿Eliminar esta etiqueta?",
+      "removeTitle": "Eliminar etiqueta"
+    }
+  },
+  "highlightImporter": {
+    "clickToUpload": "Haz clic para subir un CSV",
+    "processing": "Procesando…",
+    "requiredColumns": "Columnas obligatorias: url, text | Opcionales: title, tags, color, created_at",
+    "downloadTemplate": "Descargar plantilla",
+    "importProgress": "Progreso de importación",
+    "complete": "{{rate}}% completado",
+    "failed_one": "{{count}} fallido",
+    "failed_other": "{{count}} fallidos",
+    "importing": "Importando resaltados…",
+    "success": "¡Se importaron {{count}} resaltados correctamente!",
+    "errorsTitle": "{{count}} errores durante la importación",
+    "row": "Fila {{row}}: {{error}}",
+    "moreErrors": "+{{count}} errores más",
+    "importAnother": "Importar otro archivo",
+    "noHighlights": "No se encontraron resaltados válidos en el CSV",
+    "csvMustHaveUrl": "El CSV debe tener una columna 'url'",
+    "csvMustHaveText": "El CSV debe tener una columna 'text' (también coincide con: highlight, excerpt)",
+    "errorParsing": "Error al analizar el CSV: {{message}}"
+  },
+  "common": {
+    "loading": "Cargando…",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "close": "Cerrar",
+    "back": "Volver",
+    "continue": "Continuar",
+    "error": "Error",
+    "retry": "Reintentar",
+    "loadMore": "Cargar más",
+    "new": "Nuevo"
+  },
+  "about": {
+    "nav": {
+      "getExtension": "Obtener extensión",
+      "install": "Instalar"
+    },
+    "hero": {
+      "openSource": "Totalmente de código abierto",
+      "headline": "Escribe en los márgenes",
+      "headlineAccent": "de internet.",
+      "descriptionPre": "Margin es una capa de anotación abierta para internet. Resalta texto, deja notas y guarda marcadores de páginas, todo almacenado en tu identidad descentralizada con el",
+      "atProtocol": "AT Protocol",
+      "descriptionPost": ". Sin quedar encerrado en un silo.",
+      "openApp": "Abrir app",
+      "getStarted": "Empezar",
+      "installFor": "Instalar para {{browser}}"
+    },
+    "features": {
+      "title": "Todo lo que necesitas para interactuar con la web",
+      "subtitle": "Más que marcadores. Un conjunto completo de herramientas para leer, pensar y compartir en la web abierta.",
+      "annotations": {
+        "title": "Anotaciones",
+        "description": "Deja notas en cualquier página web. Inicia debates, comparte ideas o simplemente apunta tus reflexiones para después."
+      },
+      "highlights": {
+        "title": "Resaltados",
+        "description": "Selecciona y resalta texto en cualquier página con colores personalizables. Tus resaltados se muestran en línea con la CSS Highlights API."
+      },
+      "bookmarks": {
+        "title": "Marcadores",
+        "description": "Guarda páginas con un clic o un atajo de teclado. Todos tus marcadores se sincronizan con tu identidad del AT Protocol."
+      },
+      "collections": {
+        "title": "Colecciones",
+        "description": "Organiza tus anotaciones, resaltados y marcadores en colecciones temáticas. Compártelas públicamente o mantenlas privadas."
+      },
+      "socialDiscovery": {
+        "title": "Descubrimiento social",
+        "description": "Mira lo que otros dicen sobre las páginas que visitas. Descubre anotaciones, etiquetas en tendencia y conecta con otros lectores."
+      },
+      "tagsSearch": {
+        "title": "Etiquetas y búsqueda",
+        "description": "Etiqueta tus anotaciones para encontrarlas fácilmente. Busca por URL, etiqueta o contenido para encontrar justo lo que buscas."
+      }
+    },
+    "extension": {
+      "badge": "Extensión del navegador",
+      "title": "Tu kit de anotación,",
+      "titleLine2": "directo en el navegador",
+      "description": "La extensión de Margin lleva la experiencia de anotación completa directamente a cada página que visitas. Solo selecciona, anota y continúa.",
+      "iosShortcut": "Atajo de iOS",
+      "features": {
+        "inlineOverlay": {
+          "title": "Superposición en línea",
+          "description": "Mira las anotaciones y resaltados renderizados directamente en la página. Usa la CSS Highlights API para subrayados de texto preciosos y de aspecto nativo."
+        },
+        "contextMenu": {
+          "title": "Menú contextual y selección",
+          "description": "Haz clic derecho en cualquier selección para anotarla o resaltarla. Haz clic derecho en cualquier parte de la página para guardarla como marcador desde el submenú de Margin."
+        },
+        "keyboard": {
+          "title": "Atajos de teclado",
+          "description": "Activa la superposición, guarda la página actual como marcador o anota el texto seleccionado sin tocar el ratón."
+        },
+        "sidePanel": {
+          "title": "Panel lateral",
+          "description": "Abre el panel lateral de Margin para explorar anotaciones, marcadores y colecciones sin salir de la página que estás leyendo."
+        }
+      }
+    },
+    "protocol": {
+      "badge": "Descentralizado",
+      "title": "Tus datos, tu identidad",
+      "descriptionPre": "Margin está construido sobre el",
+      "descriptionPost": ", el protocolo abierto que impulsa apps como Bluesky. Tus anotaciones, resaltados y marcadores se almacenan en tu repositorio de datos personal, no quedan encerrados en un silo.",
+      "point0": "Inicia sesión con tu handle del AT Protocol, sin necesidad de una cuenta nueva",
+      "point1": "Tus datos viven en tu PDS, portátiles y bajo tu control",
+      "point2": "Esquemas de Lexicon personalizados para anotaciones, resaltados, colecciones y más",
+      "point3": "Totalmente de código abierto, revisa el código y contribuye"
+    },
+    "cta": {
+      "title": "Empieza a escribir en los márgenes",
+      "description": "Únete a la capa de anotación abierta. Inicia sesión con tu identidad del AT Protocol e instala la extensión para empezar.",
+      "signIn": "Iniciar sesión",
+      "viewGitHub": "Ver en GitHub",
+      "viewTangled": "Ver en Tangled"
+    },
+    "footer": {
+      "privacy": "Privacidad",
+      "terms": "Términos",
+      "contact": "Contacto"
+    },
+    "landing": {
+      "hero": {
+        "headPart1": "Escribe en los",
+        "headMargins": "márgenes",
+        "headPart2": "de",
+        "headInternet": "internet",
+        "headEnd": ".",
+        "lede": "Margin es una capa de anotación abierta para la web. Resalta, deja notas y guarda marcadores de cualquier página; todo almacenado en tu propia identidad del AT Protocol, no en la base de datos de otra persona."
+      },
+      "demo": {
+        "eyebrow": "Cómo se siente",
+        "card1Caption": "Resalta, en el color que elijas. Los subrayados se renderizan en línea mediante la CSS Highlights API; nada reescribe el DOM de la página.",
+        "card1Sample": "Margin hace que los lectores efímeros de la web dejen un rastro.",
+        "card1Mark": "lectores efímeros",
+        "card2Caption": "Fija una nota a la selección. Se ancla al texto exacto, no a un frágil desfase de caracteres, así que sobrevive a los cambios de diseño.",
+        "card2Sample": "Una nota en el margen es una conversación con tu yo del futuro.",
+        "card2Mark": "conversación con tu yo del futuro",
+        "card3Caption": "Guarda un marcador con una tecla o un clic derecho. Sincronizado con tu repositorio del AT Protocol junto a todo lo demás.",
+        "card3Url": "essays.example.com/marginalia",
+        "card3Saved": "Guardado"
+      },
+      "capabilities": {
+        "heading": "Qué incluye",
+        "subheading": "El conjunto completo de acciones que Margin te ofrece en cualquier página."
+      },
+      "protocol": {
+        "heading": "Construido sobre un protocolo, no una plataforma",
+        "lede": "Margin funciona sobre el AT Protocol, la misma red que impulsa Bluesky. Tus anotaciones viven en tu Servidor de Datos Personal como registros públicos, y cualquier app que hable el lexicon puede leerlas o construir sobre ellas.",
+        "viewLexicon": "Ver el lexicon"
+      },
+      "install": {
+        "lede": "Instalar para",
+        "or": "u obtén el"
+      },
+      "closer": {
+        "line": "La web se lee mejor con notas en el margen.",
+        "signIn": "Inicia sesión con tu handle",
+        "open": "Abrir Margin"
+      }
+    }
   }
 }

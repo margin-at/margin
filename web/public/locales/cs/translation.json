@@ -1,49 +1,134 @@
 {
+  "appTitle": "Margin",
   "nav": {
+    "feed": "Feed",
     "discover": "Objevuj",
-    "activity": "Notifikace",
-    "bookmarks": "Záložky",
     "annotations": "Vpisky",
     "highlights": "Úryvky",
+    "bookmarks": "Záložky",
     "collections": "Složky",
-    "signIn": "Přihlásit se",
-    "logOut": "Odhlásit se",
-    "feed": "Feed",
+    "activity": "Notifikace",
     "settings": "Nastavení",
     "new": "Anotovat",
+    "signIn": "Přihlásit se",
+    "logOut": "Odhlásit se",
     "themeLight": "Světlo",
     "themeDark": "Tma",
     "themeSystem": "Režim podle OS"
   },
-  "appTitle": "Margin",
+  "pageTitles": {
+    "home": "Úvod — Margin",
+    "bookmarks": "Záložky — Margin",
+    "highlights": "Úryvky — Margin",
+    "annotations": "Vpisky — Margin",
+    "discover": "Objevuj — Margin",
+    "search": "Vyhledávání — Margin",
+    "notifications": "Notifikace — Margin",
+    "new": "Nový vpisek — Margin",
+    "settings": "Nastavení — Margin",
+    "collections": "Složky — Margin",
+    "admin": "Administrace — Margin"
+  },
+  "sidebar": {
+    "getExtension": "Stáhnout rozšíření",
+    "extensionTagline": "Podtrhávejte, anotujte a ukládejte záložky z libovolné stránky.",
+    "downloadForFirefox": "Stáhnout pro Firefox",
+    "downloadForEdge": "Stáhnout pro Edge",
+    "downloadForSafari": "Stáhnout pro Safari",
+    "downloadForChrome": "Stáhnout pro Chrome",
+    "trending": "Populární",
+    "nothingTrending": "Aktuálně není nic moc v kurzu.",
+    "searchPlaceholder": "Vyhledávejte napříč uživateli, tagy, URL…",
+    "copyright": "© 2026 Padding Labs LLC",
+    "postCount_one": "{{count}} příspěvek",
+    "postCount_few": "{{count}} příspěvky",
+    "postCount_many": "{{count}} příspěvku",
+    "postCount_other": "{{count}} příspěvků"
+  },
+  "mobileNav": {
+    "iosShortcut": "Zkratka iOS"
+  },
   "feed": {
-    "mine": "Pouze já",
-    "everyone": "Všichni",
-    "filters": {
-      "bookmarks": "Záložky",
-      "highlights": "Úryvky",
-      "all": "",
-      "annotations": ""
-    },
-    "itemsWithTag": "Položky se štítkem:",
+    "welcome": "Vítejte na Marginu",
+    "welcomeTagline": "Klidné místo, kde si můžete anotovat, podtrhávat a ukládat to, co na webu čtete.",
+    "getStarted": "Pustit se do toho",
+    "learnMore": "Zjistit více",
     "tabs": {
       "recent": "Nedávné",
       "popular": "Populární",
       "shelved": "Málo diskutované",
-      "semble": "",
-      "margin": ""
+      "margin": "Margin",
+      "semble": "Semble"
     },
-    "welcome": "Vítejte na Marginu",
-    "getStarted": "Pustit se do toho",
+    "filters": {
+      "all": "Vše",
+      "annotations": "Vpisky",
+      "highlights": "Úryvky",
+      "bookmarks": "Záložky"
+    },
+    "itemsWithTag": "Položky se štítkem:",
     "clearFilter": "Odepnout filtr",
-    "loading": "Načítání…",
+    "everyone": "Všichni",
+    "mine": "Pouze já",
+    "defaultEmptyMessage": "Prozatím tady nic není — vpisky od vás a lidí, které sledujete, se objeví právě tady.",
     "nothingHereYet": "Prozatím tady nic není",
-    "defaultEmptyMessage": "",
-    "welcomeTagline": "",
-    "learnMore": ""
+    "loading": "Načítání…"
+  },
+  "discover": {
+    "tabs": {
+      "new": "Nové",
+      "popular": "Populární",
+      "forYou": "Výběr"
+    },
+    "comingSoon": "Již brzy",
+    "forYouNotAvailable": "Personalizovaná doporučení nejsou na tomto serveru prozatím k dispozici.",
+    "noDocumentsYet": "Prozatím tady nejsou žádné dokumenty. Zkuste to znova později.",
+    "startAnnotating": "Začněte anotovat a podtrhávat a získáte personalizovaná doporučení.",
+    "loadMore": "Načíst další"
+  },
+  "search": {
+    "placeholder": "Vyhledávejte vpisky, úryvky, záložky…",
+    "noResults": "Nic nenalezeno",
+    "noResultsMessage": "Pro „{{query}}“ se nic nenašlo. Zkuste jiná klíčová slova.",
+    "emptyTitle": "Vyhledávejte ve Vaší knihovně",
+    "emptyMessage": "Najděte vpisky, úryvky a záložky podle klíčového slova, URL nebo štítku.",
+    "filters": {
+      "all": "Všechno",
+      "annotations": "Vpisky",
+      "highlights": "Úryvky",
+      "bookmarks": "Záložky",
+      "mine": "Pouze já"
+    },
+    "resultCount": "{{count}}{{hasMore}} výsledků pro „{{query}}“",
+    "loadMore": "Načíst další"
+  },
+  "notifications": {
+    "title": "Události",
+    "noActivity": "Prozatím tady nic není",
+    "noActivityMessage": "Reakce na Váš obsah se objeví tady.",
+    "likedAnnotation": "se líbí Váš vpisek",
+    "likedHighlight": "se líbí Váš úryvek",
+    "likedBookmark": "se líbí Vaše záložka",
+    "likedReply": "se líbí Vaše odpověď",
+    "likedPost": "se líbí Váš příspěvek",
+    "repliedToReply": "reagoval*a na Vaši odpověď",
+    "repliedToAnnotation": "odpověděl*a na Váš vpisek",
+    "mentionedInAnnotation": "Vás zmínil*a ve vpisku",
+    "followedYou": "Vás začal*a sledovat",
+    "highlightedPage": "si vytáhnul*a úryvek z Vaší stránky",
+    "inReplyTo": "v odpovědi na",
+    "aReply": "odpověď",
+    "anAnnotation": "vpisek"
   },
   "collections": {
     "title": "Složky",
+    "subtitle": "Uspořádejte si vpisky a úryvky",
+    "none": "Prozatím žádné složky",
+    "noneMessage": "Vytvořte si novou složku k organizaci Vašich vpisků a úryvků.",
+    "createButton": "Vytvořit složku",
+    "newTitle": "Nová složka",
+    "editTitle": "Upravit složku",
+    "namePlaceholder": "Moje složka",
     "namePlaceholderEdit": "Název složky",
     "nameLabel": "Název",
     "iconLabel": "Ikona",
@@ -54,257 +139,99 @@
     "descriptionPlaceholder": "K čemu by měla tato složka sloužit?",
     "descriptionPlaceholderEdit": "O čem by měla být tato složka?",
     "cancel": "Zrušit",
+    "create": "Vytvořit složku",
     "creating": "Vytvářím…",
     "save": "Uložit změny",
     "saving": "Ukládám…",
-    "subtitle": "Uspořádejte si vpisky a úryvky",
-    "namePlaceholder": "Moje složka",
-    "createButton": "Vytvořit složku",
-    "editTitle": "Upravit složku",
-    "newTitle": "Nová složka",
-    "create": "Vytvořit složku",
-    "noneMessage": "Vytvořte si novou složku k organizaci Vašich vpisků a úryvků.",
-    "none": "",
-    "errorUpdating": "",
-    "failedUpdate": "",
-    "itemCount_one": "",
-    "itemCount_few": "",
-    "itemCount_other": "",
-    "deleteConfirm": "Smazat tuto složku?"
+    "deleteConfirm": "Smazat tuto složku?",
+    "failedUpdate": "Složku se nepodařilo upravit",
+    "errorUpdating": "Při ukládání došlo k chybě",
+    "itemCount_one": "{{count}} položka",
+    "itemCount_few": "{{count}} položky",
+    "itemCount_many": "{{count}} položky",
+    "itemCount_other": "{{count}} položek"
   },
-  "about": {
-    "footer": {
-      "contact": "Kontakt",
-      "terms": "Podmínky",
-      "privacy": "Soukromí"
-    },
-    "cta": {
-      "viewGitHub": "GitHub",
-      "viewTangled": "Tangled",
-      "signIn": "Přihlásit se",
-      "title": "Začněte psát pod čarou",
-      "description": ""
-    },
-    "protocol": {
-      "descriptionPre": "Margin je vystavěn na",
-      "point2": "",
-      "point3": "",
-      "title": "Vaše data, vaše identita",
-      "point1": "Všechna data jsou uložena ve Vámi zvoleném prostoru PDS",
-      "point0": "Nevytvářejte si nový účet, přihlašte se přes Protokol AT",
-      "badge": "Decentralizováno",
-      "descriptionPost": ", otevřeném protokolu, na kterém stojí aplikace jako Bluesky. Vaše poznámky, výňatky a oblíbené položky (záložky) jsou bezpečně uloženy ve Vašem vlastním prostoru PDS, ne u jednoho poskytovatele."
-    },
-    "extension": {
-      "features": {
-        "keyboard": {
-          "title": "Klávesové zkratky",
-          "description": ""
-        },
-        "sidePanel": {
-          "description": "",
-          "title": "Boční panel"
-        },
-        "contextMenu": {
-          "title": "",
-          "description": ""
-        },
-        "inlineOverlay": {
-          "description": "",
-          "title": ""
-        }
-      },
-      "description": "",
-      "badge": "",
-      "title": "Vaše sada anotačních nástrojů",
-      "titleLine2": "přímo v prohlížeči",
-      "iosShortcut": "Zkratka iOS"
-    },
-    "features": {
-      "title": "",
-      "highlights": {
-        "description": "",
-        "title": "Výňatky"
-      },
-      "socialDiscovery": {
-        "description": "",
-        "title": ""
-      },
-      "tagsSearch": {
-        "description": "",
-        "title": "Štítky & Vyhledávání"
-      },
-      "bookmarks": {
-        "description": "",
-        "title": "Oblíbené"
-      },
-      "subtitle": "",
-      "collections": {
-        "description": "",
-        "title": "Složky"
-      },
-      "annotations": {
-        "description": "",
-        "title": "Poznámky"
-      }
-    },
-    "hero": {
-      "openApp": "",
-      "descriptionPost": ". Ne u jednoho poskytovatele.",
-      "descriptionPre": "Margin je otevřená poznámková vrstva internetu. Podtrhávejte si, pište poznámky pro sebe nebo ostatní a ukládejte si stránky do oblíbených. Všechno decentralizovaně uložené na síti",
-      "headline": "Pište poznámky na okraj",
-      "installFor": "Rozšíření pro {{browser}}",
-      "openSource": "Kompletně open source",
-      "headlineAccent": "celého internetu.",
-      "getStarted": "Pustit se do toho",
-      "atProtocol": "Protokolu AT"
-    },
-    "nav": {
-      "install": "Nainstalovat",
-      "getExtension": "Stáhnout rozšíření"
-    }
+  "collectionDetail": {
+    "backLink": "Složky",
+    "by": "od",
+    "edit": "Upravit složku",
+    "delete": "Smazat složku",
+    "removeFromCollection": "Odebrat ze složky",
+    "viewInSemble": "Zobrazit na Semble",
+    "empty": "Složka je prázdná",
+    "notFound": "Složka nenalezena",
+    "failedToLoad": "Složku se nepodařilo načíst",
+    "deleteConfirm": "Smazat tuto složku?",
+    "removeConfirm": "Odebrat ze složky?"
   },
   "profile": {
-    "unblock_action": "Zablokovat",
-    "unmute_action": "Ztišit",
-    "emptyCollectionsOwn": "Prozatím jste si nevytvořili žádné složky.",
-    "emptyCollectionsOther": "Žádné složky",
+    "notFound": "Uživatel nenalezen",
+    "notFoundMessage": "Tento profil neexistuje nebo se nepodařilo načíst.",
+    "edit": "Upravit",
+    "viewInBluesky": "Zobrazit profil na Bluesky",
+    "unblock": "Odblokovat @{{handle}}",
+    "block": "Zablokovat @{{handle}}",
+    "unmute": "Zrušit ztišení @{{handle}}",
+    "mute": "Ztišit @{{handle}}",
+    "report": "Nahlásit",
+    "accountLabeled": "Účet označen štítkem: {{description}}",
+    "labelApplied": "Tento štítek přidala moderační služba, kterou odebíráte.",
     "show": "Zobrazit",
     "hide": "Skrýt",
-    "report": "",
-    "mutedMessage": "",
-    "mutedBanner": "",
-    "accountLabeled": "",
-    "mute": "",
-    "notFound": "",
-    "unblock": "",
-    "blockedByBanner": "",
-    "emptyTabOwn": "",
-    "labelApplied": "",
-    "viewInBluesky": "",
-    "blockedMessage": "",
-    "block": "",
-    "notFoundMessage": "",
-    "unmute": "",
-    "emptyTabOther": "",
-    "edit": "",
-    "blockedBanner": "",
-    "itemCount_one": "",
-    "itemCount_few": "",
-    "itemCount_other": ""
-  },
-  "pageTitles": {
-    "discover": "Objevuj — Margin",
-    "home": "Úvod — Margin",
-    "bookmarks": "Záložky — Margin",
-    "settings": "Nastavení — Margin",
-    "collections": "Složky — Margin",
-    "admin": "Administrace — Margin",
-    "search": "Vyhledávání — Margin",
-    "notifications": "Notifikace — Margin",
-    "new": "Nový vpisek — Margin",
-    "highlights": "Úryvky — Margin",
-    "annotations": "Vpisky — Margin"
-  },
-  "sidebar": {
-    "downloadForFirefox": "Stáhnout pro Firefox",
-    "downloadForEdge": "Stáhnout pro Edge",
-    "downloadForSafari": "Stáhnout pro Safari",
-    "downloadForChrome": "Stáhnout pro Chrome",
-    "trending": "Populární",
-    "searchPlaceholder": "Vyhledávejte napříč uživateli, tagy, URL…",
-    "getExtension": "Stáhnout rozšíření",
-    "nothingTrending": "Aktuálně není nic moc v kurzu.",
-    "postCount_one": "",
-    "postCount_few": "",
-    "postCount_other": "",
-    "copyright": "",
-    "extensionTagline": ""
-  },
-  "mobileNav": {
-    "iosShortcut": "Zkratka iOS"
-  },
-  "discover": {
-    "tabs": {
-      "new": "Nové",
-      "popular": "Populární",
-      "forYou": "Výběr"
-    },
-    "comingSoon": "Již brzy",
-    "forYouNotAvailable": "Personalizovaná doporučení nejsou na tomto serveru prozatím k dispozici.",
-    "loadMore": "Načíst další",
-    "noDocumentsYet": "Prozatím tady nejsou žádné dokumenty. Zkuste to znova později.",
-    "startAnnotating": ""
-  },
-  "search": {
-    "noResults": "Nic nenalezeno",
-    "emptyTitle": "Vyhledávejte ve Vaší knihovně",
-    "filters": {
-      "all": "Všechno",
-      "mine": "",
-      "annotations": "",
-      "highlights": "",
-      "bookmarks": ""
-    },
-    "loadMore": "Načíst další",
-    "noResultsMessage": "",
-    "placeholder": "",
-    "emptyMessage": "",
-    "resultCount": ""
-  },
-  "notifications": {
-    "inReplyTo": "v odpovědi na",
-    "aReply": "odpověď",
-    "anAnnotation": "vpisek",
-    "likedAnnotation": "se líbí Váš vpisek",
-    "likedHighlight": "se líbí Váš úryvek",
-    "likedBookmark": "se líbí Vaše záložka",
-    "likedReply": "se líbí Vaše odpověď",
-    "likedPost": "se líbí Váš příspěvek",
-    "repliedToReply": "reagoval*a na Vaši odpověď",
-    "repliedToAnnotation": "odpověděl*a na Váš vpisek",
-    "mentionedInAnnotation": "Vás zmínil*a ve vpisku",
-    "followedYou": "Vás začal*a sledovat",
-    "title": "Události",
-    "noActivity": "Prozatím tady nic není",
-    "highlightedPage": "si vytáhnul*a úryvek z Vaší stránky",
-    "noActivityMessage": "Reakce na Váš obsah se objeví tady."
+    "blockedBanner": "Zablokovali jste @{{handle}}",
+    "blockedMessage": "Jejich obsah je skrytý z Vašich feedů.",
+    "mutedBanner": "Ztišili jste @{{handle}}",
+    "mutedMessage": "Jejich obsah je skrytý z Vašich feedů.",
+    "blockedByBanner": "@{{handle}} Vás zablokoval*a. S jejich obsahem nemůžete interagovat.",
+    "unblock_action": "Odblokovat",
+    "unmute_action": "Zrušit ztišení",
+    "emptyCollectionsOwn": "Prozatím jste si nevytvořili žádné složky.",
+    "emptyCollectionsOther": "Žádné složky",
+    "itemCount_one": "{{count}} položka",
+    "itemCount_few": "{{count}} položky",
+    "itemCount_many": "{{count}} položky",
+    "itemCount_other": "{{count}} položek",
+    "emptyTabOwn": "Vaše {{tab}} se objeví tady.",
+    "emptyTabOther": "Prozatím tady není nic k vidění."
   },
   "login": {
+    "signInWith": "Přihlašte se Vaším",
+    "handleSuffix": "handle",
+    "handlePlaceholder": "handle.margin.cafe",
+    "connecting": "Připojuji…",
+    "continue": "Pokračovat",
+    "createAccount": "Vytvořit nový účet",
+    "or": "nebo",
+    "termsPrefix": "Přihlášením souhlasíte s",
     "termsLink": "Smluvní podmínky",
     "termsAnd": "a",
     "privacyLink": "Zásady ochrany osobních údajů",
-    "bannedMessage": "",
-    "bannedSignOut": "",
-    "handlePlaceholder": "",
-    "bannedAppeal": "",
-    "bannedTitle": "",
-    "handleSuffix": "",
-    "continue": "",
-    "connecting": "",
-    "termsPrefix": "Přihlášením souhlasíte s",
-    "createAccount": "Vytvořit nový účet",
-    "signInWith": "Přihlašte se Vaším",
-    "or": ""
+    "bannedTitle": "Váš účet byl pozastaven",
+    "bannedMessage": "Tento účet byl na Marginu pozastaven a už se nemůže přihlásit.",
+    "bannedAppeal": "Pokud se domníváte, že jde o omyl, můžete se odvolat e-mailem na",
+    "bannedSignOut": "Odhlásit se"
   },
   "signUp": {
-    "atProtocol": "Protokol AT",
+    "title": "Vytvořte si účet",
+    "subtitle": "Margin se řídí",
+    "atProtocol": "AT Protocol",
+    "subtitleSuffix": ". Vyberte poskytovatele, který bude hostit Váš účet.",
+    "customPdsTitle": "Použít vlastní PDS",
+    "customPdsSubtitle": "Zadejte adresu PDS, který hostí Váš účet.",
     "pdsAddressLabel": "Adresa PDS",
-    "pdsAddressPlaceholder": "pds.vasedomena.cz",
+    "pdsAddressPlaceholder": "pds.example.com",
     "connecting": "Připojuji…",
     "back": "Zpátky",
     "continue": "Pokračovat",
     "invite": "Pozvat",
+    "moreOptions": "Více možností",
+    "atmosphereNote": "Už máte účet v Atmosféře? Stačí se přihlásit!",
     "providerError": "K tomuto poskytovateli se teď nelze připojit. Zkuste to znova.",
     "customPdsError": "K tomuto PDS se teď nelze připojit. Zkontrolujte, zda zadáváte správnou adresu.",
     "providers": {
       "margin": {
         "name": "Margin",
-        "description": ""
-      },
-      "customPds": {
-        "description": "PDS už máte? Pokud ano, zadejte jeho adresu.",
-        "name": "Použít vlastní PDS"
+        "description": "Nejjednodušší způsob, jak začít"
       },
       "bluesky": {
         "name": "Bluesky",
@@ -312,32 +239,29 @@
       },
       "blacksky": {
         "name": "Blacksky",
-        "description": ""
-      },
-      "northsky": {
-        "description": "Kanadské družstvo vlastněné a provozované zaměstnanci",
-        "name": "Northsky"
+        "description": "Komunita vlastněná černošskou komunitou"
       },
       "eurosky": {
-        "description": "Eurosky je Vaším kouskem Evropy v Atmosféře",
-        "name": ""
+        "name": "Eurosky",
+        "description": "Eurosky je Vaším kouskem Evropy v Atmosféře"
       },
       "selfhostedSocial": {
         "name": "selfhosted.social",
         "description": "Prostor pro všechny umělce, kutily a objevitele"
       },
+      "northsky": {
+        "name": "Northsky",
+        "description": "Kanadské družstvo vlastněné a provozované zaměstnanci"
+      },
       "tophhie": {
         "name": "Tophhie",
         "description": "Komunita plná přátelské atmosféry"
+      },
+      "customPds": {
+        "name": "Použít vlastní PDS",
+        "description": "PDS už máte? Pokud ano, zadejte jeho adresu."
       }
-    },
-    "customPdsSubtitle": "",
-    "subtitle": "",
-    "subtitleSuffix": "",
-    "customPdsTitle": "",
-    "title": "",
-    "moreOptions": "",
-    "atmosphereNote": ""
+    }
   },
   "composer": {
     "newHighlight": "Nový úryvek",
@@ -346,7 +270,17 @@
     "saveHighlight": "Uložit úryvek",
     "postAnnotation": "Vložit vpisek",
     "postNote": "Vložit poznámku",
+    "highlightHint": "Ukládáte pasáž bez komentáře. Přidejte text níže a změňte ji na vpisek.",
+    "addQuote": "+ Přidat citaci ze stránky",
+    "quotePlaceholder": "Vložte nebo napište text, který anotujete…",
     "removeQuote": "Odebrat citaci",
+    "thoughtsPlaceholder": "Přidejte své myšlenky k této pasáži…",
+    "mindPlaceholder": "Co máte na srdci?",
+    "tagsPlaceholder": "Přidat štítky…",
+    "contentWarning": "Upozornění na obsah",
+    "contentWarningCount": "Upozornění na obsah ({{count}})",
+    "cancel": "Zrušit",
+    "failedToPost": "Vložení se nezdařilo",
     "labels": {
       "sexual": "Sexualita",
       "nudity": "Nahota",
@@ -354,424 +288,535 @@
       "gore": "Gore",
       "spam": "Spam",
       "misleading": "Manipulace"
-    },
-    "contentWarning": "Upozornění na obsah",
-    "cancel": "Zrušit",
-    "contentWarningCount": "",
-    "highlightHint": "",
-    "quotePlaceholder": "",
-    "failedToPost": "",
-    "addQuote": "",
-    "tagsPlaceholder": "",
-    "mindPlaceholder": "",
-    "thoughtsPlaceholder": ""
+    }
   },
   "card": {
+    "addedTo": "Přidáno do",
+    "addedToLower": "přidáno do",
+    "and": "a",
     "communityBookmark": "Komunitní záložka",
     "lichenBookmark": "Záložka Lichen",
+    "openInSemble": "Otevřít na Semble",
+    "deleteConfirm": "Smazat tuto položku?",
+    "hideContent": "Skrýt obsah",
+    "show": "Zobrazit",
+    "edited": "(upraveno)",
+    "annotate": "Anotovat",
     "untitledBookmark": "Nepojmenovaná záložka",
+    "addNotePlaceholder": "Přidejte poznámku a změňte tento úryvek na vpisek…",
+    "addToCollectionTitle": "Přidat do složky",
+    "annotateTitle": "Anotovat tento úryvek",
     "editTitle": "Upravit",
     "deleteTitle": "Smazat",
     "report": "Nahlásit",
     "muteUser": "Ztišit @{{handle}}",
     "blockUser": "Zablokovat @{{handle}}",
-    "addToCollectionTitle": "",
-    "openInSemble": "",
-    "deleteConfirm": "",
-    "addedTo": "",
+    "convertToAnnotation": "Změnit na vpisek",
+    "justNow": "právě teď",
     "labelDescriptions": {
-      "gore": "",
-      "spam": "",
-      "misleading": "",
-      "violence": "",
-      "sexual": "",
-      "nudity": ""
-    },
-    "and": "",
-    "edited": "",
-    "addNotePlaceholder": "",
-    "convertToAnnotation": "",
-    "hideContent": "",
-    "justNow": "",
-    "annotateTitle": "",
-    "show": "",
-    "annotate": "",
-    "addedToLower": ""
-  },
-  "editCollection": {
-    "namePlaceholder": "",
-    "iconsTab": "",
-    "nameLabel": "",
-    "saving": "",
-    "descriptionLabel": "",
-    "iconLabel": "",
-    "errorUpdating": "",
-    "save": "",
-    "cancel": "",
-    "title": "",
-    "descriptionPlaceholder": "",
-    "failedUpdate": "",
-    "emojisTab": "",
-    "selected": ""
-  },
-  "annotationDetail": {
-    "reply": "",
-    "mayBeDeleted": "",
-    "replyPlaceholder": "",
-    "back": "",
-    "signInToReply": "",
-    "failedReply": "",
-    "notFound": "",
-    "failedDelete": "",
-    "replyingTo": "",
-    "logIn": "",
-    "failedResolve": "",
-    "backToFeed": "",
-    "replies": "",
-    "deleteReplyConfirm": ""
-  },
-  "iosShortcut": {
-    "step6Title": "",
-    "step3Title": "",
-    "step4Title": "",
-    "step1Link": "",
-    "step2Title": "",
-    "step6Description": "",
-    "step2Description": "",
-    "gotIt": "",
-    "title": "",
-    "howTo": "",
-    "step5Description": "",
-    "step4Description": "",
-    "step1Title": "",
-    "step3Description": "",
-    "step5Title": ""
-  },
-  "settings": {
-    "apiKeys": {
-      "keyNamePlaceholder": "",
-      "created": "",
-      "copyNow": "",
-      "description": "",
-      "empty": "",
-      "revokeConfirm": "",
-      "generate": ""
-    },
-    "logout": "",
-    "contentFiltering": {
-      "noLabelers": "",
-      "add": "",
-      "remove": "",
-      "hide": "",
-      "description": "",
-      "labelerDidPlaceholder": "",
-      "ignore": "",
-      "labelVisibility": "",
-      "labelVisibilityDesc": "",
-      "warn": "",
-      "subscribedLabelers": ""
-    },
-    "moderation": {
-      "noBlocked": "",
-      "mutedAccounts": "",
-      "unblock": "",
-      "description": "",
-      "blockedAccounts": "",
-      "noMuted": "",
-      "unmute": ""
-    },
-    "iosShortcut": {
-      "description": "",
-      "setupButton": ""
-    },
-    "language": {
-      "label": "",
-      "description": ""
-    },
-    "sections": {
-      "appearance": "",
-      "language": "",
-      "contentFiltering": "",
-      "iosShortcut": "",
-      "moderation": "",
-      "batchImport": "",
-      "profile": "",
-      "apiKeys": ""
-    },
-    "appearance": {
-      "communityBookmarksDesc": "",
-      "communityBookmarks": "",
-      "disableExternalLinkWarningDesc": "",
-      "disableExternalLinkWarning": ""
-    },
-    "batchImport": {
-      "description": ""
-    },
-    "title": ""
-  },
-  "shareMenu": {
-    "moreOptions": "",
-    "copyLink": "",
-    "openOnSemble": "",
-    "sembleIntegration": "",
-    "shareViaApp": "",
-    "copied": "",
-    "copyUniversalLink": "",
-    "copySembleLink": ""
-  },
-  "editItem": {
-    "titlePlaceholder": "",
-    "descriptionPlaceholder": "",
-    "colorLabel": "",
-    "save": "",
-    "editAnnotation": "",
-    "tagsLabel": "",
-    "failedSave": "",
-    "saving": "",
-    "cancel": "",
-    "descriptionLabel": "",
-    "editHighlight": "",
-    "textPlaceholder": "",
-    "contentWarning": "",
-    "titleLabel": "",
-    "textLabel": "",
-    "editBookmark": "",
-    "tagPlaceholder": ""
-  },
-  "urlPage": {
-    "tabs": {
-      "all": "",
-      "highlights": "",
-      "annotations": "",
-      "collections": "",
-      "bookmarks": ""
-    },
-    "noHighlightsYet": "",
-    "noAnnotationsMessage": "",
-    "loading": "",
-    "loadingAnnotations": "",
-    "copied": "",
-    "noHighlightsMessage": "",
-    "loadMore": "",
-    "blankCanvasMessage": "",
-    "blankCanvas": "",
-    "noAnnotationsYet": "",
-    "urlPlaceholder": "",
-    "view": "",
-    "contributor_one": "",
-    "contributor_few": "",
-    "contributor_other": "",
-    "myAnnotations": "",
-    "description": "",
-    "share": "",
-    "title": "",
-    "failedLoadMore": ""
-  },
-  "addToCollection": {
-    "title": "",
-    "back": "",
-    "descriptionPlaceholder": "",
-    "creating": "",
-    "iconLabel": "",
-    "create": "",
-    "descriptionLabel": "",
-    "collectionNameLabel": "",
-    "newCollectionButton": "",
-    "failedAdd": "",
-    "failedCreate": "",
-    "namePlaceholder": "",
-    "emojisTab": "",
-    "done": "",
-    "createNewDescription": "",
-    "none": "",
-    "failedLoad": "",
-    "selected": "",
-    "loading": "",
-    "iconsTab": ""
-  },
-  "adminModeration": {
-    "reasons": {
-      "spam": "",
-      "rude": "",
-      "misleading": "",
-      "other": "",
-      "violation": "",
-      "sexual": ""
-    },
-    "actions": {
-      "applyWarningDesc": "",
-      "applyWarning": "",
-      "labelApplied": "",
-      "contentUriOptional": "",
-      "applyLabel": "",
-      "accountDid": "",
-      "contentUri": "",
-      "labelType": ""
-    },
-    "reports": {
-      "empty": "",
-      "reportedUser": "",
-      "details": "",
-      "contentUri": "",
-      "emptyFiltered": "",
-      "takedown": "",
-      "reporter": "",
-      "acknowledge": "",
-      "emptyPending": "",
-      "dismiss": ""
-    },
-    "accessDeniedMessage": "",
-    "labels": {
-      "empty": "",
-      "accountLevel": "",
-      "removeConfirm": "",
-      "removeTitle": "",
-      "emptyMessage": ""
-    },
-    "accessDenied": "",
-    "tabs": {
-      "actions": "",
-      "labels": "",
-      "reports": ""
-    },
-    "filters": {
-      "pending": "",
-      "resolved": "",
-      "dismissed": "",
-      "escalated": "",
-      "all": ""
-    },
-    "stats": "",
-    "title": ""
-  },
-  "new": {
-    "composeTitle": "",
-    "needsAccount": "",
-    "composeTagline": "",
-    "urlLabel": "",
-    "signInRequired": "",
-    "signInButton": "",
-    "urlPlaceholder": ""
-  },
-  "report": {
-    "reasons": {
-      "spam": "",
-      "rudeOrHarassing": "",
-      "ruleViolation": "",
-      "inappropriateContent": "",
-      "misleading": "",
-      "other": ""
-    },
-    "submittedMessage": "",
-    "reportingContent": "",
-    "detailsPlaceholder": "",
-    "titleGeneric": "",
-    "titleUser": "",
-    "submitted": "",
-    "cancel": "",
-    "submit": "",
-    "submitting": "",
-    "issueLabel": ""
-  },
-  "editProfile": {
-    "uploadButton": "",
-    "bioLabel": "",
-    "addLinkPlaceholder": "",
-    "avatarUploadError": "",
-    "displayNameLabel": "",
-    "cancel": "",
-    "avatarTypeError": "",
-    "title": "",
-    "uploading": "",
-    "avatarLabel": "",
-    "avatarSizeError": "",
-    "linksLabel": "",
-    "save": "",
-    "websiteLabel": "",
-    "saving": ""
-  },
-  "userUrlPage": {
-    "noUrl": "",
-    "noItemsMessage": "",
-    "loadingAnnotations": "",
-    "loadMore": "",
-    "noAnnotations": "",
-    "on": "",
-    "failedLoadMore": "",
-    "noHighlights": "",
-    "noUrlMessage": "",
-    "loading": "",
-    "noItems": ""
-  },
-  "common": {
-    "loadMore": "",
-    "save": "",
-    "error": "",
-    "retry": "",
-    "cancel": "",
-    "back": "",
-    "new": "",
-    "continue": "",
-    "loading": "",
-    "close": ""
-  },
-  "highlightImporter": {
-    "complete": "",
-    "moreErrors": "",
-    "row": "",
-    "noHighlights": "",
-    "downloadTemplate": "",
-    "requiredColumns": "",
-    "success": "",
-    "importProgress": "",
-    "csvMustHaveText": "",
-    "csvMustHaveUrl": "",
-    "processing": "",
-    "importing": "",
-    "errorsTitle": "",
-    "importAnother": "",
-    "failed_one": "",
-    "failed_few": "",
-    "failed_other": "",
-    "clickToUpload": "",
-    "errorParsing": ""
-  },
-  "editHistory": {
-    "close": "",
-    "failedLoad": "",
-    "currentVersion": "",
-    "previousVersion": "",
-    "title": "",
-    "editedAgo": "",
-    "noHistory": "",
-    "timeAgo": "",
-    "postedAgo": ""
-  },
-  "collectionDetail": {
-    "notFound": "",
-    "backLink": "",
-    "by": "",
-    "removeFromCollection": "",
-    "edit": "",
-    "deleteConfirm": "",
-    "delete": "",
-    "empty": "",
-    "removeConfirm": "",
-    "failedToLoad": "",
-    "viewInSemble": "Zobrazit na Semble"
+      "sexual": "Sexuální obsah",
+      "nudity": "Nahota",
+      "violence": "Násilí",
+      "gore": "Drastický obsah",
+      "spam": "Spam",
+      "misleading": "Manipulace"
+    }
   },
   "profileHoverCard": {
-    "notFound": "",
-    "viewProfile": ""
-  },
-  "externalLink": {
-    "cancel": "",
-    "alwaysAllow": "",
-    "message": "",
-    "open": "",
-    "title": ""
+    "viewProfile": "Zobrazit profil",
+    "notFound": "Profil nenalezen"
   },
   "replyList": {
-    "noReplies": ""
+    "noReplies": "Prozatím žádné odpovědi"
+  },
+  "shareMenu": {
+    "sembleIntegration": "Integrace se Semble",
+    "openOnSemble": "Otevřít na Semble",
+    "copySembleLink": "Kopírovat odkaz na Semble",
+    "copyLink": "Kopírovat odkaz",
+    "shareViaApp": "Sdílet přes aplikaci",
+    "copyUniversalLink": "Kopírovat univerzální odkaz",
+    "moreOptions": "Více možností…",
+    "copied": "Zkopírováno!"
+  },
+  "addToCollection": {
+    "title": "Přidat do složky",
+    "loading": "Načítám složky…",
+    "collectionNameLabel": "Název složky",
+    "namePlaceholder": "Moje složka",
+    "descriptionLabel": "Popisek (volitelně)",
+    "descriptionPlaceholder": "O čem by měla být tato složka?",
+    "iconLabel": "Ikona",
+    "iconsTab": "Ikony",
+    "emojisTab": "Emotikony",
+    "selected": "Vybráno:",
+    "back": "Zpátky",
+    "create": "Vytvořit",
+    "creating": "Vytvářím…",
+    "newCollectionButton": "Nová složka",
+    "createNewDescription": "Vytvořit novou složku",
+    "none": "Prozatím žádné složky",
+    "done": "Hotovo",
+    "failedLoad": "Složky se nepodařilo načíst",
+    "failedAdd": "Přidání do složky se nezdařilo",
+    "failedCreate": "Vytvoření složky se nezdařilo"
+  },
+  "editItem": {
+    "editAnnotation": "Upravit vpisek",
+    "editHighlight": "Upravit úryvek",
+    "editBookmark": "Upravit záložku",
+    "textLabel": "Text",
+    "textPlaceholder": "Napište svůj vpisek…",
+    "colorLabel": "Barva",
+    "tagsLabel": "Štítky",
+    "tagPlaceholder": "Přidat štítek…",
+    "contentWarning": "Upozornění na obsah",
+    "cancel": "Zrušit",
+    "save": "Uložit",
+    "saving": "Ukládám…",
+    "failedSave": "Změny se nepodařilo uložit. Zkuste to znova.",
+    "titleLabel": "Název",
+    "titlePlaceholder": "Název záložky",
+    "descriptionLabel": "Popisek",
+    "descriptionPlaceholder": "Volitelný popisek…"
+  },
+  "editCollection": {
+    "title": "Upravit složku",
+    "nameLabel": "Název složky",
+    "namePlaceholder": "Moje složka",
+    "descriptionLabel": "Popisek (volitelně)",
+    "descriptionPlaceholder": "O čem by měla být tato složka?",
+    "iconLabel": "Ikona",
+    "iconsTab": "Ikony",
+    "emojisTab": "Emotikony",
+    "selected": "Vybráno:",
+    "cancel": "Zrušit",
+    "save": "Uložit změny",
+    "saving": "Ukládám…",
+    "failedUpdate": "Složku se nepodařilo upravit",
+    "errorUpdating": "Při ukládání došlo k chybě"
+  },
+  "externalLink": {
+    "title": "Opouštíte Margin",
+    "message": "Chystáte se navštívit externí stránku.",
+    "alwaysAllow": "Vždy povolit odkazy na {{hostname}}",
+    "cancel": "Zrušit",
+    "open": "Otevřít odkaz"
+  },
+  "report": {
+    "submitted": "Hlášení odesláno",
+    "submittedMessage": "Děkujeme. Brzy se na to podíváme.",
+    "titleUser": "Nahlásit @{{handle}}",
+    "titleGeneric": "Nahlásit uživatele",
+    "reportingContent": "Nahlašujete konkrétní obsah",
+    "issueLabel": "V čem je problém?",
+    "cancel": "Zrušit",
+    "submit": "Odeslat hlášení",
+    "submitting": "Odesílám…",
+    "detailsPlaceholder": "Další podrobnosti (volitelně)",
+    "reasons": {
+      "spam": "Spam",
+      "ruleViolation": "Porušení pravidel",
+      "misleading": "Manipulace",
+      "rudeOrHarassing": "Hrubé nebo obtěžující",
+      "inappropriateContent": "Nevhodný obsah",
+      "other": "Jiné"
+    }
+  },
+  "editProfile": {
+    "title": "Upravit profil",
+    "avatarLabel": "Profilový obrázek",
+    "uploadButton": "Nahrát",
+    "uploading": "Nahrávám…",
+    "displayNameLabel": "Zobrazované jméno",
+    "bioLabel": "Bio",
+    "websiteLabel": "Web",
+    "linksLabel": "Odkazy",
+    "addLinkPlaceholder": "Přidat odkaz…",
+    "cancel": "Zrušit",
+    "save": "Uložit",
+    "saving": "Ukládám…",
+    "avatarTypeError": "Vyberte prosím obrázek ve formátu JPEG nebo PNG",
+    "avatarSizeError": "Obrázek musí být menší než 2 MB",
+    "avatarUploadError": "Nahrání se nezdařilo: {{message}}"
+  },
+  "iosShortcut": {
+    "title": "Ukládejte ze Safari na iOS",
+    "howTo": "Jak zkratku používat",
+    "step1Title": "Nainstalujte zkratku",
+    "step1Link": "Stáhnout zkratku iOS",
+    "step2Title": "Vygenerujte API klíč",
+    "step2Description": "Na této stránce nastavení vytvořte nový klíč a zkopírujte ho.",
+    "step3Title": "Nastavte zkratku",
+    "step3Description": "V aplikaci Zkratky klikněte na menu u zkratky Save to Margin a vložte svůj API klíč do akce Text hned pod úvodním komentářem.",
+    "step4Title": "Uložení stránky do záložek",
+    "step4Description": "Nevybírejte žádný text. V Safari klikněte na menu, stiskněte Sdílet a vyberte Save to Margin.",
+    "step5Title": "Podtržení textu",
+    "step5Description": "Vyberte text na stránce, klikněte na menu, stiskněte Sdílet a vyberte Save to Margin. Pole Note nechte prázdné.",
+    "step6Title": "Přidání vpisku",
+    "step6Description": "Vyberte text, sdílejte přes Save to Margin (z menu), do pole Note zadejte vlastní poznámku a stiskněte Done!",
+    "gotIt": "Rozumím"
+  },
+  "editHistory": {
+    "title": "Historie úprav",
+    "noHistory": "Žádná historie úprav nenalezena.",
+    "currentVersion": "Aktuální verze",
+    "previousVersion": "Předchozí verze",
+    "editedAgo": "Upraveno před {{time}}",
+    "postedAgo": "Vloženo před {{time}}",
+    "timeAgo": "před {{time}}",
+    "close": "Zavřít",
+    "failedLoad": "Historii úprav se nepodařilo načíst"
+  },
+  "settings": {
+    "title": "Nastavení",
+    "sections": {
+      "profile": "Profil",
+      "appearance": "Vzhled",
+      "language": "Jazyk",
+      "batchImport": "Hromadný import úryvků",
+      "apiKeys": "API klíče",
+      "moderation": "Moderace",
+      "contentFiltering": "Filtrování obsahu",
+      "iosShortcut": "Zkratka iOS"
+    },
+    "language": {
+      "label": "Jazyk rozhraní",
+      "description": "Vyberte jazyk rozhraní Marginu."
+    },
+    "appearance": {
+      "disableExternalLinkWarning": "Vypnout upozornění na externí odkazy",
+      "disableExternalLinkWarningDesc": "Při otevírání externích odkazů se neptat na potvrzení",
+      "communityBookmarks": "Sdílet záložky do komunitního feedu",
+      "communityBookmarksDesc": "Vaše uložené záložky se objeví v komunitním feedu záložek"
+    },
+    "batchImport": {
+      "description": "Nahrajte úryvky z CSV. Povinné: url, text. Volitelné: title, tags, color, created_at"
+    },
+    "apiKeys": {
+      "description": "Pro zkratku iOS a další aplikace",
+      "keyNamePlaceholder": "Název klíče, např. Zkratka iOS",
+      "generate": "Vygenerovat",
+      "copyNow": "Zkopírujte hned — už ho znova neuvidíte!",
+      "empty": "Prozatím žádné API klíče. Vytvořte si jeden pro použití s rozšířením prohlížeče.",
+      "created": "Vytvořeno {{date}}",
+      "revokeConfirm": "Zneplatnit tento klíč? Aplikace, které ho používají, přestanou fungovat."
+    },
+    "moderation": {
+      "description": "Spravujte zablokované a ztišené účty",
+      "blockedAccounts": "Zablokované účty ({{count}})",
+      "noBlocked": "Žádné zablokované účty",
+      "unblock": "Odblokovat",
+      "mutedAccounts": "Ztišené účty ({{count}})",
+      "noMuted": "Žádné ztišené účty",
+      "unmute": "Zrušit ztišení"
+    },
+    "contentFiltering": {
+      "description": "Odebírejte labelery a nastavte, jak se zobrazuje označený obsah",
+      "subscribedLabelers": "Odebíraní labeleři",
+      "noLabelers": "Žádní odebíraní labeleři",
+      "labelerDidPlaceholder": "did:plc:… (DID labeleru)",
+      "remove": "Odebrat",
+      "add": "Přidat",
+      "labelVisibility": "Viditelnost štítků",
+      "labelVisibilityDesc": "Vyberte, jak nakládat s každým typem štítku: Upozornit zobrazí rozostřený překryv, Skrýt obsah úplně odstraní, Ignorovat zobrazí obsah normálně.",
+      "warn": "Upozornit",
+      "hide": "Skrýt",
+      "ignore": "Ignorovat"
+    },
+    "iosShortcut": {
+      "description": "Ukládejte stránky do Marginu ze Safari na iPhonu a iPadu",
+      "setupButton": "Nastavit zkratku iOS"
+    },
+    "logout": "Odhlásit se"
+  },
+  "new": {
+    "signInRequired": "Pro vytvoření se přihlaste",
+    "needsAccount": "Potřebujete účet Bluesky",
+    "signInButton": "Přihlásit se přes Bluesky",
+    "composeTitle": "Vytvořit",
+    "composeTagline": "Podtrhněte pasáž, přidejte poznámku nebo anotujte stránku — vše odsud.",
+    "urlLabel": "URL k anotaci",
+    "urlPlaceholder": "https://example.com/article"
+  },
+  "annotationDetail": {
+    "back": "Zpátky",
+    "replies": "Odpovědi ({{count}})",
+    "replyingTo": "Odpovídáte na",
+    "replyPlaceholder": "Napište odpověď…",
+    "reply": "Odpovědět",
+    "signInToReply": "Pro odpověď se přihlaste",
+    "logIn": "Přihlásit se",
+    "notFound": "Nenalezeno",
+    "mayBeDeleted": "Tohle mohlo být smazáno.",
+    "backToFeed": "Zpět na feed",
+    "deleteReplyConfirm": "Smazat tuto odpověď?",
+    "failedReply": "Odpověď se nepodařilo vložit: {{message}}",
+    "failedDelete": "Smazání se nezdařilo: {{message}}",
+    "failedResolve": "Handle se nepodařilo načíst: {{message}}"
+  },
+  "urlPage": {
+    "title": "Anotace URL",
+    "description": "Zadejte URL a uvidíte všechny veřejné vpisky a úryvky od komunity Marginu.",
+    "urlPlaceholder": "https://example.com/article",
+    "view": "Zobrazit",
+    "myAnnotations": "Moje vpisky",
+    "share": "Sdílet",
+    "copied": "Zkopírováno!",
+    "contributor_one": "{{count}} přispěvatel",
+    "contributor_few": "{{count}} přispěvatelé",
+    "contributor_many": "{{count}} přispěvatele",
+    "contributor_other": "{{count}} přispěvatelů",
+    "loadingAnnotations": "Načítám vpisky…",
+    "blankCanvas": "Tato stránka je prázdné plátno",
+    "blankCanvasMessage": "Nikdo tady zatím nezanechal poznámky. Chcete být první? Stáhněte si rozšíření Margin a sdílejte, co máte na mysli.",
+    "tabs": {
+      "all": "Vše",
+      "annotations": "Vpisky",
+      "highlights": "Úryvky",
+      "bookmarks": "Záložky",
+      "collections": "Složky"
+    },
+    "noAnnotationsYet": "Prozatím žádné vpisky",
+    "noAnnotationsMessage": "Na tuto stránku nikdo nenapsal poznámku.",
+    "noHighlightsYet": "Prozatím žádné úryvky",
+    "noHighlightsMessage": "Z této stránky nikdo nepodtrhl pasáž.",
+    "loadMore": "Načíst další",
+    "loading": "Načítání…",
+    "failedLoadMore": "Načtení dalších se nezdařilo: {{message}}"
+  },
+  "userUrlPage": {
+    "on": "na",
+    "loadingAnnotations": "Načítám vpisky…",
+    "noUrl": "Nezadána žádná URL",
+    "noUrlMessage": "Zadejte prosím URL pro zobrazení vpisků.",
+    "noItems": "Žádné položky nenalezeny",
+    "noItemsMessage": "{{name}} tuto stránku zatím neanotoval*a.",
+    "noAnnotations": "Žádné vpisky",
+    "noHighlights": "Žádné úryvky",
+    "loadMore": "Načíst další",
+    "loading": "Načítání…",
+    "failedLoadMore": "Načtení dalších se nezdařilo: {{message}}"
+  },
+  "adminModeration": {
+    "accessDenied": "Přístup odepřen",
+    "accessDeniedMessage": "Nemáte oprávnění k přístupu do moderačního panelu.",
+    "title": "Moderace",
+    "stats": "{{pending}} čeká · {{total}} hlášení celkem",
+    "tabs": {
+      "reports": "Hlášení",
+      "actions": "Akce",
+      "labels": "Štítky"
+    },
+    "filters": {
+      "all": "Vše",
+      "pending": "Čeká",
+      "resolved": "Vyřešeno",
+      "dismissed": "Zamítnuto",
+      "escalated": "Eskalováno"
+    },
+    "reports": {
+      "empty": "Žádná hlášení",
+      "emptyPending": "Žádná čekající hlášení k posouzení.",
+      "emptyFiltered": "Žádná hlášení se stavem {{status}}.",
+      "reportedUser": "Nahlášený uživatel",
+      "reporter": "Nahlašující",
+      "details": "Podrobnosti",
+      "contentUri": "URI obsahu",
+      "acknowledge": "Vzít na vědomí",
+      "dismiss": "Zamítnout",
+      "takedown": "Odstranit"
+    },
+    "reasons": {
+      "spam": "Spam",
+      "violation": "Porušení pravidel",
+      "misleading": "Manipulace",
+      "sexual": "Nevhodné",
+      "rude": "Hrubé / obtěžující",
+      "other": "Jiné"
+    },
+    "actions": {
+      "applyWarning": "Přidat upozornění na obsah",
+      "applyWarningDesc": "Přidejte štítek s upozorněním na obsah ke konkrétnímu příspěvku nebo účtu. Uživatelé uvidí rozostřený překryv s možností obsah zobrazit.",
+      "accountDid": "DID účtu",
+      "contentUri": "URI obsahu",
+      "contentUriOptional": "volitelné — pro štítek na úrovni účtu nechte prázdné",
+      "labelType": "Typ štítku",
+      "applyLabel": "Přidat štítek",
+      "labelApplied": "Štítek přidán"
+    },
+    "labels": {
+      "empty": "Žádné štítky",
+      "emptyMessage": "Prozatím nebyly přidány žádné štítky obsahu.",
+      "accountLevel": "Štítek na úrovni účtu",
+      "removeConfirm": "Odebrat tento štítek?",
+      "removeTitle": "Odebrat štítek"
+    }
+  },
+  "highlightImporter": {
+    "clickToUpload": "Klikněte pro nahrání CSV",
+    "processing": "Zpracovávám…",
+    "requiredColumns": "Povinné sloupce: url, text | Volitelné: title, tags, color, created_at",
+    "downloadTemplate": "Stáhnout šablonu",
+    "importProgress": "Průběh importu",
+    "complete": "{{rate}} % hotovo",
+    "failed_one": "{{count}} se nezdařil",
+    "failed_few": "{{count}} se nezdařily",
+    "failed_many": "{{count}} se nezdařilo",
+    "failed_other": "{{count}} se nezdařilo",
+    "importing": "Importuji úryvky…",
+    "success": "Úspěšně naimportováno {{count}} úryvků!",
+    "errorsTitle": "{{count}} chyb během importu",
+    "row": "Řádek {{row}}: {{error}}",
+    "moreErrors": "+{{count}} dalších chyb",
+    "importAnother": "Importovat další soubor",
+    "noHighlights": "V CSV nebyly nalezeny žádné platné úryvky",
+    "csvMustHaveUrl": "CSV musí mít sloupec „url“",
+    "csvMustHaveText": "CSV musí mít sloupec „text“ (odpovídá také: highlight, excerpt)",
+    "errorParsing": "Chyba při zpracování CSV: {{message}}"
+  },
+  "common": {
+    "loading": "Načítání…",
+    "cancel": "Zrušit",
+    "save": "Uložit",
+    "close": "Zavřít",
+    "back": "Zpátky",
+    "continue": "Pokračovat",
+    "error": "Chyba",
+    "retry": "Zkusit znova",
+    "loadMore": "Načíst další",
+    "new": "Nové"
+  },
+  "about": {
+    "nav": {
+      "getExtension": "Stáhnout rozšíření",
+      "install": "Nainstalovat"
+    },
+    "hero": {
+      "openSource": "Kompletně open source",
+      "headline": "Pište poznámky na okraj",
+      "headlineAccent": "celého internetu.",
+      "descriptionPre": "Margin je otevřená poznámková vrstva internetu. Podtrhávejte si, pište poznámky pro sebe nebo ostatní a ukládejte si stránky do oblíbených. Všechno decentralizovaně uložené na síti",
+      "atProtocol": "AT Protocol",
+      "descriptionPost": ". Ne u jednoho poskytovatele.",
+      "openApp": "Otevřít aplikaci",
+      "getStarted": "Pustit se do toho",
+      "installFor": "Rozšíření pro {{browser}}"
+    },
+    "features": {
+      "title": "Vše, co potřebujete k zapojení do webu",
+      "subtitle": "Víc než jen záložky. Kompletní sada nástrojů pro čtení, přemýšlení a sdílení na otevřeném webu.",
+      "annotations": {
+        "title": "Poznámky",
+        "description": "Zanechávejte poznámky na libovolné webové stránce. Začínejte diskuze, sdílejte postřehy nebo si jen zapisujte myšlenky na později."
+      },
+      "highlights": {
+        "title": "Výňatky",
+        "description": "Vybírejte a podtrhávejte text na libovolné stránce ve vlastních barvách. Vaše úryvky se vykreslují přímo na stránce přes CSS Highlights API."
+      },
+      "bookmarks": {
+        "title": "Oblíbené",
+        "description": "Ukládejte stránky jedním kliknutím nebo klávesovou zkratkou. Všechny Vaše záložky se synchronizují s Vaší identitou na AT Protocol."
+      },
+      "collections": {
+        "title": "Složky",
+        "description": "Uspořádejte si vpisky, úryvky a záložky do tematických složek. Sdílejte je veřejně nebo si je nechte soukromé."
+      },
+      "socialDiscovery": {
+        "title": "Sociální objevování",
+        "description": "Uvidíte, co o navštívených stránkách říkají ostatní. Objevujte vpisky, populární štítky a propojte se s dalšími čtenáři."
+      },
+      "tagsSearch": {
+        "title": "Štítky & Vyhledávání",
+        "description": "Označujte své vpisky štítky pro snadné dohledání. Vyhledávejte podle URL, štítku nebo obsahu a najděte přesně to, co hledáte."
+      }
+    },
+    "extension": {
+      "badge": "Rozšíření prohlížeče",
+      "title": "Vaše sada anotačních nástrojů",
+      "titleLine2": "přímo v prohlížeči",
+      "description": "Rozšíření Margin přináší kompletní anotační zážitek přímo na každou stránku, kterou navštívíte. Stačí vybrat, anotovat a pokračovat.",
+      "iosShortcut": "Zkratka iOS",
+      "features": {
+        "inlineOverlay": {
+          "title": "Překryv na stránce",
+          "description": "Vpisky a úryvky se vykreslují přímo na stránce. Využívá CSS Highlights API pro krásná, přirozeně působící podtržení textu."
+        },
+        "contextMenu": {
+          "title": "Kontextové menu a výběr",
+          "description": "Klikněte pravým tlačítkem na libovolný výběr a anotujte ho nebo podtrhněte. Klikněte pravým tlačítkem kdekoli na stránce a uložte ji do záložek z podmenu Margin."
+        },
+        "keyboard": {
+          "title": "Klávesové zkratky",
+          "description": "Přepněte překryv, uložte aktuální stránku do záložek nebo anotujte vybraný text, aniž byste sáhli po myši."
+        },
+        "sidePanel": {
+          "title": "Boční panel",
+          "description": "Otevřete boční panel Margin a procházejte vpisky, záložky a složky, aniž byste opustili stránku, kterou čtete."
+        }
+      }
+    },
+    "protocol": {
+      "badge": "Decentralizováno",
+      "title": "Vaše data, vaše identita",
+      "descriptionPre": "Margin je vystavěn na",
+      "descriptionPost": ", otevřeném protokolu, na kterém stojí aplikace jako Bluesky. Vaše poznámky, výňatky a oblíbené položky (záložky) jsou bezpečně uloženy ve Vašem vlastním prostoru PDS, ne u jednoho poskytovatele.",
+      "point0": "Nevytvářejte si nový účet, přihlašte se přes AT Protocol handle",
+      "point1": "Všechna data jsou uložena ve Vámi zvoleném prostoru PDS",
+      "point2": "Vlastní schémata Lexicon pro vpisky, úryvky, složky a další",
+      "point3": "Kompletně open source — podívejte se na kód a přispějte"
+    },
+    "cta": {
+      "title": "Začněte psát pod čarou",
+      "description": "Připojte se k otevřené poznámkové vrstvě. Přihlašte se svou identitou na AT Protocol a nainstalujte rozšíření, abyste mohli začít.",
+      "signIn": "Přihlásit se",
+      "viewGitHub": "GitHub",
+      "viewTangled": "Tangled"
+    },
+    "footer": {
+      "privacy": "Soukromí",
+      "terms": "Podmínky",
+      "contact": "Kontakt"
+    },
+    "landing": {
+      "hero": {
+        "headPart1": "Pište na",
+        "headMargins": "okraj",
+        "headPart2": "celého",
+        "headInternet": "internetu",
+        "headEnd": ".",
+        "lede": "Margin je otevřená poznámková vrstva webu. Podtrhávejte, zanechávejte poznámky a ukládejte do záložek libovolnou stránku; vše uložené na Vaší vlastní identitě na AT Protocol, ne v cizí databázi."
+      },
+      "demo": {
+        "eyebrow": "Jaké to je",
+        "card1Caption": "Podtrhněte si ve své oblíbené barvě. Podtržení se vykresluje přímo na stránce přes CSS Highlights API; nic nepřepisuje DOM stránky.",
+        "card1Sample": "Margin nechá pomíjivé čtenáře webu zanechat stopu.",
+        "card1Mark": "pomíjivé čtenáře",
+        "card2Caption": "Připněte poznámku k výběru. Ukotví se k přesnému textu, ne ke křehkému posunu znaků, takže přežije i změny rozvržení.",
+        "card2Sample": "Poznámka na okraji je rozhovor s Vaším budoucím já.",
+        "card2Mark": "rozhovor s Vaším budoucím já",
+        "card3Caption": "Uložte do záložek jedním stiskem klávesy nebo pravým kliknutím. Synchronizováno do Vašeho repozitáře na AT Protocol spolu se vším ostatním.",
+        "card3Url": "essays.example.com/marginalia",
+        "card3Saved": "Uloženo"
+      },
+      "capabilities": {
+        "heading": "Co je uvnitř",
+        "subheading": "Kompletní sada tahů, které Vám Margin dává na libovolné stránce."
+      },
+      "protocol": {
+        "heading": "Postaveno na protokolu, ne na platformě",
+        "lede": "Margin běží na AT Protocol, stejné síti, na které stojí Bluesky. Vaše vpisky žijí ve Vašem Personal Data Serveru jako veřejné záznamy a jakákoli aplikace, která mluví lexiconem, je může číst nebo na nich stavět.",
+        "viewLexicon": "Zobrazit lexicon"
+      },
+      "install": {
+        "lede": "Nainstalovat pro",
+        "or": "nebo si pořiďte"
+      },
+      "closer": {
+        "line": "Web se čte lépe s poznámkami na okraji.",
+        "signIn": "Přihlaste se svým handle",
+        "open": "Otevřít Margin"
+      }
+    }
   }
 }

@@ -5,7 +5,9 @@
     "discover": "Descobrir",
     "annotations": "Anotações",
     "highlights": "Destaques",
+    "bookmarks": "Favoritos",
     "collections": "Coleções",
+    "activity": "Atividade",
     "settings": "Configurações",
     "new": "Novo",
     "signIn": "Entrar",
@@ -16,6 +18,7 @@
   },
   "pageTitles": {
     "home": "Página Inicial — Margin",
+    "bookmarks": "Favoritos — Margin",
     "highlights": "Destaques — Margin",
     "annotations": "Anotações — Margin",
     "discover": "Descobrir — Margin",
@@ -23,10 +26,792 @@
     "notifications": "Notificações — Margin",
     "new": "Nova Anotação — Margin",
     "settings": "Configurações — Margin",
-    "collections": "Coleções — Margin"
+    "collections": "Coleções — Margin",
+    "admin": "Admin — Margin"
   },
   "sidebar": {
     "getExtension": "Obter a Extensão",
-    "extensionTagline": "Destaque, anote e salve a partir de qualquer página."
+    "extensionTagline": "Destaque, anote e salve a partir de qualquer página.",
+    "downloadForFirefox": "Baixar para Firefox",
+    "downloadForEdge": "Baixar para Edge",
+    "downloadForSafari": "Baixar para Safari",
+    "downloadForChrome": "Baixar para Chrome",
+    "trending": "Em alta",
+    "nothingTrending": "Nada em alta no momento.",
+    "searchPlaceholder": "Buscar pessoas, tags, URLs…",
+    "copyright": "© 2026 Padding Labs LLC",
+    "postCount_one": "{{count}} publicação",
+    "postCount_many": "{{count}} de publicações",
+    "postCount_other": "{{count}} publicações"
+  },
+  "mobileNav": {
+    "iosShortcut": "Atalho do iOS"
+  },
+  "feed": {
+    "welcome": "Bem-vindo ao Margin",
+    "welcomeTagline": "Um lugar tranquilo para anotar, destacar e salvar o que você lê na web.",
+    "getStarted": "Começar",
+    "learnMore": "Saiba mais",
+    "tabs": {
+      "recent": "Recentes",
+      "popular": "Populares",
+      "shelved": "Salvos",
+      "margin": "Margin",
+      "semble": "Semble"
+    },
+    "filters": {
+      "all": "Todos",
+      "annotations": "Anotações",
+      "highlights": "Destaques",
+      "bookmarks": "Favoritos"
+    },
+    "itemsWithTag": "Itens com a tag:",
+    "clearFilter": "Limpar filtro",
+    "everyone": "Todos",
+    "mine": "Meus",
+    "defaultEmptyMessage": "Nada por aqui ainda — anotações suas e das pessoas que você segue aparecerão aqui.",
+    "nothingHereYet": "Nada por aqui ainda",
+    "loading": "Carregando…"
+  },
+  "discover": {
+    "tabs": {
+      "new": "Novos",
+      "popular": "Populares",
+      "forYou": "Para Você"
+    },
+    "comingSoon": "Em breve",
+    "forYouNotAvailable": "Recomendações personalizadas ainda não estão disponíveis neste servidor.",
+    "noDocumentsYet": "Nenhum documento foi descoberto ainda. Volte em breve!",
+    "startAnnotating": "Comece a anotar e destacar para receber recomendações personalizadas.",
+    "loadMore": "Carregar mais"
+  },
+  "search": {
+    "placeholder": "Buscar anotações, destaques, favoritos…",
+    "noResults": "Nenhum resultado encontrado",
+    "noResultsMessage": "Nada corresponde a \"{{query}}\". Tente outras palavras-chave.",
+    "emptyTitle": "Busque na sua biblioteca",
+    "emptyMessage": "Encontre anotações, destaques e favoritos por palavra-chave, URL ou tag.",
+    "filters": {
+      "all": "Todos",
+      "annotations": "Anotações",
+      "highlights": "Destaques",
+      "bookmarks": "Favoritos",
+      "mine": "Meus"
+    },
+    "resultCount": "{{count}}{{hasMore}} resultados para \"{{query}}\"",
+    "loadMore": "Carregar mais"
+  },
+  "notifications": {
+    "title": "Atividade",
+    "noActivity": "Nenhuma atividade ainda",
+    "noActivityMessage": "Interações com o seu conteúdo aparecerão aqui.",
+    "likedAnnotation": "curtiu sua anotação",
+    "likedHighlight": "curtiu seu destaque",
+    "likedBookmark": "curtiu seu favorito",
+    "likedReply": "curtiu sua resposta",
+    "likedPost": "curtiu sua publicação",
+    "repliedToReply": "respondeu à sua resposta",
+    "repliedToAnnotation": "respondeu à sua anotação",
+    "mentionedInAnnotation": "mencionou você em uma anotação",
+    "followedYou": "começou a seguir você",
+    "highlightedPage": "destacou sua página",
+    "inReplyTo": "em resposta a",
+    "aReply": "uma resposta",
+    "anAnnotation": "uma anotação"
+  },
+  "collections": {
+    "title": "Coleções",
+    "subtitle": "Organize suas anotações e destaques",
+    "none": "Nenhuma coleção ainda",
+    "noneMessage": "Crie uma coleção para organizar seus destaques e anotações.",
+    "createButton": "Criar coleção",
+    "newTitle": "Nova Coleção",
+    "editTitle": "Editar Coleção",
+    "namePlaceholder": "Minha Coleção",
+    "namePlaceholderEdit": "Nome da coleção",
+    "nameLabel": "Nome",
+    "iconLabel": "Ícone",
+    "iconsTab": "Ícones",
+    "emojisTab": "Emojis",
+    "selectedIcon": "Selecionado:",
+    "descriptionLabel": "Descrição (opcional)",
+    "descriptionPlaceholder": "Para que serve esta coleção?",
+    "descriptionPlaceholderEdit": "Sobre o que é esta coleção?",
+    "cancel": "Cancelar",
+    "create": "Criar Coleção",
+    "creating": "Criando…",
+    "save": "Salvar Alterações",
+    "saving": "Salvando…",
+    "deleteConfirm": "Excluir esta coleção?",
+    "failedUpdate": "Falha ao atualizar a coleção",
+    "errorUpdating": "Ocorreu um erro ao atualizar",
+    "itemCount_one": "{{count}} item",
+    "itemCount_many": "{{count}} de itens",
+    "itemCount_other": "{{count}} itens"
+  },
+  "collectionDetail": {
+    "backLink": "Coleções",
+    "by": "por",
+    "edit": "Editar coleção",
+    "delete": "Excluir coleção",
+    "removeFromCollection": "Remover da coleção",
+    "viewInSemble": "Ver no Semble",
+    "empty": "A coleção está vazia",
+    "notFound": "Coleção não encontrada",
+    "failedToLoad": "Falha ao carregar a coleção",
+    "deleteConfirm": "Excluir esta coleção?",
+    "removeConfirm": "Remover da coleção?"
+  },
+  "profile": {
+    "notFound": "Usuário não encontrado",
+    "notFoundMessage": "Este perfil não existe ou não pôde ser carregado.",
+    "edit": "Editar",
+    "viewInBluesky": "Ver perfil no Bluesky",
+    "unblock": "Desbloquear @{{handle}}",
+    "block": "Bloquear @{{handle}}",
+    "unmute": "Reativar @{{handle}}",
+    "mute": "Silenciar @{{handle}}",
+    "report": "Denunciar",
+    "accountLabeled": "Conta rotulada: {{description}}",
+    "labelApplied": "Este rótulo foi aplicado por um serviço de moderação que você assina.",
+    "show": "Mostrar",
+    "hide": "Ocultar",
+    "blockedBanner": "Você bloqueou @{{handle}}",
+    "blockedMessage": "O conteúdo dessa pessoa está oculto dos seus feeds.",
+    "mutedBanner": "Você silenciou @{{handle}}",
+    "mutedMessage": "O conteúdo dessa pessoa está oculto dos seus feeds.",
+    "blockedByBanner": "@{{handle}} bloqueou você. Você não pode interagir com o conteúdo dessa pessoa.",
+    "unblock_action": "Desbloquear",
+    "unmute_action": "Reativar",
+    "emptyCollectionsOwn": "Você ainda não criou nenhuma coleção.",
+    "emptyCollectionsOther": "Nenhuma coleção",
+    "itemCount_one": "{{count}} item",
+    "itemCount_many": "{{count}} de itens",
+    "itemCount_other": "{{count}} itens",
+    "emptyTabOwn": "Seus {{tab}} aparecerão aqui.",
+    "emptyTabOther": "Nada para ver aqui ainda."
+  },
+  "login": {
+    "signInWith": "Entre com seu",
+    "handleSuffix": "identificador",
+    "handlePlaceholder": "handle.margin.cafe",
+    "connecting": "Conectando…",
+    "continue": "Continuar",
+    "createAccount": "Criar Nova Conta",
+    "or": "ou",
+    "termsPrefix": "Ao entrar, você concorda com nossos",
+    "termsLink": "Termos de Serviço",
+    "termsAnd": "e",
+    "privacyLink": "Política de Privacidade",
+    "bannedTitle": "Sua conta foi suspensa",
+    "bannedMessage": "Esta conta foi suspensa do Margin e não pode mais entrar.",
+    "bannedAppeal": "Se você acredita que isso é um erro, pode recorrer enviando um e-mail para",
+    "bannedSignOut": "Sair"
+  },
+  "signUp": {
+    "title": "Crie sua conta",
+    "subtitle": "O Margin segue o",
+    "atProtocol": "AT Protocol",
+    "subtitleSuffix": ". Escolha um provedor para hospedar sua conta.",
+    "customPdsTitle": "Usar um PDS personalizado",
+    "customPdsSubtitle": "Insira o endereço do PDS que hospeda sua conta.",
+    "pdsAddressLabel": "Endereço do PDS",
+    "pdsAddressPlaceholder": "pds.example.com",
+    "connecting": "Conectando…",
+    "back": "Voltar",
+    "continue": "Continuar",
+    "invite": "Convite",
+    "moreOptions": "Mais opções",
+    "atmosphereNote": "Já tem uma conta na atmosphere? Basta entrar!",
+    "providerError": "Não foi possível conectar a este provedor. Tente novamente.",
+    "customPdsError": "Não foi possível conectar a esse PDS. Verifique o endereço.",
+    "providers": {
+      "margin": {
+        "name": "Margin",
+        "description": "A maneira mais fácil de começar"
+      },
+      "bluesky": {
+        "name": "Bluesky",
+        "description": "A maior comunidade da Atmosphere"
+      },
+      "blacksky": {
+        "name": "Blacksky",
+        "description": "Uma comunidade de propriedade negra"
+      },
+      "eurosky": {
+        "name": "Eurosky",
+        "description": "Seu lar europeu na Atmosphere"
+      },
+      "selfhostedSocial": {
+        "name": "selfhosted.social",
+        "description": "Um lar para criadores, entusiastas e curiosos"
+      },
+      "northsky": {
+        "name": "Northsky",
+        "description": "Uma instância canadense de propriedade queer"
+      },
+      "tophhie": {
+        "name": "Tophhie",
+        "description": "Uma comunidade britânica"
+      },
+      "customPds": {
+        "name": "Usar um PDS personalizado",
+        "description": "Já tem um PDS? Insira o endereço dele."
+      }
+    }
+  },
+  "composer": {
+    "newHighlight": "Novo destaque",
+    "newAnnotation": "Nova anotação",
+    "newNote": "Nova nota",
+    "saveHighlight": "Salvar destaque",
+    "postAnnotation": "Publicar anotação",
+    "postNote": "Publicar nota",
+    "highlightHint": "Salvando um trecho sem comentário. Adicione um texto abaixo para transformá-lo em uma anotação.",
+    "addQuote": "+ Adicionar uma citação da página",
+    "quotePlaceholder": "Cole ou digite o texto que você está anotando…",
+    "removeQuote": "Remover Citação",
+    "thoughtsPlaceholder": "Adicione suas reflexões sobre este trecho…",
+    "mindPlaceholder": "No que você está pensando?",
+    "tagsPlaceholder": "Adicionar tags…",
+    "contentWarning": "Aviso de Conteúdo",
+    "contentWarningCount": "Aviso de Conteúdo ({{count}})",
+    "cancel": "Cancelar",
+    "failedToPost": "Falha ao publicar",
+    "labels": {
+      "sexual": "Sexual",
+      "nudity": "Nudez",
+      "violence": "Violência",
+      "gore": "Conteúdo Gráfico",
+      "spam": "Spam",
+      "misleading": "Enganoso"
+    }
+  },
+  "card": {
+    "addedTo": "Adicionado a",
+    "addedToLower": "adicionado a",
+    "and": "e",
+    "communityBookmark": "Favorito da comunidade",
+    "lichenBookmark": "Favorito do Lichen",
+    "openInSemble": "Abrir no Semble",
+    "deleteConfirm": "Excluir este item?",
+    "hideContent": "Ocultar Conteúdo",
+    "show": "Mostrar",
+    "edited": "(editado)",
+    "annotate": "Anotar",
+    "untitledBookmark": "Favorito Sem Título",
+    "addNotePlaceholder": "Adicione sua nota para converter este destaque em uma anotação…",
+    "addToCollectionTitle": "Adicionar à Coleção",
+    "annotateTitle": "Anotar este destaque",
+    "editTitle": "Editar",
+    "deleteTitle": "Excluir",
+    "report": "Denunciar",
+    "muteUser": "Silenciar @{{handle}}",
+    "blockUser": "Bloquear @{{handle}}",
+    "convertToAnnotation": "Converter em anotação",
+    "justNow": "agora mesmo",
+    "labelDescriptions": {
+      "sexual": "Conteúdo Sexual",
+      "nudity": "Nudez",
+      "violence": "Violência",
+      "gore": "Conteúdo Gráfico",
+      "spam": "Spam",
+      "misleading": "Enganoso"
+    }
+  },
+  "profileHoverCard": {
+    "viewProfile": "Ver Perfil",
+    "notFound": "Perfil não encontrado"
+  },
+  "replyList": {
+    "noReplies": "Nenhuma resposta ainda"
+  },
+  "shareMenu": {
+    "sembleIntegration": "Integração com Semble",
+    "openOnSemble": "Abrir no Semble",
+    "copySembleLink": "Copiar Link do Semble",
+    "copyLink": "Copiar Link",
+    "shareViaApp": "Compartilhar via App",
+    "copyUniversalLink": "Copiar Link Universal",
+    "moreOptions": "Mais Opções…",
+    "copied": "Copiado!"
+  },
+  "addToCollection": {
+    "title": "Adicionar à Coleção",
+    "loading": "Carregando coleções…",
+    "collectionNameLabel": "Nome da coleção",
+    "namePlaceholder": "Minha Coleção",
+    "descriptionLabel": "Descrição (opcional)",
+    "descriptionPlaceholder": "Sobre o que é esta coleção?",
+    "iconLabel": "Ícone",
+    "iconsTab": "Ícones",
+    "emojisTab": "Emojis",
+    "selected": "Selecionado:",
+    "back": "Voltar",
+    "create": "Criar",
+    "creating": "Criando…",
+    "newCollectionButton": "Nova Coleção",
+    "createNewDescription": "Criar uma nova coleção",
+    "none": "Nenhuma coleção ainda",
+    "done": "Concluído",
+    "failedLoad": "Falha ao carregar as coleções",
+    "failedAdd": "Falha ao adicionar à coleção",
+    "failedCreate": "Falha ao criar a coleção"
+  },
+  "editItem": {
+    "editAnnotation": "Editar Anotação",
+    "editHighlight": "Editar Destaque",
+    "editBookmark": "Editar Favorito",
+    "textLabel": "Texto",
+    "textPlaceholder": "Escreva sua anotação…",
+    "colorLabel": "Cor",
+    "tagsLabel": "Tags",
+    "tagPlaceholder": "Adicionar uma tag…",
+    "contentWarning": "Aviso de Conteúdo",
+    "cancel": "Cancelar",
+    "save": "Salvar",
+    "saving": "Salvando…",
+    "failedSave": "Falha ao salvar as alterações. Tente novamente.",
+    "titleLabel": "Título",
+    "titlePlaceholder": "Título do favorito",
+    "descriptionLabel": "Descrição",
+    "descriptionPlaceholder": "Descrição opcional…"
+  },
+  "editCollection": {
+    "title": "Editar Coleção",
+    "nameLabel": "Nome da coleção",
+    "namePlaceholder": "Minha Coleção",
+    "descriptionLabel": "Descrição (opcional)",
+    "descriptionPlaceholder": "Sobre o que é esta coleção?",
+    "iconLabel": "Ícone",
+    "iconsTab": "Ícones",
+    "emojisTab": "Emojis",
+    "selected": "Selecionado:",
+    "cancel": "Cancelar",
+    "save": "Salvar Alterações",
+    "saving": "Salvando…",
+    "failedUpdate": "Falha ao atualizar a coleção",
+    "errorUpdating": "Ocorreu um erro ao atualizar"
+  },
+  "externalLink": {
+    "title": "Saindo do Margin",
+    "message": "Você está prestes a visitar um site externo.",
+    "alwaysAllow": "Sempre permitir links para {{hostname}}",
+    "cancel": "Cancelar",
+    "open": "Abrir Link"
+  },
+  "report": {
+    "submitted": "Denúncia enviada",
+    "submittedMessage": "Obrigado. Vamos analisar isso em breve.",
+    "titleUser": "Denunciar @{{handle}}",
+    "titleGeneric": "Denunciar usuário",
+    "reportingContent": "Denunciando conteúdo específico",
+    "issueLabel": "Qual é o problema?",
+    "cancel": "Cancelar",
+    "submit": "Enviar Denúncia",
+    "submitting": "Enviando…",
+    "detailsPlaceholder": "Detalhes adicionais (opcional)",
+    "reasons": {
+      "spam": "Spam",
+      "ruleViolation": "Violação de regra",
+      "misleading": "Enganoso",
+      "rudeOrHarassing": "Rude ou abusivo",
+      "inappropriateContent": "Conteúdo inadequado",
+      "other": "Outro"
+    }
+  },
+  "editProfile": {
+    "title": "Editar Perfil",
+    "avatarLabel": "Avatar",
+    "uploadButton": "Enviar",
+    "uploading": "Enviando…",
+    "displayNameLabel": "Nome de Exibição",
+    "bioLabel": "Bio",
+    "websiteLabel": "Site",
+    "linksLabel": "Links",
+    "addLinkPlaceholder": "Adicionar um link…",
+    "cancel": "Cancelar",
+    "save": "Salvar",
+    "saving": "Salvando…",
+    "avatarTypeError": "Selecione uma imagem JPEG ou PNG",
+    "avatarSizeError": "A imagem deve ter menos de 2MB",
+    "avatarUploadError": "Falha ao enviar: {{message}}"
+  },
+  "iosShortcut": {
+    "title": "Salvar a partir do Safari no iOS",
+    "howTo": "Como usar o atalho",
+    "step1Title": "Instale o atalho",
+    "step1Link": "Obter Atalho do iOS",
+    "step2Title": "Gere uma Chave de API",
+    "step2Description": "Crie uma nova chave nesta página de configurações e copie-a.",
+    "step3Title": "Configure o atalho",
+    "step3Description": "No app Atalhos, clique no menu do atalho Salvar no Margin e cole sua chave de API na ação Texto logo abaixo do comentário de configuração.",
+    "step4Title": "Para salvar uma página nos favoritos",
+    "step4Description": "Não selecione nenhum texto. Clique no menu do Safari, toque em Compartilhar e selecione Salvar no Margin.",
+    "step5Title": "Para destacar um texto",
+    "step5Description": "Selecione o texto na página, clique no menu, toque em Compartilhar e selecione Salvar no Margin. Deixe o campo Nota em branco.",
+    "step6Title": "Para adicionar uma anotação",
+    "step6Description": "Selecione o texto, compartilhe com Salvar no Margin (pelo menu), digite sua nota personalizada no campo Nota e toque em Concluído!",
+    "gotIt": "Entendi"
+  },
+  "editHistory": {
+    "title": "Histórico de Edições",
+    "noHistory": "Nenhum histórico de edições encontrado.",
+    "currentVersion": "Versão Atual",
+    "previousVersion": "Versão Anterior",
+    "editedAgo": "Editado há {{time}}",
+    "postedAgo": "Publicado há {{time}}",
+    "timeAgo": "há {{time}}",
+    "close": "Fechar",
+    "failedLoad": "Falha ao carregar o histórico de edições"
+  },
+  "settings": {
+    "title": "Configurações",
+    "sections": {
+      "profile": "Perfil",
+      "appearance": "Aparência",
+      "language": "Idioma",
+      "batchImport": "Importação em Lote de Destaques",
+      "apiKeys": "Chaves de API",
+      "moderation": "Moderação",
+      "contentFiltering": "Filtragem de Conteúdo",
+      "iosShortcut": "Atalho do iOS"
+    },
+    "language": {
+      "label": "Idioma da Interface",
+      "description": "Escolha o idioma da interface do Margin."
+    },
+    "appearance": {
+      "disableExternalLinkWarning": "Desativar aviso de link externo",
+      "disableExternalLinkWarningDesc": "Não pedir confirmação ao abrir links externos",
+      "communityBookmarks": "Compartilhar favoritos no feed da comunidade",
+      "communityBookmarksDesc": "Seus favoritos salvos aparecerão no feed de favoritos da comunidade"
+    },
+    "batchImport": {
+      "description": "Envie destaques a partir de um CSV. Obrigatórios: url, text. Opcionais: title, tags, color, created_at"
+    },
+    "apiKeys": {
+      "description": "Para o atalho do iOS e outros apps",
+      "keyNamePlaceholder": "Nome da chave, ex.: Atalho do iOS",
+      "generate": "Gerar",
+      "copyNow": "Copie agora - você não verá isto novamente!",
+      "empty": "Nenhuma chave de API ainda. Crie uma para usar com a extensão do navegador.",
+      "created": "Criada em {{date}}",
+      "revokeConfirm": "Revogar esta chave? Os apps que a utilizam deixarão de funcionar."
+    },
+    "moderation": {
+      "description": "Gerencie contas bloqueadas e silenciadas",
+      "blockedAccounts": "Contas bloqueadas ({{count}})",
+      "noBlocked": "Nenhuma conta bloqueada",
+      "unblock": "Desbloquear",
+      "mutedAccounts": "Contas silenciadas ({{count}})",
+      "noMuted": "Nenhuma conta silenciada",
+      "unmute": "Reativar"
+    },
+    "contentFiltering": {
+      "description": "Assine rotuladores e configure como o conteúdo rotulado aparece",
+      "subscribedLabelers": "Rotuladores Assinados",
+      "noLabelers": "Nenhum rotulador assinado",
+      "labelerDidPlaceholder": "did:plc:… (DID do rotulador)",
+      "remove": "Remover",
+      "add": "Adicionar",
+      "labelVisibility": "Visibilidade dos Rótulos",
+      "labelVisibilityDesc": "Escolha como tratar cada tipo de rótulo: Avisar mostra uma sobreposição borrada, Ocultar remove o conteúdo por completo, Ignorar mostra o conteúdo normalmente.",
+      "warn": "Avisar",
+      "hide": "Ocultar",
+      "ignore": "Ignorar"
+    },
+    "iosShortcut": {
+      "description": "Salve páginas no Margin a partir do Safari no iPhone e iPad",
+      "setupButton": "Configurar Atalho do iOS"
+    },
+    "logout": "Sair"
+  },
+  "new": {
+    "signInRequired": "Entre para criar",
+    "needsAccount": "Você precisa de uma conta no Bluesky",
+    "signInButton": "Entrar com o Bluesky",
+    "composeTitle": "Compor",
+    "composeTagline": "Destaque um trecho, deixe uma nota ou anote uma página — tudo a partir daqui.",
+    "urlLabel": "URL para anotar",
+    "urlPlaceholder": "https://example.com/article"
+  },
+  "annotationDetail": {
+    "back": "Voltar",
+    "replies": "Respostas ({{count}})",
+    "replyingTo": "Respondendo a",
+    "replyPlaceholder": "Escreva uma resposta…",
+    "reply": "Responder",
+    "signInToReply": "Entre para responder",
+    "logIn": "Entrar",
+    "notFound": "Não encontrado",
+    "mayBeDeleted": "Isto pode ter sido excluído.",
+    "backToFeed": "Voltar ao Feed",
+    "deleteReplyConfirm": "Excluir esta resposta?",
+    "failedReply": "Falha ao publicar a resposta: {{message}}",
+    "failedDelete": "Falha ao excluir: {{message}}",
+    "failedResolve": "Falha ao resolver o identificador: {{message}}"
+  },
+  "urlPage": {
+    "title": "Anotações da URL",
+    "description": "Insira uma URL para ver todas as anotações e destaques públicos da comunidade Margin.",
+    "urlPlaceholder": "https://example.com/article",
+    "view": "Ver",
+    "myAnnotations": "Minhas Anotações",
+    "share": "Compartilhar",
+    "copied": "Copiado!",
+    "contributor_one": "{{count}} colaborador",
+    "contributor_many": "{{count}} de colaboradores",
+    "contributor_other": "{{count}} colaboradores",
+    "loadingAnnotations": "Carregando anotações…",
+    "blankCanvas": "Esta página é uma tela em branco",
+    "blankCanvasMessage": "Ninguém deixou notas aqui ainda. Quer ser o primeiro? Pegue a extensão do Margin e compartilhe o que você está pensando.",
+    "tabs": {
+      "all": "Todos",
+      "annotations": "Anotações",
+      "highlights": "Destaques",
+      "bookmarks": "Favoritos",
+      "collections": "Coleções"
+    },
+    "noAnnotationsYet": "Nenhuma anotação ainda",
+    "noAnnotationsMessage": "Ninguém deixou uma nota escrita nesta página.",
+    "noHighlightsYet": "Nenhum destaque ainda",
+    "noHighlightsMessage": "Ninguém destacou um trecho desta página.",
+    "loadMore": "Carregar mais",
+    "loading": "Carregando…",
+    "failedLoadMore": "Falha ao carregar mais: {{message}}"
+  },
+  "userUrlPage": {
+    "on": "em",
+    "loadingAnnotations": "Carregando anotações…",
+    "noUrl": "Nenhuma URL especificada",
+    "noUrlMessage": "Forneça uma URL para ver as anotações.",
+    "noItems": "Nenhum item encontrado",
+    "noItemsMessage": "{{name}} ainda não anotou esta página.",
+    "noAnnotations": "Nenhuma anotação",
+    "noHighlights": "Nenhum destaque",
+    "loadMore": "Carregar mais",
+    "loading": "Carregando…",
+    "failedLoadMore": "Falha ao carregar mais: {{message}}"
+  },
+  "adminModeration": {
+    "accessDenied": "Acesso Negado",
+    "accessDeniedMessage": "Você não tem permissão para acessar o painel de moderação.",
+    "title": "Moderação",
+    "stats": "{{pending}} pendentes · {{total}} denúncias no total",
+    "tabs": {
+      "reports": "Denúncias",
+      "actions": "Ações",
+      "labels": "Rótulos"
+    },
+    "filters": {
+      "all": "Todas",
+      "pending": "Pendentes",
+      "resolved": "Resolvidas",
+      "dismissed": "Descartadas",
+      "escalated": "Escaladas"
+    },
+    "reports": {
+      "empty": "Nenhuma denúncia",
+      "emptyPending": "Nenhuma denúncia pendente para analisar.",
+      "emptyFiltered": "Nenhuma denúncia {{status}} encontrada.",
+      "reportedUser": "Usuário Denunciado",
+      "reporter": "Autor da Denúncia",
+      "details": "Detalhes",
+      "contentUri": "URI do Conteúdo",
+      "acknowledge": "Confirmar",
+      "dismiss": "Descartar",
+      "takedown": "Remover"
+    },
+    "reasons": {
+      "spam": "Spam",
+      "violation": "Violação de Regra",
+      "misleading": "Enganoso",
+      "sexual": "Inadequado",
+      "rude": "Rude / Abusivo",
+      "other": "Outro"
+    },
+    "actions": {
+      "applyWarning": "Aplicar Aviso de Conteúdo",
+      "applyWarningDesc": "Adicione um rótulo de aviso de conteúdo a uma publicação ou conta específica. Os usuários verão uma sobreposição borrada com a opção de revelar.",
+      "accountDid": "DID da Conta",
+      "contentUri": "URI do Conteúdo",
+      "contentUriOptional": "opcional — deixe em branco para rótulo no nível da conta",
+      "labelType": "Tipo de Rótulo",
+      "applyLabel": "Aplicar Rótulo",
+      "labelApplied": "Rótulo aplicado"
+    },
+    "labels": {
+      "empty": "Nenhum rótulo",
+      "emptyMessage": "Nenhum rótulo de conteúdo foi aplicado ainda.",
+      "accountLevel": "Rótulo no nível da conta",
+      "removeConfirm": "Remover este rótulo?",
+      "removeTitle": "Remover rótulo"
+    }
+  },
+  "highlightImporter": {
+    "clickToUpload": "Clique para enviar um CSV",
+    "processing": "Processando…",
+    "requiredColumns": "Colunas obrigatórias: url, text | Opcionais: title, tags, color, created_at",
+    "downloadTemplate": "Baixar Modelo",
+    "importProgress": "Progresso da Importação",
+    "complete": "{{rate}}% concluído",
+    "failed_one": "{{count}} falhou",
+    "failed_many": "{{count}} de falhas",
+    "failed_other": "{{count}} falharam",
+    "importing": "Importando destaques…",
+    "success": "{{count}} destaques importados com sucesso!",
+    "errorsTitle": "{{count}} erros durante a importação",
+    "row": "Linha {{row}}: {{error}}",
+    "moreErrors": "+{{count}} erros adicionais",
+    "importAnother": "Importar Outro Arquivo",
+    "noHighlights": "Nenhum destaque válido encontrado no CSV",
+    "csvMustHaveUrl": "O CSV deve ter uma coluna 'url'",
+    "csvMustHaveText": "O CSV deve ter uma coluna 'text' (também aceita: highlight, excerpt)",
+    "errorParsing": "Erro ao processar o CSV: {{message}}"
+  },
+  "common": {
+    "loading": "Carregando…",
+    "cancel": "Cancelar",
+    "save": "Salvar",
+    "close": "Fechar",
+    "back": "Voltar",
+    "continue": "Continuar",
+    "error": "Erro",
+    "retry": "Tentar novamente",
+    "loadMore": "Carregar mais",
+    "new": "Novo"
+  },
+  "about": {
+    "nav": {
+      "getExtension": "Obter Extensão",
+      "install": "Instalar"
+    },
+    "hero": {
+      "openSource": "Totalmente de código aberto",
+      "headline": "Escreva nas margens",
+      "headlineAccent": "da internet.",
+      "descriptionPre": "O Margin é uma camada de anotação aberta para a internet. Destaque textos, deixe notas e salve páginas nos favoritos, tudo armazenado na sua identidade descentralizada com o",
+      "atProtocol": "AT Protocol",
+      "descriptionPost": ". Sem ficar preso em um silo.",
+      "openApp": "Abrir App",
+      "getStarted": "Começar",
+      "installFor": "Instalar para {{browser}}"
+    },
+    "features": {
+      "title": "Tudo o que você precisa para interagir com a web",
+      "subtitle": "Mais do que favoritos. Um kit completo para ler, pensar e compartilhar na web aberta.",
+      "annotations": {
+        "title": "Anotações",
+        "description": "Deixe notas em qualquer página da web. Inicie discussões, compartilhe insights ou apenas registre suas ideias para depois."
+      },
+      "highlights": {
+        "title": "Destaques",
+        "description": "Selecione e destaque textos em qualquer página com cores personalizáveis. Seus destaques são renderizados na própria página com a CSS Highlights API."
+      },
+      "bookmarks": {
+        "title": "Favoritos",
+        "description": "Salve páginas com um clique ou um atalho de teclado. Todos os seus favoritos são sincronizados com sua identidade no AT Protocol."
+      },
+      "collections": {
+        "title": "Coleções",
+        "description": "Organize suas anotações, destaques e favoritos em coleções temáticas. Compartilhe-as publicamente ou mantenha-as privadas."
+      },
+      "socialDiscovery": {
+        "title": "Descoberta Social",
+        "description": "Veja o que os outros estão dizendo sobre as páginas que você visita. Descubra anotações, tags em alta e conecte-se com outros leitores."
+      },
+      "tagsSearch": {
+        "title": "Tags e Busca",
+        "description": "Marque suas anotações com tags para encontrá-las facilmente. Busque por URL, tag ou conteúdo para achar exatamente o que procura."
+      }
+    },
+    "extension": {
+      "badge": "Extensão de Navegador",
+      "title": "Seu kit de anotação,",
+      "titleLine2": "direto no navegador",
+      "description": "A extensão do Margin traz a experiência completa de anotação diretamente para cada página que você visita. Basta selecionar, anotar e seguir em frente.",
+      "iosShortcut": "Atalho do iOS",
+      "features": {
+        "inlineOverlay": {
+          "title": "Sobreposição na Página",
+          "description": "Veja anotações e destaques renderizados diretamente na página. Usa a CSS Highlights API para sublinhados de texto bonitos e com aparência nativa."
+        },
+        "contextMenu": {
+          "title": "Menu de Contexto e Seleção",
+          "description": "Clique com o botão direito em qualquer seleção para anotá-la ou destacá-la. Clique com o botão direito em qualquer lugar da página para salvá-la nos favoritos pelo submenu do Margin."
+        },
+        "keyboard": {
+          "title": "Atalhos de Teclado",
+          "description": "Alterne a sobreposição, salve a página atual nos favoritos ou anote o texto selecionado sem precisar usar o mouse."
+        },
+        "sidePanel": {
+          "title": "Painel Lateral",
+          "description": "Abra o painel lateral do Margin para navegar por anotações, favoritos e coleções sem sair da página que você está lendo."
+        }
+      }
+    },
+    "protocol": {
+      "badge": "Descentralizado",
+      "title": "Seus dados, sua identidade",
+      "descriptionPre": "O Margin é construído sobre o",
+      "descriptionPost": ", o protocolo aberto que move apps como o Bluesky. Suas anotações, destaques e favoritos são armazenados no seu repositório de dados pessoal, sem ficar presos em um silo.",
+      "point0": "Entre com seu identificador do AT Protocol, sem precisar de uma nova conta",
+      "point1": "Seus dados ficam no seu PDS, portáteis e sob o seu controle",
+      "point2": "Esquemas de Lexicon personalizados para anotações, destaques, coleções e muito mais",
+      "point3": "Totalmente de código aberto, confira o código e contribua"
+    },
+    "cta": {
+      "title": "Comece a escrever nas margens",
+      "description": "Junte-se à camada de anotação aberta. Entre com sua identidade do AT Protocol e instale a extensão para começar.",
+      "signIn": "Entrar",
+      "viewGitHub": "Ver no GitHub",
+      "viewTangled": "Ver no Tangled"
+    },
+    "footer": {
+      "privacy": "Privacidade",
+      "terms": "Termos",
+      "contact": "Contato"
+    },
+    "landing": {
+      "hero": {
+        "headPart1": "Escreva nas",
+        "headMargins": "margens",
+        "headPart2": "da",
+        "headInternet": "internet",
+        "headEnd": ".",
+        "lede": "O Margin é uma camada de anotação aberta para a web. Destaque, deixe notas e salve qualquer página nos favoritos; tudo armazenado na sua própria identidade do AT Protocol, e não no banco de dados de outra pessoa."
+      },
+      "demo": {
+        "eyebrow": "Como funciona",
+        "card1Caption": "Destaque na cor que preferir. Os sublinhados são renderizados na própria página via CSS Highlights API; nada reescreve o DOM da página.",
+        "card1Sample": "O Margin faz com que os leitores efêmeros da web deixem um rastro.",
+        "card1Mark": "leitores efêmeros",
+        "card2Caption": "Fixe uma nota à seleção. Ela se ancora ao texto exato, e não a um frágil deslocamento de caracteres, então sobrevive a mudanças de layout.",
+        "card2Sample": "Uma nota na margem é uma conversa com o seu eu do futuro.",
+        "card2Mark": "conversa com o seu eu do futuro",
+        "card3Caption": "Salve nos favoritos com uma tecla ou um clique com o botão direito. Sincronizado ao seu repositório do AT Protocol junto com todo o resto.",
+        "card3Url": "essays.example.com/marginalia",
+        "card3Saved": "Salvo"
+      },
+      "capabilities": {
+        "heading": "O que tem aqui",
+        "subheading": "O conjunto completo de recursos que o Margin oferece em qualquer página."
+      },
+      "protocol": {
+        "heading": "Construído sobre um protocolo, não uma plataforma",
+        "lede": "O Margin roda no AT Protocol, a mesma rede que move o Bluesky. Suas anotações ficam no seu Personal Data Server como registros públicos, e qualquer app que fale o lexicon pode lê-las ou construir a partir delas.",
+        "viewLexicon": "Ver o lexicon"
+      },
+      "install": {
+        "lede": "Instalar para",
+        "or": "ou obtenha o"
+      },
+      "closer": {
+        "line": "A web fica melhor de ler com notas na margem.",
+        "signIn": "Entre com seu identificador",
+        "open": "Abrir Margin"
+      }
+    }
   }
 }

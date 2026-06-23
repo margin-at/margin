@@ -747,11 +747,21 @@ export default function About() {
 
       <footer className="border-t border-surface-200 dark:border-surface-800">
         <div className="max-w-[68rem] mx-auto px-5 sm:px-8 py-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-2.5">
-            <img src="/logo.svg" alt="Margin" className="w-4 h-4 opacity-60" />
-            <span className="text-[13px] text-surface-500 dark:text-surface-400">
-              {t("sidebar.copyright")}
-            </span>
+          <div className="flex items-center gap-2.5 text-surface-500 dark:text-surface-400">
+            <svg
+              viewBox="0 0 180 180"
+              fill="currentColor"
+              aria-hidden="true"
+              className="w-4 h-4"
+            >
+              <path d="M0,60 L0,0 L60,0 L60,20 L20,20 L20,60 Z" />
+              <path d="M120,0 L180,0 L180,60 L160,60 L160,20 L120,20 Z" />
+              <path d="M0,120 L20,120 L20,160 L60,160 L60,180 L0,180 Z" />
+              <path d="M160,120 L180,120 L180,180 L120,180 L120,160 L160,160 Z" />
+              <rect x="80" y="62" width="20" height="56" />
+              <rect x="62" y="80" width="56" height="20" />
+            </svg>
+            <span className="text-[13px]">{t("sidebar.copyright")}</span>
           </div>
           <div className="flex items-center gap-5 text-[13px] text-surface-500 dark:text-surface-400 flex-wrap">
             <a
@@ -773,10 +783,10 @@ export default function About() {
               Brand
             </a>
             <a
-              href="/impressum"
+              href="/imprint"
               className="hover:text-surface-900 dark:hover:text-white transition-colors"
             >
-              Impressum
+              Imprint
             </a>
             <a
               href="mailto:hello@margin.at"

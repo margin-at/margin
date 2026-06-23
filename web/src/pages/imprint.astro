@@ -1,0 +1,150 @@
+---
+import BaseLayout from '../layouts/StaticLayout.astro';
+
+const sections = [
+	{ id: 'operator', title: 'Betreiber / Operator' },
+	{ id: 'register', title: 'Register' },
+	{ id: 'vertretung', title: 'Vertretung / Representation' },
+	{ id: 'kontakt', title: 'Kontakt / Contact' },
+	{ id: 'adr', title: 'Streitbeilegung / Dispute resolution' },
+	{ id: 'haftung', title: 'Haftung & Recht / Liability & law' },
+];
+
+const REGISTRATION_ID = '2026-001947328';
+---
+
+<BaseLayout title="Imprint - Margin" description="Imprint / legal information for Margin">
+	<div class="min-h-screen bg-surface-100 dark:bg-surface-900">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 pt-10 md:pt-14 pb-20">
+			<a href="/home" class="inline-flex items-center gap-1.5 text-sm font-medium text-surface-500 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white transition-colors mb-8">
+				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+				Back
+			</a>
+
+			<div class="lg:grid lg:grid-cols-[minmax(0,1fr)_200px] lg:gap-12">
+				<div class="bg-white dark:bg-surface-800 rounded-2xl px-5 sm:px-8 lg:px-12 py-10 md:py-14 lg:min-w-0">
+					<header class="mb-12">
+						<p class="text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider mb-3">Legal</p>
+						<h1 class="font-display font-bold text-3xl md:text-4xl text-surface-900 dark:text-white tracking-tight mb-2">Imprint</h1>
+						<p class="text-sm text-surface-500 dark:text-surface-400">Anbieterkennzeichnung &amp; rechtliche Hinweise · Provider identification &amp; legal notice</p>
+					</header>
+
+					<details class="lg:hidden mb-10 rounded-xl border border-surface-200 dark:border-surface-700/60 overflow-hidden">
+						<summary class="cursor-pointer px-4 py-3 text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider bg-surface-50 dark:bg-surface-900/40">On this page</summary>
+						<ol class="px-4 py-3 space-y-0.5 text-sm">
+							{sections.map((s) => (
+								<li><a href={`#${s.id}`} class="block py-1 text-surface-600 dark:text-surface-400">{s.title}</a></li>
+							))}
+						</ol>
+					</details>
+
+					<div class="space-y-12">
+						<section id="operator" data-toc-section class="scroll-mt-6">
+							<h2 class="font-display font-bold text-xl text-surface-900 dark:text-white tracking-tight mb-2">Betreiber / Operator</h2>
+							<address class="not-italic text-[15px] text-surface-700 dark:text-surface-300 leading-relaxed">
+								<strong class="text-surface-900 dark:text-white">Padding Labs LLC</strong><br />
+								30 N Gould St Ste N<br />
+								Sheridan, WY 82801<br />
+								United States
+							</address>
+							<p class="mt-3 text-[15px] text-surface-700 dark:text-surface-300 leading-relaxed">
+								Margin (<strong class="text-surface-900 dark:text-white">margin.at</strong>) wird von der Padding Labs LLC betrieben, einer in den Vereinigten Staaten ansässigen Gesellschaft, die ihre Dienste auch Verbraucher:innen in der Europäischen Union anbietet.<br />
+								<span class="opacity-80">Margin (margin.at) is operated by Padding Labs LLC, a company based in the United States that also offers its services to consumers in the European Union.</span>
+							</p>
+						</section>
+
+						<section id="register" data-toc-section class="scroll-mt-6">
+							<h2 class="font-display font-bold text-xl text-surface-900 dark:text-white tracking-tight mb-2">Unternehmensform &amp; Register / Company form &amp; registration</h2>
+							<p class="text-[15px] text-surface-700 dark:text-surface-300 leading-relaxed">
+								Limited Liability Company (LLC)<br />
+								Registerbehörde / Registry: Wyoming Secretary of State, USA<br />
+								Filing ID: <span class="font-medium text-surface-900 dark:text-white">{REGISTRATION_ID}</span>
+							</p>
+						</section>
+
+						<section id="vertretung" data-toc-section class="scroll-mt-6">
+							<h2 class="font-display font-bold text-xl text-surface-900 dark:text-white tracking-tight mb-2">Vertretung / Representation</h2>
+							<p class="text-[15px] text-surface-700 dark:text-surface-300 leading-relaxed">
+								Vertreten durch die Geschäftsführung (Managing Member) der Padding Labs LLC.<br />
+								<span class="opacity-80">Represented by the management (Managing Member) of Padding Labs LLC.</span>
+							</p>
+						</section>
+
+						<section id="kontakt" data-toc-section class="scroll-mt-6">
+							<h2 class="font-display font-bold text-xl text-surface-900 dark:text-white tracking-tight mb-2">Kontakt / Contact</h2>
+							<p class="text-[15px] text-surface-700 dark:text-surface-300 leading-relaxed">
+								E-Mail: <a href="mailto:hello@margin.at" class="text-primary-600 dark:text-primary-400 hover:underline font-medium">hello@margin.at</a><br />
+								Tel: <a href="tel:+13072428447" class="text-primary-600 dark:text-primary-400 hover:underline font-medium">+1 (307) 242-8447</a>
+							</p>
+						</section>
+
+						<section id="adr" data-toc-section class="scroll-mt-6">
+							<h2 class="font-display font-bold text-xl text-surface-900 dark:text-white tracking-tight mb-2">Verbraucherstreitbeilegung / Consumer dispute resolution</h2>
+							<p class="text-[15px] text-surface-700 dark:text-surface-300 leading-relaxed">
+								Die EU-Plattform zur Online-Streitbeilegung (ODR) wurde mit 20. Juli 2025 eingestellt (Verordnung (EU) 2024/3228). Ein Verzeichnis der Verbraucherschlichtungsstellen ist unter <a href="https://consumer-redress.ec.europa.eu/dispute-resolution-bodies" target="_blank" rel="noopener noreferrer" class="text-primary-600 dark:text-primary-400 hover:underline font-medium">consumer-redress.ec.europa.eu</a> verfügbar. Wir sind nicht verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen, und nehmen derzeit nicht daran teil.<br />
+								<span class="opacity-80">The EU Online Dispute Resolution (ODR) platform was discontinued on 20 July 2025 (Regulation (EU) 2024/3228). A directory of consumer dispute-resolution bodies is available at the link above. We are not obliged to participate in, and do not currently participate in, consumer ADR proceedings.</span>
+							</p>
+						</section>
+
+						<section id="haftung" data-toc-section class="scroll-mt-6">
+							<h2 class="font-display font-bold text-xl text-surface-900 dark:text-white tracking-tight mb-2">Haftung &amp; anwendbares Recht / Liability &amp; governing law</h2>
+							<div class="space-y-3 text-[15px] text-surface-700 dark:text-surface-300 leading-relaxed">
+								<p>Trotz sorgfältiger inhaltlicher Kontrolle übernehmen wir keine Haftung für die Inhalte externer Links; für deren Inhalt sind ausschließlich die jeweiligen Betreiber verantwortlich. Die Nutzung von Margin richtet sich nach den <a href="/terms" class="text-primary-600 dark:text-primary-400 hover:underline font-medium">Nutzungsbedingungen</a> und der <a href="/privacy" class="text-primary-600 dark:text-primary-400 hover:underline font-medium">Datenschutzerklärung</a>. Soweit gesetzlich zulässig, gilt das Recht des Staates Wyoming, USA; zwingende verbraucherschützende Bestimmungen des Staates des gewöhnlichen Aufenthalts der Verbraucher:innen bleiben unberührt.</p>
+								<p class="opacity-80">Despite careful review we accept no liability for the content of external links; their operators are solely responsible. Use of Margin is governed by our <a href="/terms" class="text-primary-600 dark:text-primary-400 hover:underline font-medium">Terms</a> and <a href="/privacy" class="text-primary-600 dark:text-primary-400 hover:underline font-medium">Privacy Policy</a>. To the extent permitted by law, the laws of the State of Wyoming, USA apply; mandatory consumer-protection provisions of the consumer's country of habitual residence remain unaffected.</p>
+							</div>
+						</section>
+					</div>
+				</div>
+
+				<aside class="hidden lg:block">
+					<details class="sticky top-6 group" open>
+						<summary class="cursor-pointer list-none flex items-center gap-1.5 py-2 text-[11px] font-semibold text-surface-400 dark:text-surface-500 uppercase tracking-[0.12em] hover:text-surface-700 dark:hover:text-surface-200 transition-colors">
+							<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="transition-transform group-open:rotate-90"><path d="m9 18 6-6-6-6"/></svg>
+							On this page
+						</summary>
+						<ol class="mt-3 space-y-0.5 text-[13px]">
+							{sections.map((s) => (
+								<li>
+									<a href={`#${s.id}`} data-toc-link={s.id} class="toc-link block py-1 text-surface-500 dark:text-surface-500 hover:text-surface-900 dark:hover:text-white transition-colors leading-snug">{s.title}</a>
+								</li>
+							))}
+						</ol>
+					</details>
+				</aside>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		const links = document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]');
+		const sections = document.querySelectorAll<HTMLElement>('[data-toc-section]');
+		if (links.length && sections.length) {
+			const setActive = (id: string) => {
+				links.forEach((l) => {
+					if (l.dataset.tocLink === id) {
+						l.classList.add('text-primary-600', 'dark:text-primary-400', 'font-medium');
+						l.classList.remove('text-surface-500', 'dark:text-surface-500');
+					} else {
+						l.classList.remove('text-primary-600', 'dark:text-primary-400', 'font-medium');
+						l.classList.add('text-surface-500', 'dark:text-surface-500');
+					}
+				});
+			};
+			let current = sections[0].id;
+			setActive(current);
+			const obs = new IntersectionObserver(
+				(entries) => {
+					const visible = entries
+						.filter((e) => e.isIntersecting)
+						.sort((a, b) => (a.target as HTMLElement).offsetTop - (b.target as HTMLElement).offsetTop);
+					if (visible.length > 0) {
+						current = visible[0].target.id;
+						setActive(current);
+					}
+				},
+				{ rootMargin: '-15% 0px -70% 0px', threshold: 0 }
+			);
+			sections.forEach((s) => obs.observe(s));
+		}
+	</script>
+</BaseLayout>
