@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/signal"
 	"strings"
+	stdsync "sync"
 	"syscall"
 	"time"
 
@@ -21,6 +22,7 @@ import (
 	"margin.at/internal/db"
 	"margin.at/internal/embeddings"
 	"margin.at/internal/firehose"
+	"margin.at/internal/leader"
 	"margin.at/internal/logger"
 	internalMiddleware "margin.at/internal/middleware"
 	"margin.at/internal/oauth"
@@ -70,28 +72,6 @@ func main() {
 	}
 	database.MigrateUnifiedNotes(context.Background())
 
-	go func() {
-		ticker := time.NewTicker(1 * time.Hour)
-		defer ticker.Stop()
-
-		runCleanup := func() {
-			_, err := database.TryAdvisoryLock(context.Background(), db.LockSessionCleanup, func() error {
-				if err := database.DeleteExpiredOAuthSessions(context.Background()); err != nil {
-					return err
-				}
-				return database.DeleteExpiredPendingAuthsOAuth(context.Background())
-			})
-			if err != nil {
-				logger.Error("Failed to run cleanup of expired sessions: %v", err)
-			}
-		}
-
-		runCleanup()
-		for range ticker.C {
-			runCleanup()
-		}
-	}()
-
 	embeddingClient := embeddings.NewClient()
 	recService := recommendations.NewService(database, embeddingClient)
 	logger.Info("Recommendation engine initialized (embeddings enabled: %v)", embeddingClient.IsEnabled())
@@ -109,63 +89,54 @@ func main() {
 	ingester := firehose.NewIngester(database, syncSvc)
 	firehose.RelayURL = getEnv("BLOCK_RELAY_URL", "wss://jetstream2.us-east.bsky.network/subscribe")
 	logger.Info("Firehose URL: %s", firehose.RelayURL)
-
-	backfillCtx, backfillCancel := context.WithCancel(context.Background())
-	defer backfillCancel()
-
 	if recService.IsEnabled() {
 		ingester.SetOnAnnotation(recService.OnAnnotation)
 		ingester.SetOnDocument(recService.OnDocument)
-
-		if getEnv("DISABLE_BACKFILL", "") == "" {
-			go func() {
-				time.Sleep(5 * time.Second)
-				select {
-				case <-backfillCtx.Done():
-					return
-				default:
-				}
-				database.TryAdvisoryLock(backfillCtx, db.LockBackfill, func() error { //nolint:errcheck
-					logger.Info("Starting recommendation backfill...")
-					if err := recService.BackfillDocumentEmbeddings(200); err != nil {
-						logger.Error("Document embedding backfill error: %v", err)
-					}
-					if backfillCtx.Err() != nil {
-						return nil
-					}
-					annCount, err := recService.BackfillAnnotationEmbeddings(200)
-					if err != nil {
-						logger.Error("Annotation embedding backfill error: %v", err)
-					}
-					if backfillCtx.Err() != nil {
-						return nil
-					}
-					hlCount, err := recService.BackfillHighlightEmbeddings(200)
-					if err != nil {
-						logger.Error("Highlight embedding backfill error: %v", err)
-					}
-					if backfillCtx.Err() != nil {
-						return nil
-					}
-					profileCount, err := recService.RebuildAllProfiles()
-					if err != nil {
-						logger.Error("Profile rebuild error: %v", err)
-					}
-					logger.Info("Recommendation backfill complete (annotations: %d, highlights: %d, profiles: %d)", annCount, hlCount, profileCount)
-					return nil
-				})
-			}()
-		} else {
-			logger.Info("Recommendation backfill disabled (DISABLE_BACKFILL is set)")
-		}
 	}
 
+	workerCtx, workerCancel := context.WithCancel(context.Background())
+	defer workerCancel()
+
+	var workersWG stdsync.WaitGroup
+	workersWG.Add(1)
 	go func() {
-		_, err := database.TryAdvisoryLock(context.Background(), db.LockFirehose, func() error {
-			return ingester.Start(context.Background())
-		})
-		if err != nil {
-			logger.Error("Firehose ingester error: %v", err)
+		defer workersWG.Done()
+		for workerCtx.Err() == nil {
+			logger.Info("leader: campaigning for leadership...")
+			leaderCtx, releaseLeader, err := leader.Acquire(workerCtx, database.Pool())
+			if err != nil {
+				return
+			}
+			logger.Info("leader: elected — starting background workers")
+
+			var leaderWG stdsync.WaitGroup
+
+			ingester.Start(leaderCtx) //nolint:errcheck
+			logger.Info("firehose: ingester started")
+
+			if recService.IsEnabled() && getEnv("DISABLE_BACKFILL", "") == "" {
+				leaderWG.Add(1)
+				go func() {
+					defer leaderWG.Done()
+					runBackfill(leaderCtx, recService)
+				}()
+			} else if !recService.IsEnabled() {
+				logger.Info("Recommendation backfill skipped (embeddings disabled)")
+			} else {
+				logger.Info("Recommendation backfill disabled (DISABLE_BACKFILL is set)")
+			}
+
+			leaderWG.Add(1)
+			go func() {
+				defer leaderWG.Done()
+				runSessionCleanup(leaderCtx, database)
+			}()
+
+			<-leaderCtx.Done()
+			logger.Info("leader: stepping down — draining workers")
+			ingester.Stop()
+			releaseLeader()
+			leaderWG.Wait()
 		}
 	}()
 
@@ -233,17 +204,86 @@ func main() {
 	<-quit
 
 	logger.Infoln("Shutting down server...")
-	backfillCancel()
-	ingester.Stop()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	if err := server.Shutdown(ctx); err != nil {
-		logger.Fatal("Server forced to shutdown: %v", err)
+		logger.Error("Server forced to shutdown: %v", err)
+	}
+
+	workerCancel()
+	drained := make(chan struct{})
+	go func() {
+		workersWG.Wait()
+		close(drained)
+	}()
+	select {
+	case <-drained:
+		logger.Infoln("Background workers drained cleanly")
+	case <-time.After(30 * time.Second):
+		logger.Error("Background workers did not drain within 30s — exiting anyway")
 	}
 
 	logger.Infoln("Server exited")
+}
+
+func runBackfill(ctx context.Context, recService *recommendations.Service) {
+	select {
+	case <-ctx.Done():
+		return
+	case <-time.After(5 * time.Second):
+	}
+
+	logger.Info("Starting recommendation backfill...")
+	if err := recService.BackfillDocumentEmbeddings(200); err != nil {
+		logger.Error("Document embedding backfill error: %v", err)
+	}
+	if ctx.Err() != nil {
+		return
+	}
+	annCount, err := recService.BackfillAnnotationEmbeddings(200)
+	if err != nil {
+		logger.Error("Annotation embedding backfill error: %v", err)
+	}
+	if ctx.Err() != nil {
+		return
+	}
+	hlCount, err := recService.BackfillHighlightEmbeddings(200)
+	if err != nil {
+		logger.Error("Highlight embedding backfill error: %v", err)
+	}
+	if ctx.Err() != nil {
+		return
+	}
+	profileCount, err := recService.RebuildAllProfiles()
+	if err != nil {
+		logger.Error("Profile rebuild error: %v", err)
+	}
+	logger.Info("Recommendation backfill complete (annotations: %d, highlights: %d, profiles: %d)", annCount, hlCount, profileCount)
+}
+
+func runSessionCleanup(ctx context.Context, database *db.DB) {
+	cleanup := func() {
+		if err := database.DeleteExpiredOAuthSessions(ctx); err != nil {
+			logger.Error("Failed to delete expired OAuth sessions: %v", err)
+		}
+		if err := database.DeleteExpiredPendingAuthsOAuth(ctx); err != nil {
+			logger.Error("Failed to delete expired pending auths: %v", err)
+		}
+	}
+
+	cleanup()
+	ticker := time.NewTicker(1 * time.Hour)
+	defer ticker.Stop()
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-ticker.C:
+			cleanup()
+		}
+	}
 }
 
 func getEnv(key, fallback string) string {

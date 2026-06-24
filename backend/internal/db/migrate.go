@@ -14,12 +14,7 @@ import (
 //go:embed migrations
 var migrationsFS embed.FS
 
-const (
-	LockMigrate        int64 = 0x6D617267696E
-	LockFirehose       int64 = 0x6669726568736F65
-	LockSessionCleanup int64 = 0x73657373696F6E
-	LockBackfill       int64 = 0x6261636B66696C6C
-)
+const LockMigrate int64 = 0x6D617267696E
 
 func (db *DB) Migrate() error {
 	ctx := context.Background()
