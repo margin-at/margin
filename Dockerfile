@@ -39,9 +39,25 @@ EXPOSE 8080
 
 COPY <<'EOF' /app/start.sh
 #!/bin/sh
+set -e
+
+term() {
+	kill -TERM "$api_pid" "$web_pid" 2>/dev/null
+	exit 0
+}
+trap term TERM INT
+
 PORT=$API_PORT ./margin-server &
+api_pid=$!
 node ./dist/server/entry.mjs &
-wait -n
+web_pid=$!
+
+while kill -0 "$api_pid" 2>/dev/null && kill -0 "$web_pid" 2>/dev/null; do
+	sleep 1
+done
+
+kill -TERM "$api_pid" "$web_pid" 2>/dev/null
+exit 1
 EOF
 RUN chmod +x /app/start.sh
 
