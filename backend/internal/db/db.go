@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log"
 	"strings"
 	"time"
 
@@ -63,12 +64,35 @@ func New(dsn string) (*DB, error) {
 	if err != nil {
 		return nil, fmt.Errorf("open database: %w", err)
 	}
-	if err := pool.Ping(context.Background()); err != nil {
+
+	if err := pingWithRetry(pool, 30*time.Second); err != nil {
 		pool.Close()
 		return nil, fmt.Errorf("ping database: %w", err)
 	}
 
 	return &DB{pool: pool, migrationDB: stdlib.OpenDBFromPool(pool), q: sqlcdb.New(pool)}, nil
+}
+
+func pingWithRetry(pool *pgxpool.Pool, maxWait time.Duration) error {
+	deadline := time.Now().Add(maxWait)
+	delay := 500 * time.Millisecond
+	var err error
+	for attempt := 1; ; attempt++ {
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		err = pool.Ping(ctx)
+		cancel()
+		if err == nil {
+			return nil
+		}
+		if time.Now().Add(delay).After(deadline) {
+			return err
+		}
+		log.Printf("database: not ready (attempt %d): %v — retrying in %s", attempt, err, delay)
+		time.Sleep(delay)
+		if delay < 5*time.Second {
+			delay *= 2
+		}
+	}
 }
 
 func (db *DB) Close() error {
