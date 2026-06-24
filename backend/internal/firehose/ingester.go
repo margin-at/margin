@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net"
 	"strings"
 	"sync"
 	"time"
@@ -203,8 +204,15 @@ func (i *Ingester) subscribe(ctx context.Context) error {
 		default:
 		}
 
+		_ = conn.SetReadDeadline(time.Now().Add(5 * time.Second))
 		_, message, err := conn.ReadMessage()
 		if err != nil {
+			if ctx.Err() != nil {
+				return nil
+			}
+			if ne, ok := err.(net.Error); ok && ne.Timeout() {
+				continue
+			}
 			return fmt.Errorf("websocket read failed: %w", err)
 		}
 

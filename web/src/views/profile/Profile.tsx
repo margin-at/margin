@@ -43,6 +43,7 @@ import {
   Tabs,
 } from "../../components/ui";
 import { $user } from "../../store/auth";
+import { displayHandle } from "../../lib/handle";
 import { $preferences, loadPreferences } from "../../store/preferences";
 import type {
   Collection,
@@ -377,10 +378,11 @@ export default function Profile({ did, initialProfile }: ProfileProps) {
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <h1 className="text-xl font-bold text-surface-900 dark:text-white truncate">
-                  {profile.displayName || profile.handle}
+                  {profile.displayName ||
+                    displayHandle(profile.handle, profile.did)}
                 </h1>
                 <p className="text-surface-500 dark:text-surface-400">
-                  @{profile.handle}
+                  @{displayHandle(profile.handle, profile.did)}
                 </p>
               </div>
               <div className="flex items-center gap-2">

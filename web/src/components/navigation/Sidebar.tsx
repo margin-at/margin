@@ -19,6 +19,7 @@ import { useStore } from "@nanostores/react";
 import { $user, logout } from "../../store/auth";
 import { $theme, cycleTheme } from "../../store/theme";
 import { getUnreadNotificationCount } from "../../api/client";
+import { displayHandle } from "../../lib/handle";
 import { Avatar, CountBadge } from "../ui";
 import { useTranslation } from "react-i18next";
 
@@ -221,7 +222,7 @@ export default function Sidebar({
 
             <a
               href={`/profile/${user.did}`}
-              title={user.displayName || user.handle}
+              title={user.displayName || displayHandle(user.handle, user.did)}
               onClick={
                 onNavigate
                   ? (e) => {
@@ -235,10 +236,10 @@ export default function Sidebar({
               <Avatar did={user.did} avatar={user.avatar} size="sm" />
               <div className="flex-1 min-w-0 hidden lg:block">
                 <p className="font-medium text-surface-900 dark:text-white truncate text-[13px]">
-                  {user.displayName || user.handle}
+                  {user.displayName || displayHandle(user.handle, user.did)}
                 </p>
                 <p className="text-[11px] text-surface-500 dark:text-surface-400 truncate">
-                  @{user.handle}
+                  @{displayHandle(user.handle, user.did)}
                 </p>
               </div>
             </a>

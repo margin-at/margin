@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Avatar from "../ui/Avatar";
 import RichText from "./RichText";
 import { getProfile } from "../../api/client";
+import { displayHandle } from "../../lib/handle";
 import type { UserProfile } from "../../types";
 import { Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -127,10 +128,11 @@ export default function ProfileHoverCard({
                 />
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-surface-900 dark:text-white truncate group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
-                    {profile.displayName || profile.handle}
+                    {profile.displayName ||
+                      displayHandle(profile.handle, profile.did)}
                   </p>
                   <p className="text-sm text-surface-500 dark:text-surface-400 truncate">
-                    @{profile.handle}
+                    @{displayHandle(profile.handle, profile.did)}
                   </p>
                 </div>
               </a>

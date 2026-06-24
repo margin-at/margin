@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
 
 import { getNotifications, markNotificationsRead } from "../../api/client";
+import { displayHandle } from "../../lib/handle";
 import type { NotificationItem, AnnotationItem } from "../../types";
 import {
   Heart,
@@ -31,6 +32,19 @@ function getContentType(
   if (uri.includes("/at.margin.bookmark/")) return "bookmark";
   if (uri.includes("/at.margin.reply/")) return "reply";
   return "unknown";
+}
+
+function annotationHref(uri: string, subject?: AnnotationItem): string {
+  if (!uri) return "#";
+  if (getContentType(uri) !== "reply") {
+    return `/annotation/${encodeURIComponent(uri)}`;
+  }
+  const target = subject?.rootUri || subject?.inReplyTo || subject?.parentUri;
+  if (!target || getContentType(target) === "reply") {
+    return `/annotation/${encodeURIComponent(subject?.rootUri || uri)}`;
+  }
+  const rkey = uri.split("/").pop();
+  return `/annotation/${encodeURIComponent(target)}${rkey ? `#reply-${rkey}` : ""}`;
 }
 
 function getNotificationVerb(
@@ -134,7 +148,7 @@ function SubjectPreview({
   if (!item?.uri && !subjectUri) return null;
 
   const contentType = getContentType(subjectUri);
-  const href = `/annotation/${encodeURIComponent(subjectUri)}`;
+  const href = annotationHref(subjectUri, item);
 
   let preview: React.ReactNode = null;
 
@@ -203,7 +217,7 @@ function SubjectPreview({
           <p className="text-surface-400 dark:text-surface-500 text-xs mt-1">
             {t("notifications.inReplyTo")}{" "}
             <a
-              href={`/annotation/${encodeURIComponent(parentUri)}`}
+              href={annotationHref(parentUri, item)}
               className="hover:underline text-primary-500"
               onClick={(e) => e.stopPropagation()}
             >
@@ -357,11 +371,15 @@ export default function Notifications({
                           href={`/profile/${n.actor.did}`}
                           className="font-semibold text-surface-900 dark:text-white hover:underline"
                         >
-                          {n.actor.displayName || `@${n.actor.handle}`}
+                          {n.actor.displayName ||
+                            `@${displayHandle(n.actor.handle, n.actor.did)}`}
                         </a>{" "}
                         {n.type !== "follow" && n.subjectUri ? (
                           <a
-                            href={`/annotation/${encodeURIComponent(n.subjectUri)}`}
+                            href={annotationHref(
+                              n.subjectUri,
+                              n.subject as AnnotationItem | undefined,
+                            )}
                             className="hover:underline"
                           >
                             {verb}

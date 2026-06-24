@@ -88,6 +88,7 @@ export interface AnnotationItem {
     };
   };
   parentUri?: string;
+  rootUri?: string;
   labels?: ContentLabel[];
 }
 

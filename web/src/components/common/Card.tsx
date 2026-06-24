@@ -39,6 +39,7 @@ import {
 } from "../../api/client";
 import { $user } from "../../store/auth";
 import { $preferences } from "../../store/preferences";
+import { displayHandle } from "../../lib/handle";
 import { useStore } from "@nanostores/react";
 import type {
   AnnotationItem,
@@ -377,7 +378,8 @@ export default function Card({
                       size="xs"
                     />
                     <span>
-                      {item.addedBy.displayName || `@${item.addedBy.handle}`}
+                      {item.addedBy.displayName ||
+                        `@${displayHandle(item.addedBy.handle, item.addedBy.did)}`}
                     </span>
                   </a>
                 </ProfileHoverCard>
@@ -451,11 +453,12 @@ export default function Card({
                 href={`/profile/${item.author?.did}`}
                 className="font-semibold text-surface-900 dark:text-white text-[15px] hover:underline block truncate sm:whitespace-normal sm:overflow-visible"
               >
-                {item.author?.displayName || item.author?.handle}
+                {item.author?.displayName ||
+                  displayHandle(item.author?.handle, item.author?.did)}
               </a>
             </ProfileHoverCard>
             <span className="text-surface-400 dark:text-surface-500 text-sm truncate max-w-[120px] sm:max-w-none sm:whitespace-normal sm:overflow-visible break-all">
-              @{item.author?.handle}
+              @{displayHandle(item.author?.handle, item.author?.did)}
             </span>
             <span className="text-surface-300 dark:text-surface-600">·</span>
             <span className="text-surface-400 dark:text-surface-500 text-sm">

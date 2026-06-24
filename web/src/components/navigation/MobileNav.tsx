@@ -16,6 +16,7 @@ import {
 import { useEffect, useState } from "react";
 import { getUnreadNotificationCount } from "../../api/client";
 import { $user, logout } from "../../store/auth";
+import { displayHandle } from "../../lib/handle";
 import { AppleIcon } from "../common/Icons";
 import { useTranslation } from "react-i18next";
 
@@ -97,10 +98,11 @@ export default function MobileNav({
                     )}
                     <div className="flex flex-col min-w-0">
                       <span className="font-semibold text-surface-900 dark:text-white text-sm truncate">
-                        {user.displayName || user.handle}
+                        {user.displayName ||
+                          displayHandle(user.handle, user.did)}
                       </span>
                       <span className="text-xs text-surface-400 dark:text-surface-500 truncate">
-                        @{user.handle}
+                        @{displayHandle(user.handle, user.did)}
                       </span>
                     </div>
                   </a>

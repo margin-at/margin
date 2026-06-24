@@ -14,12 +14,11 @@ export type { Collection } from "../types";
 
 export const sessionAtom = atom<UserProfile | null>(null);
 
-export async function checkSession(): Promise<UserProfile | null> {
+export async function checkSession(): Promise<UserProfile | null | undefined> {
   try {
     const res = await fetch("/auth/session");
     if (!res.ok) {
-      sessionAtom.set(null);
-      return null;
+      return undefined;
     }
     const data = await res.json();
 
@@ -84,8 +83,7 @@ export async function checkSession(): Promise<UserProfile | null> {
     return null;
   } catch (e) {
     console.error("Session check failed:", e);
-    sessionAtom.set(null);
-    return null;
+    return undefined;
   }
 }
 
@@ -108,14 +106,12 @@ async function apiRequest(
   });
 
   if (response.status === 401 && !skipAuthRedirect) {
-    sessionAtom.set(null);
-    try {
-      await fetch("/auth/logout", { method: "POST" });
-    } catch {
-      // Ignore
-    }
-    if (window.location.pathname !== "/login") {
-      window.location.href = "/login";
+    const verified = await checkSession();
+    if (verified === null) {
+      sessionAtom.set(null);
+      if (window.location.pathname !== "/login") {
+        window.location.href = "/login";
+      }
     }
   }
 

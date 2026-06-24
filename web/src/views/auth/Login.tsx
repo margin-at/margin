@@ -12,6 +12,7 @@ import { Avatar } from "../../components/ui";
 import { useStore } from "@nanostores/react";
 import { $theme } from "../../store/theme";
 import { analytics } from "../../lib/analytics";
+import { displayHandle } from "../../lib/handle";
 
 interface LoginProps {
   initialError?: string;
@@ -280,7 +281,7 @@ export default function Login({ initialError }: LoginProps) {
                         {actor.displayName || actor.handle}
                       </div>
                       <div className="text-surface-500 dark:text-surface-400 text-xs truncate">
-                        @{actor.handle}
+                        @{displayHandle(actor.handle, actor.did)}
                       </div>
                     </div>
                   </button>

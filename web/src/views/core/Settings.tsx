@@ -65,6 +65,7 @@ import { AppleIcon } from "../../components/common/Icons";
 import { HighlightImporter } from "./HighlightImporter";
 import IOSShortcutModal from "../../components/modals/IOSShortcutModal";
 import { analytics } from "../../lib/analytics";
+import { displayHandle } from "../../lib/handle";
 
 export default function Settings() {
   const { t } = useTranslation();
@@ -178,7 +179,7 @@ export default function Settings() {
                 {user.displayName || user.handle}
               </p>
               <p className="text-surface-500 dark:text-surface-400">
-                @{user.handle}
+                @{displayHandle(user.handle, user.did)}
               </p>
             </div>
             <ChevronRight
@@ -456,7 +457,7 @@ export default function Settings() {
                             </p>
                             {b.author?.handle && (
                               <p className="text-xs text-surface-400 dark:text-surface-500 truncate">
-                                @{b.author.handle}
+                                @{displayHandle(b.author.handle, b.author.did)}
                               </p>
                             )}
                           </div>
@@ -514,7 +515,7 @@ export default function Settings() {
                             </p>
                             {m.author?.handle && (
                               <p className="text-xs text-surface-400 dark:text-surface-500 truncate">
-                                @{m.author.handle}
+                                @{displayHandle(m.author.handle, m.author.did)}
                               </p>
                             )}
                           </div>

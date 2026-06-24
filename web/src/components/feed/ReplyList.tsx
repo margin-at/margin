@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { MessageSquare, Trash2, Reply } from "lucide-react";
 import type { AnnotationItem, UserProfile } from "../../types";
 import { getAvatarUrl } from "../../api/client";
+import { displayHandle } from "../../lib/handle";
 import { clsx } from "clsx";
 
 interface ReplyListProps {
@@ -49,7 +50,10 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
       >
         {isInline ? (
           <>
-            <a href={`/profile/${author.handle}`} className="shrink-0">
+            <a
+              href={`/profile/${author.did || author.handle}`}
+              className="shrink-0"
+            >
               {getAvatarUrl(author.did, author.avatar) ? (
                 <img
                   src={getAvatarUrl(author.did, author.avatar)}
@@ -80,7 +84,8 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
                     depth > 0 ? "text-xs" : "text-sm",
                   )}
                 >
-                  {author.displayName || author.handle}
+                  {author.displayName ||
+                    displayHandle(author.handle, author.did)}
                 </span>
                 <span className="text-surface-400 dark:text-surface-500 text-xs">
                   {reply.createdAt
@@ -120,7 +125,10 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
         ) : (
           <div className="p-3 bg-white dark:bg-surface-900 rounded-lg ring-1 ring-black/5 dark:ring-white/5">
             <div className="flex items-center gap-2 mb-2">
-              <a href={`/profile/${author.handle}`} className="shrink-0">
+              <a
+                href={`/profile/${author.did || author.handle}`}
+                className="shrink-0"
+              >
                 {getAvatarUrl(author.did, author.avatar) ? (
                   <img
                     src={getAvatarUrl(author.did, author.avatar)}
@@ -137,7 +145,8 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
               </a>
               <div className="flex flex-col">
                 <span className="font-medium text-surface-900 dark:text-white text-sm">
-                  {author.displayName || author.handle}
+                  {author.displayName ||
+                    displayHandle(author.handle, author.did)}
                 </span>
               </div>
               <span className="text-surface-400 dark:text-surface-500 text-xs ml-auto">

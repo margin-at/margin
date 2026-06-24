@@ -346,18 +346,11 @@ export default function AppShell() {
   });
 
   useEffect(() => {
-    const ssrUser = window.__MARGIN_USER__;
-    if ($user.get() === null && ssrUser === null) return;
-
-    if (ssrUser) {
-      checkSession().then((user) => {
-        if (user) $user.set(user);
-      });
-    } else if (ssrUser === undefined) {
-      checkSession().then((user) => {
+    checkSession().then((user) => {
+      if (user !== undefined) {
         $user.set(user);
-      });
-    }
+      }
+    });
   }, []);
 
   return (

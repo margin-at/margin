@@ -7,6 +7,7 @@ import {
   type Tag,
 } from "../../api/client";
 import { Avatar } from "../ui";
+import { displayHandle } from "../../lib/handle";
 import { useTranslation } from "react-i18next";
 
 function looksLikeUrl(query: string): boolean {
@@ -195,10 +196,11 @@ export default function RightSidebar({ onNavigate }: RightSidebarProps) {
                   <Avatar src={actor.avatar} size="sm" />
                   <div className="min-w-0 flex-1">
                     <div className="font-semibold text-surface-900 dark:text-white truncate text-sm leading-tight">
-                      {actor.displayName || actor.handle}
+                      {actor.displayName ||
+                        displayHandle(actor.handle, actor.did)}
                     </div>
                     <div className="text-surface-500 dark:text-surface-400 text-xs truncate">
-                      @{actor.handle}
+                      @{displayHandle(actor.handle, actor.did)}
                     </div>
                   </div>
                 </button>

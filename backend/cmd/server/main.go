@@ -205,24 +205,24 @@ func main() {
 
 	logger.Infoln("Shutting down server...")
 
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-	defer cancel()
-
-	if err := server.Shutdown(ctx); err != nil {
-		logger.Error("Server forced to shutdown: %v", err)
-	}
-
 	workerCancel()
 	drained := make(chan struct{})
 	go func() {
 		workersWG.Wait()
 		close(drained)
 	}()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if err := server.Shutdown(ctx); err != nil {
+		logger.Error("Server forced to shutdown: %v", err)
+	}
+
 	select {
 	case <-drained:
 		logger.Infoln("Background workers drained cleanly")
-	case <-time.After(30 * time.Second):
-		logger.Error("Background workers did not drain within 30s — exiting anyway")
+	case <-time.After(10 * time.Second):
+		logger.Error("Background workers did not drain in time — exiting anyway")
 	}
 
 	logger.Infoln("Server exited")
