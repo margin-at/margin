@@ -620,14 +620,43 @@ func (h *Handler) GetByTargetHash(w http.ResponseWriter, r *http.Request) {
 		notes = mergeNotes(notes, hashNotes)
 	}
 
-	lc, _ := h.hydration.Load(r.Context(), notes, h.getViewerDID(r))
+	if bannedDIDs, err := h.db.GetBannedDIDs(r.Context()); err == nil && len(bannedDIDs) > 0 {
+		banned := make(map[string]bool, len(bannedDIDs))
+		for _, did := range bannedDIDs {
+			banned[did] = true
+		}
+		filtered := notes[:0]
+		for _, n := range notes {
+			if !banned[n.AuthorDID] {
+				filtered = append(filtered, n)
+			}
+		}
+		notes = filtered
+	}
+
+	viewerDID := h.getViewerDID(r)
+	if viewerDID != "" {
+		if hidden, err := h.db.GetAllHiddenDIDs(r.Context(), viewerDID); err == nil && len(hidden) > 0 {
+			filtered := notes[:0]
+			for _, n := range notes {
+				if !hidden[n.AuthorDID] {
+					filtered = append(filtered, n)
+				}
+			}
+			notes = filtered
+		}
+	}
+
+	lc, _ := h.hydration.Load(r.Context(), notes, viewerDID)
 	items := make([]service.APINote, len(notes))
 	for i, n := range notes {
 		items[i] = h.hydration.ToAPINote(n, lc)
 	}
 	annotations, highlights, bookmarks := notesByMotivation(items)
 
-	if len(items) == 0 {
+	if viewerDID != "" {
+		w.Header().Set("Cache-Control", "private, max-age=0, no-store")
+	} else if len(items) == 0 {
 		w.Header().Set("Cache-Control", "public, max-age=60, s-maxage=300")
 	} else {
 		w.Header().Set("Cache-Control", "private, max-age=0, no-store")
