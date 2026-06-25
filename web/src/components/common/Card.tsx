@@ -339,7 +339,8 @@ export default function Card({
       })()
     : null;
 
-  const isbn = pageUrl?.match(/^urn:isbn:(.+)$/i)?.[1].replace(/-/g, "");
+  const isbnMatch = pageUrl?.match(/^urn:isbn:(.+)$/i);
+  const isbn = isbnMatch ? isbnMatch[1].replace(/-/g, "") : null;
   const bookUrl = isbn ? `https://openlibrary.org/isbn/${isbn}` : null;
   const bookTitle =
     item.target?.title || item.title || (isbn ? `ISBN ${isbn}` : null);
@@ -348,6 +349,7 @@ export default function Card({
     const sel = item.target?.selector;
     if (!sel?.exact) return null;
     if (bookUrl) return bookUrl;
+    if (!pageUrl) return null;
     const prefix = sel.prefix ? encodeURIComponent(sel.prefix) + "-," : "";
     const suffix = sel.suffix ? ",-" + encodeURIComponent(sel.suffix) : "";
     return `${pageUrl}#:~:text=${prefix}${encodeURIComponent(sel.exact)}${suffix}`;
