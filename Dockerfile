@@ -49,6 +49,16 @@ trap term TERM INT
 
 PORT=$API_PORT ./margin-server &
 api_pid=$!
+
+until wget -qO- "http://localhost:$API_PORT/health" >/dev/null 2>&1; do
+	if ! kill -0 "$api_pid" 2>/dev/null; then
+		echo "API exited before becoming ready"
+		exit 1
+	fi
+	echo "Waiting for API..."
+	sleep 0.5
+done
+
 node ./dist/server/entry.mjs &
 web_pid=$!
 

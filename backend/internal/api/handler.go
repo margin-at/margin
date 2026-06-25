@@ -263,6 +263,14 @@ func (h *Handler) RegisterRoutes(r chi.Router) {
 
 func (h *Handler) Health(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Cache-Control", "no-cache")
+
+	ctx, cancel := context.WithTimeout(r.Context(), 2*time.Second)
+	defer cancel()
+	if err := h.db.Pool().Ping(ctx); err != nil {
+		WriteJSON(w, http.StatusServiceUnavailable, map[string]string{"status": "unavailable", "reason": "database"})
+		return
+	}
+
 	WriteSuccess(w, map[string]string{"status": "ok", "version": "1.0"})
 }
 
