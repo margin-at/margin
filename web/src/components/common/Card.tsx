@@ -21,6 +21,7 @@ import {
   Send,
   X,
   Bookmark,
+  BookOpen,
 } from "lucide-react";
 import ShareMenu from "../modals/ShareMenu";
 import AddToCollectionModal from "../modals/AddToCollectionModal";
@@ -338,6 +339,20 @@ export default function Card({
       })()
     : null;
 
+  const isbn = pageUrl?.match(/^urn:isbn:(.+)$/i)?.[1].replace(/-/g, "");
+  const bookUrl = isbn ? `https://openlibrary.org/isbn/${isbn}` : null;
+  const bookTitle =
+    item.target?.title || item.title || (isbn ? `ISBN ${isbn}` : null);
+
+  const quoteLinkUrl = (() => {
+    const sel = item.target?.selector;
+    if (!sel?.exact) return null;
+    if (bookUrl) return bookUrl;
+    const prefix = sel.prefix ? encodeURIComponent(sel.prefix) + "-," : "";
+    const suffix = sel.suffix ? ",-" + encodeURIComponent(sel.suffix) : "";
+    return `${pageUrl}#:~:text=${prefix}${encodeURIComponent(sel.exact)}${suffix}`;
+  })();
+
   const decodeHTMLEntities = (text: string) => {
     if (!text.includes("&")) return text;
     try {
@@ -549,14 +564,18 @@ export default function Card({
 
           {pageUrl && !isBookmark && !(contentWarning && !contentRevealed) && (
             <a
-              href={pageUrl}
+              href={bookUrl || pageUrl}
               target="_blank"
               rel="noopener noreferrer"
-              onClick={(e) => handleExternalClick(e, pageUrl)}
+              onClick={(e) => handleExternalClick(e, bookUrl || pageUrl)}
               className="inline-flex items-center gap-1 text-xs text-primary-600 dark:text-primary-400 hover:underline mt-0.5 max-w-full"
             >
-              <ExternalLink size={10} className="flex-shrink-0" />
-              <span className="truncate">{displayUrl}</span>
+              {isbn ? (
+                <BookOpen size={10} className="flex-shrink-0" />
+              ) : (
+                <ExternalLink size={10} className="flex-shrink-0" />
+              )}
+              <span className="truncate">{isbn ? bookTitle : displayUrl}</span>
             </a>
           )}
         </div>
@@ -697,14 +716,11 @@ export default function Card({
               }
             >
               <a
-                href={`${pageUrl}#:~:text=${item.target.selector.prefix ? encodeURIComponent(item.target.selector.prefix) + "-," : ""}${encodeURIComponent(item.target.selector.exact)}${item.target.selector.suffix ? ",-" + encodeURIComponent(item.target.selector.suffix) : ""}`}
+                href={quoteLinkUrl || undefined}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => {
-                  const sel = item.target?.selector;
-                  if (!sel) return;
-                  const url = `${pageUrl}#:~:text=${sel.prefix ? encodeURIComponent(sel.prefix) + "-," : ""}${encodeURIComponent(sel.exact)}${sel.suffix ? ",-" + encodeURIComponent(sel.suffix) : ""}`;
-                  handleExternalClick(e, url);
+                  if (quoteLinkUrl) handleExternalClick(e, quoteLinkUrl);
                 }}
                 className="block break-words"
               >
