@@ -109,6 +109,11 @@ function getContentWarning(
 
 const PHYSICAL_BOOKS_SPEC = "https://margin.at/docs/specs/physical-books";
 
+// Decode one application/x-www-form-urlencoded component. "+" maps to a space;
+// the replace runs before decodeURIComponent so an escaped plus (%2B) survives.
+const formDecode = (component: string): string =>
+  decodeURIComponent(component.replace(/\+/g, " "));
+
 // Printed page label from a selector's physical-books FragmentSelector, e.g.
 // "255-256", or "A-1 - A-2" when a label itself contains an (encoded) hyphen.
 function bookPageLabel(selector?: Selector | null): string | null {
@@ -131,7 +136,7 @@ function bookPageLabel(selector?: Selector | null): string | null {
       .find(([key]) => key === "page")?.[1];
     if (!raw) return null;
     try {
-      const pages = raw.split("-").map(decodeURIComponent);
+      const pages = raw.split("-").map(formDecode);
       const separator = /%2d/i.test(raw) ? " - " : "-";
       return pages.join(separator);
     } catch {
