@@ -4,6 +4,8 @@ WORKDIR /app/web
 COPY web/package.json web/bun.lock ./
 RUN bun install
 COPY web/ ./
+# Lexicons are the source of truth for schema docs rendered by the web build.
+COPY lexicons/ /app/lexicons/
 RUN bun run build
 
 FROM golang:1.25-alpine AS backend-builder
