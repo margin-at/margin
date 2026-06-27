@@ -47,6 +47,7 @@ import type {
   ContentLabel,
   LabelVisibility,
 } from "../../types";
+import { asTextQuote } from "../../types";
 
 import { Avatar } from "../ui";
 import CollectionIcon from "./CollectionIcon";
@@ -252,7 +253,7 @@ export default function Card({
       item.uri,
       pageUrl,
       convertText.trim(),
-      item.target?.selector,
+      asTextQuote(item.target?.selector),
       item.target?.title,
     );
     setConverting(false);
@@ -346,7 +347,7 @@ export default function Card({
     item.target?.title || item.title || (isbn ? `ISBN ${isbn}` : null);
 
   const quoteLinkUrl = (() => {
-    const sel = item.target?.selector;
+    const sel = asTextQuote(item.target?.selector);
     if (!sel?.exact) return null;
     if (bookUrl) return bookUrl;
     if (!pageUrl) return null;
@@ -689,7 +690,7 @@ export default function Card({
         )}
 
         {!(contentWarning && !contentRevealed) &&
-          item.target?.selector?.exact && (
+          asTextQuote(item.target?.selector)?.exact && (
             <blockquote
               className={clsx(
                 "pl-4 py-2 border-l-[3px] mb-3 text-[15px] italic text-surface-600 dark:text-surface-300 rounded-r-lg hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors",
@@ -726,7 +727,7 @@ export default function Card({
                 }}
                 className="block break-words"
               >
-                "{item.target?.selector?.exact}"
+                "{asTextQuote(item.target?.selector)?.exact}"
               </a>
             </blockquote>
           )}

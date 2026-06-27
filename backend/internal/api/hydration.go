@@ -36,14 +36,15 @@ type Author struct {
 }
 
 type APISelector struct {
-	Type       string `json:"type"`
-	Exact      string `json:"exact,omitempty"`
-	Prefix     string `json:"prefix,omitempty"`
-	Suffix     string `json:"suffix,omitempty"`
-	Start      *int   `json:"start,omitempty"`
-	End        *int   `json:"end,omitempty"`
-	Value      string `json:"value,omitempty"`
-	ConformsTo string `json:"conformsTo,omitempty"`
+	Type       string       `json:"type"`
+	Exact      string       `json:"exact,omitempty"`
+	Prefix     string       `json:"prefix,omitempty"`
+	Suffix     string       `json:"suffix,omitempty"`
+	Start      *int         `json:"start,omitempty"`
+	End        *int         `json:"end,omitempty"`
+	Value      string       `json:"value,omitempty"`
+	ConformsTo string       `json:"conformsTo,omitempty"`
+	RefinedBy  *APISelector `json:"refinedBy,omitempty"`
 }
 
 type APIBody struct {

@@ -8,6 +8,7 @@ import {
   getTrendingTags,
 } from "../../api/client";
 import type { Selector, ContentLabelValue } from "../../types";
+import { asTextQuote } from "../../types";
 import { X, ShieldAlert, Highlighter, PenLine } from "lucide-react";
 import TagInput from "../ui/TagInput";
 import { analytics } from "../../lib/analytics";
@@ -114,17 +115,14 @@ export default function Composer({
         };
       }
 
+      const quoteSelector = asTextQuote(finalSelector);
       const tagList = tags.filter(Boolean);
 
       if (!text.trim()) {
-        if (!finalSelector) throw new Error("No text selected");
+        if (!quoteSelector) throw new Error("No text selected");
         await createHighlight({
           url,
-          selector: finalSelector as {
-            exact: string;
-            prefix?: string;
-            suffix?: string;
-          },
+          selector: quoteSelector,
           color: "yellow",
           tags: tagList,
           labels: selfLabels.length > 0 ? selfLabels : undefined,
@@ -139,13 +137,13 @@ export default function Composer({
         await createAnnotation({
           url,
           text: text.trim(),
-          selector: finalSelector || undefined,
+          selector: quoteSelector,
           tags: tagList,
           labels: selfLabels.length > 0 ? selfLabels : undefined,
         });
         analytics.capture("annotation_created", {
           url,
-          has_quote: !!finalSelector,
+          has_quote: !!quoteSelector,
           tag_count: tagList.length,
           has_labels: selfLabels.length > 0,
         });
