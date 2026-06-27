@@ -47,19 +47,12 @@ export interface XPathSelector extends BaseSelector {
   value: string;
 }
 
-export interface RangeSelector extends BaseSelector {
-  type: "RangeSelector";
-  startSelector: Selector;
-  endSelector: Selector;
-}
-
 export type Selector =
   | TextQuoteSelector
   | TextPositionSelector
   | FragmentSelector
   | CssSelector
-  | XPathSelector
-  | RangeSelector;
+  | XPathSelector;
 
 /** Narrows a selector to a TextQuoteSelector if possible, for reading quote text. */
 export function asTextQuote(

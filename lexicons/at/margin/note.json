@@ -171,8 +171,7 @@
             "TextPositionSelector",
             "CssSelector",
             "XPathSelector",
-            "FragmentSelector",
-            "RangeSelector"
+            "FragmentSelector"
           ]
         },
         "exact": {
