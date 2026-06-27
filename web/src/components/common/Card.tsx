@@ -46,6 +46,7 @@ import type {
   AnnotationItem,
   ContentLabel,
   LabelVisibility,
+  Selector,
 } from "../../types";
 import { asTextQuote } from "../../types";
 
@@ -101,6 +102,40 @@ function getContentWarning(
         visibility,
         isAccountWide: match.scope === "account",
       };
+    }
+  }
+  return null;
+}
+
+const PHYSICAL_BOOKS_SPEC = "https://margin.at/docs/specs/physical-books";
+
+// Printed page label from a selector's physical-books FragmentSelector, e.g.
+// "255-256", or "A-1 - A-2" when a label itself contains an (encoded) hyphen.
+function bookPageLabel(selector?: Selector | null): string | null {
+  for (
+    let sel: Selector | null | undefined = selector;
+    sel;
+    sel = sel.refinedBy
+  ) {
+    if (
+      sel.type !== "FragmentSelector" ||
+      sel.conformsTo !== PHYSICAL_BOOKS_SPEC ||
+      !sel.value
+    ) {
+      continue;
+    }
+    // Keep the value raw (%2D still encoded) so the range hyphen stays unambiguous.
+    const raw = sel.value
+      .split("&")
+      .map((pair) => pair.split("="))
+      .find(([key]) => key === "page")?.[1];
+    if (!raw) return null;
+    try {
+      const pages = raw.split("-").map(decodeURIComponent);
+      const separator = /%2d/i.test(raw) ? " - " : "-";
+      return pages.join(separator);
+    } catch {
+      return null;
     }
   }
   return null;
@@ -345,6 +380,7 @@ export default function Card({
   const bookUrl = isbn ? `https://openlibrary.org/isbn/${isbn}` : null;
   const bookTitle =
     item.target?.title || item.title || (isbn ? `ISBN ${isbn}` : null);
+  const bookPage = bookPageLabel(item.target?.selector);
 
   const quoteLinkUrl = (() => {
     const sel = asTextQuote(item.target?.selector);
@@ -566,20 +602,29 @@ export default function Card({
           </div>
 
           {pageUrl && !isBookmark && !(contentWarning && !contentRevealed) && (
-            <a
-              href={bookUrl || pageUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => handleExternalClick(e, bookUrl || pageUrl)}
-              className="inline-flex items-center gap-1 text-xs text-primary-600 dark:text-primary-400 hover:underline mt-0.5 max-w-full"
-            >
-              {isbn ? (
-                <BookOpen size={10} className="flex-shrink-0" />
-              ) : (
-                <ExternalLink size={10} className="flex-shrink-0" />
+            <div className="flex items-center gap-1.5 mt-0.5 max-w-full">
+              <a
+                href={bookUrl || pageUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => handleExternalClick(e, bookUrl || pageUrl)}
+                className="inline-flex items-center gap-1 text-xs text-primary-600 dark:text-primary-400 hover:underline min-w-0"
+              >
+                {isbn ? (
+                  <BookOpen size={10} className="flex-shrink-0" />
+                ) : (
+                  <ExternalLink size={10} className="flex-shrink-0" />
+                )}
+                <span className="truncate">
+                  {isbn ? bookTitle : displayUrl}
+                </span>
+              </a>
+              {isbn && bookPage && (
+                <span className="flex-shrink-0 text-xs text-surface-500 dark:text-surface-400">
+                  (p.{bookPage})
+                </span>
               )}
-              <span className="truncate">{isbn ? bookTitle : displayUrl}</span>
-            </a>
+            </div>
           )}
         </div>
       </div>
