@@ -1,5 +1,10 @@
 /// <reference types="astro/client" />
 
+declare module "virtual:lexicons" {
+  /** Raw lexicon JSON text, keyed by NSID id (e.g. "at.margin.note"). */
+  export const lexicons: Record<string, string>;
+}
+
 declare module "virtual:i18n-resources" {
   export const resources: Record<
     string,

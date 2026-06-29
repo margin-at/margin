@@ -13,13 +13,52 @@ export interface UserProfile {
   labels?: ContentLabel[];
 }
 
-export interface Selector {
-  type?: string;
+interface BaseSelector {
+  /** A further selector applied within the region this selector identifies (W3C refinement). */
+  refinedBy?: Selector;
+}
+
+export interface TextQuoteSelector extends BaseSelector {
+  type: "TextQuoteSelector";
   exact: string;
   prefix?: string;
   suffix?: string;
-  start?: number;
-  end?: number;
+}
+
+export interface TextPositionSelector extends BaseSelector {
+  type: "TextPositionSelector";
+  start: number;
+  end: number;
+}
+
+export interface FragmentSelector extends BaseSelector {
+  type: "FragmentSelector";
+  value: string;
+  conformsTo?: string;
+}
+
+export interface CssSelector extends BaseSelector {
+  type: "CssSelector";
+  value: string;
+}
+
+export interface XPathSelector extends BaseSelector {
+  type: "XPathSelector";
+  value: string;
+}
+
+export type Selector =
+  | TextQuoteSelector
+  | TextPositionSelector
+  | FragmentSelector
+  | CssSelector
+  | XPathSelector;
+
+/** Narrows a selector to a TextQuoteSelector if possible, for reading quote text. */
+export function asTextQuote(
+  selector?: Selector | null,
+): TextQuoteSelector | undefined {
+  return selector?.type === "TextQuoteSelector" ? selector : undefined;
 }
 
 export interface Target {

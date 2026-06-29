@@ -1,0 +1,170 @@
+---
+import BaseLayout from "../../../layouts/StaticLayout.astro";
+
+const SPEC_URL = "https://margin.at/docs/specs/physical-books";
+
+// Hand-tokenised at build time so the example highlights with no client JS.
+const exampleHtml = `{
+  <span class="text-sky-300">"type"</span>: <span class="text-emerald-300">"TextQuoteSelector"</span>,
+  <span class="text-sky-300">"exact"</span>: <span class="text-emerald-300">"Some text from a book."</span>,
+  <span class="text-sky-300">"refinedBy"</span>: {
+    <span class="text-sky-300">"type"</span>: <span class="text-emerald-300">"FragmentSelector"</span>,
+    <span class="text-surface-500 italic">// The URL of the page you're reading now</span>
+    <span class="text-sky-300">"conformsTo"</span>: <span class="text-emerald-300">"${SPEC_URL}"</span>,
+    <span class="text-surface-500 italic">// The page number, or consecutive page number range</span>
+    <span class="text-sky-300">"value"</span>: <span class="text-emerald-300">"page=255-256"</span>
+  }
+}`;
+
+const examples = [
+	{ value: "page=20", meaning: "Page 20." },
+	{
+		value: "page=255-256",
+		meaning: "A range of consecutive pages, 255 to 256.",
+	},
+	{
+		value: "page=xi",
+		meaning: "A page printed with the Roman numeral xi (e.g. front matter).",
+	},
+];
+---
+
+<BaseLayout
+	title="Physical book pages — Margin"
+	description="Addressing printed pages in a W3C annotation FragmentSelector."
+>
+	<div class="min-h-screen bg-surface-100 dark:bg-surface-900">
+		<div class="max-w-3xl mx-auto px-4 sm:px-6 pt-10 md:pt-14 pb-20">
+			<a
+				href="/home"
+				class="inline-flex items-center gap-1.5 text-sm font-medium text-surface-500 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white transition-colors mb-8"
+			>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="16"
+					height="16"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					><path d="m12 19-7-7 7-7"></path><path d="M19 12H5"></path></svg
+				>
+				Home
+			</a>
+
+			<div
+				class="bg-white dark:bg-surface-800 rounded-2xl px-5 sm:px-8 lg:px-12 py-10 md:py-14"
+			>
+				<header class="mb-10">
+					<p
+						class="text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider mb-3"
+					>
+						Specification
+					</p>
+					<h1
+						class="font-display font-bold text-3xl md:text-4xl text-surface-900 dark:text-white tracking-tight mb-2"
+					>
+						Physical book pages
+					</h1>
+					<p class="text-sm text-surface-500 dark:text-surface-400">
+						When you're annotating physical books, you can <a
+							href="https://www.w3.org/TR/annotation-model/#refinement-of-selection"
+							target="_blank"
+							rel="noopener noreferrer"
+							class="font-medium text-primary-600 hover:underline dark:text-primary-400"
+							>refine</a
+						> the location of a note with the printed page number(s) they're on with
+						this <kbd
+							class="rounded bg-surface-100 dark:bg-surface-700/60 px-1.5 py-0.5 font-mono text-[13px] text-surface-800 dark:text-surface-200"
+							>FragmentSelector</kbd
+						>.
+					</p>
+				</header>
+
+				<div
+					class="space-y-10 text-[15px] text-surface-700 dark:text-surface-300 leading-relaxed"
+				>
+					<section>
+						<h2
+							class="font-display font-bold text-xl text-surface-900 dark:text-white tracking-tight mb-3"
+						>
+							Example
+						</h2>
+						<pre
+							class="rounded-xl bg-surface-900 dark:bg-surface-950 text-surface-100 text-[13px] leading-relaxed p-4 sm:p-5 overflow-x-auto font-mono"><code set:html={exampleHtml} /></pre>
+					</section>
+
+					<section>
+						<h2
+							class="font-display font-bold text-xl text-surface-900 dark:text-white tracking-tight mb-3"
+						>
+							Conforms To
+						</h2>
+
+						<p class="mb-4">
+							For the spec below to apply the <kbd
+								class="rounded bg-surface-100 dark:bg-surface-700/60 px-1.5 py-0.5 font-mono text-[13px] text-surface-800 dark:text-surface-200"
+								>conformsTo</kbd
+							> value <em>must</em> be exactly <kbd
+								class="rounded bg-surface-100 dark:bg-surface-700/60 px-1.5 py-0.5 font-mono text-[13px] text-surface-800 dark:text-surface-200"
+								>{SPEC_URL}</kbd
+							>.
+						</p>
+
+						<h2
+							class="font-display font-bold text-xl text-surface-900 dark:text-white tracking-tight mb-3"
+						>
+							Value
+						</h2>
+						<p class="mb-4">
+							<kbd
+								class="rounded bg-surface-100 dark:bg-surface-700/60 px-1.5 py-0.5 font-mono text-[13px] text-surface-800 dark:text-surface-200"
+								>value</kbd
+							>s conforming to this spec are an <code
+								class="rounded bg-surface-100 dark:bg-surface-700/60 px-1.5 py-0.5 font-mono text-[13px] text-surface-800 dark:text-surface-200"
+								>application/x-www-form-urlencoded</code
+							> string. Today only one valid key is defined, <kbd
+								class="rounded bg-surface-100 dark:bg-surface-700/60 px-1.5 py-0.5 font-mono text-[13px] text-surface-800 dark:text-surface-200"
+								>page</kbd
+							>.
+						</p>
+						<p class="mb-4">
+							The value of <kbd
+								class="rounded bg-surface-100 dark:bg-surface-700/60 px-1.5 py-0.5 font-mono text-[13px] text-surface-800 dark:text-surface-200"
+								>page</kbd
+							> should be the page number(s) where the text fragment can be found,
+							as written on the printed pages themselves.
+						</p>
+						<pre
+							class="mb-4 rounded-xl bg-surface-900 dark:bg-surface-950 text-surface-100 text-[13px] leading-relaxed p-4 sm:p-5 overflow-x-auto font-mono"><code><span class="text-surface-500 italic">// Page <span class="text-amber-300">42</span> of the book</span>
+page=<span class="text-amber-300">42</span></code></pre>
+						<p class="mb-4">
+							Consecutive page ranges are declared as the first page number, a
+							hyphen (<kbd
+								class="rounded bg-surface-100 dark:bg-surface-700/60 px-1.5 py-0.5 font-mono text-[13px] text-surface-800 dark:text-surface-200"
+								>0x2D</kbd
+							>), and the last page number, as they appear in the book.
+						</p>
+						<pre
+							class="mb-4 rounded-xl bg-surface-900 dark:bg-surface-950 text-surface-100 text-[13px] leading-relaxed p-4 sm:p-5 overflow-x-auto font-mono"><code><span class="text-surface-500 italic">// Spread from page <span class="text-amber-300">xiv</span> to page <span class="text-violet-300">2</span></span>
+page=<span class="text-amber-300">xiv</span>-<span class="text-violet-300">2</span></code></pre>
+						<p class="mb-4">
+							Page numbers containing hyphens should be percent-escaped.
+						</p>
+						<pre
+							class="mb-4 rounded-xl bg-surface-900 dark:bg-surface-950 text-surface-100 text-[13px] leading-relaxed p-4 sm:p-5 overflow-x-auto font-mono"><code><span class="text-surface-500 italic">// Spread from page <span class="text-amber-300">A-1</span> to page <span class="text-violet-300">A-2</span></span>
+page=<span class="text-amber-300">A%2D1</span>-<span class="text-violet-300">A%2D2</span></code></pre>
+						<p class="mt-4 text-surface-500 dark:text-surface-400">
+							Keys other than <kbd
+								class="rounded bg-surface-100 dark:bg-surface-700/60 px-1.5 py-0.5 font-mono text-[13px] text-surface-800 dark:text-surface-200"
+								>page</kbd
+							> have unspecified meaning.
+						</p>
+					</section>
+				</div>
+			</div>
+		</div>
+	</div>
+</BaseLayout>

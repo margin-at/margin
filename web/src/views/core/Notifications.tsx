@@ -5,6 +5,7 @@ import type { TFunction } from "i18next";
 import { getNotifications, markNotificationsRead } from "../../api/client";
 import { displayHandle } from "../../lib/handle";
 import type { NotificationItem, AnnotationItem } from "../../types";
+import { asTextQuote } from "../../types";
 import {
   Heart,
   MessageCircle,
@@ -153,7 +154,7 @@ function SubjectPreview({
   let preview: React.ReactNode = null;
 
   if (contentType === "annotation") {
-    const quote = item?.target?.selector?.exact;
+    const quote = asTextQuote(item?.target?.selector)?.exact;
     const body = item?.text || item?.body?.value;
     preview = (
       <>
@@ -170,7 +171,7 @@ function SubjectPreview({
       </>
     );
   } else if (contentType === "highlight") {
-    const quote = item?.target?.selector?.exact;
+    const quote = asTextQuote(item?.target?.selector)?.exact;
     preview = quote ? (
       <p className="text-surface-500 dark:text-surface-400 text-xs italic line-clamp-2">
         &ldquo;{quote}&rdquo;

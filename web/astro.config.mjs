@@ -11,6 +11,42 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const API_PORT = process.env.API_PORT || 8081;
 
+function lexiconsPlugin() {
+  const virtualId = "virtual:lexicons";
+  const resolvedId = "\0" + virtualId;
+  return {
+    name: "lexicons",
+    /** @param {string} id */
+    resolveId(id) {
+      if (id === virtualId) return resolvedId;
+    },
+    /** @param {string} id */
+    load(id) {
+      if (id !== resolvedId) return;
+      // Single source of truth: every lexicon in ../lexicons, keyed by its NSID
+      // id, read raw at build time so docs never drift from the schema.
+      const lexiconsDir = join(__dirname, "../lexicons");
+      /** @type {Record<string, string>} */
+      const lexicons = {};
+      /** @param {string} dir */
+      const walk = (dir) => {
+        for (const entry of readdirSync(dir, { withFileTypes: true })) {
+          const full = join(dir, entry.name);
+          if (entry.isDirectory()) {
+            walk(full);
+          } else if (entry.name.endsWith(".json")) {
+            const text = readFileSync(full, "utf-8").trimEnd();
+            const id = JSON.parse(text).id;
+            if (id) lexicons[id] = text;
+          }
+        }
+      };
+      walk(lexiconsDir);
+      return `export const lexicons = ${JSON.stringify(lexicons)};`;
+    },
+  };
+}
+
 function i18nResourcesPlugin() {
   const virtualId = "virtual:i18n-resources";
   const resolvedId = "\0" + virtualId;
@@ -89,7 +125,7 @@ export default defineConfig({
     defaultStrategy: "viewport",
   },
   vite: {
-    plugins: [i18nResourcesPlugin(), i18nLanguagesPlugin()],
+    plugins: [lexiconsPlugin(), i18nResourcesPlugin(), i18nLanguagesPlugin()],
     resolve: {
       alias: {
         "@": resolve(__dirname, "src"),

@@ -10,6 +10,7 @@ import {
   getTrendingTags,
 } from "../../api/client";
 import type { AnnotationItem, ContentLabelValue } from "../../types";
+import { asTextQuote } from "../../types";
 import TagInput from "../ui/TagInput";
 
 const SELF_LABEL_VALUES: ContentLabelValue[] = [
@@ -236,9 +237,9 @@ function EditItemModalContent({
                   />
                 ))}
               </div>
-              {item.target?.selector?.exact && (
+              {asTextQuote(item.target?.selector)?.exact && (
                 <blockquote className="mt-3 pl-3 py-2 border-l-2 border-surface-300 dark:border-surface-600 text-sm italic text-surface-500 dark:text-surface-400">
-                  {item.target.selector.exact}
+                  {asTextQuote(item.target?.selector)?.exact}
                 </blockquote>
               )}
             </div>

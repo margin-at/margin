@@ -1,7 +1,7 @@
 {
   "lexicon": 1,
   "id": "at.margin.note",
-  "revision": 3,
+  "revision": 4,
   "description": "W3C Web Annotation Data Model compliant unified note record for ATProto",
   "defs": {
     "main": {
@@ -171,8 +171,7 @@
             "TextPositionSelector",
             "CssSelector",
             "XPathSelector",
-            "FragmentSelector",
-            "RangeSelector"
+            "FragmentSelector"
           ]
         },
         "exact": {
@@ -212,6 +211,11 @@
           "type": "string",
           "format": "uri",
           "description": "FragmentSelector: URI of the specification the fragment conforms to"
+        },
+        "refinedBy": {
+          "type": "ref",
+          "ref": "#selector",
+          "description": "W3C refinement: a further selector applied within the region this selector identifies (e.g. a FragmentSelector locating a page or CFI range inside a TextQuoteSelector match)."
         }
       }
     },

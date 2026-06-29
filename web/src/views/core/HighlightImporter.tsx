@@ -9,7 +9,7 @@ import type React from "react";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { createHighlight } from "../../api/client";
-import type { Selector } from "../../types";
+import type { TextQuoteSelector } from "../../types";
 import { analytics } from "../../lib/analytics";
 
 interface Highlight {
@@ -189,7 +189,7 @@ https://blog.example.com,"Another highlight","Article Title","reading",blue,2024
         const h = highlights[i];
 
         try {
-          const selector: Selector = {
+          const selector: TextQuoteSelector = {
             type: "TextQuoteSelector",
             exact: h.text.substring(0, 5000), // Max 5000 chars
           };

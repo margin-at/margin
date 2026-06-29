@@ -7,6 +7,7 @@ import type {
   NotificationItem,
   Selector,
   Target,
+  TextQuoteSelector,
   UserProfile,
 } from "../types";
 
@@ -341,7 +342,7 @@ interface CreateAnnotationParams {
   url: string;
   text?: string;
   title?: string;
-  selector?: { exact: string; prefix?: string; suffix?: string };
+  selector?: TextQuoteSelector;
   tags?: string[];
   labels?: string[];
 }
@@ -370,7 +371,7 @@ export async function createAnnotation({
 
 interface CreateHighlightParams {
   url: string;
-  selector: { exact: string; prefix?: string; suffix?: string };
+  selector: TextQuoteSelector;
   color?: string;
   tags?: string[];
   title?: string;
@@ -517,7 +518,7 @@ export async function convertHighlightToAnnotation(
   highlightUri: string,
   url: string,
   text: string,
-  selector?: { exact: string; prefix?: string; suffix?: string },
+  selector?: TextQuoteSelector,
   title?: string,
 ): Promise<{ success: boolean; item?: AnnotationItem; error?: string }> {
   try {
