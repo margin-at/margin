@@ -73,4 +73,7 @@ exit 1
 EOF
 RUN chmod +x /app/start.sh
 
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD wget -qO- "http://localhost:$API_PORT/health" >/dev/null 2>&1 && wget -qO- "http://localhost:$PORT/" >/dev/null 2>&1 || exit 1
+
 CMD ["/app/start.sh"]

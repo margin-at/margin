@@ -310,6 +310,8 @@ func (s *CollectionService) GetCollectionItems(w http.ResponseWriter, r *http.Re
 		viewerDID = session.DID
 	}
 
+	items = filterHiddenCollectionItems(r.Context(), s.db, viewerDID, items)
+
 	enrichedItems, err := hydrateCollectionItems(s.db, items, viewerDID)
 	if err != nil {
 		logger.Error("Hydration error: %v", err)

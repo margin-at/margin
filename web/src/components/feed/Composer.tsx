@@ -3,13 +3,14 @@ import { useTranslation } from "react-i18next";
 import {
   createAnnotation,
   createHighlight,
+  createBookmark,
   sessionAtom,
   getUserTags,
   getTrendingTags,
 } from "../../api/client";
 import type { Selector, ContentLabelValue } from "../../types";
 import { asTextQuote } from "../../types";
-import { X, ShieldAlert, Highlighter, PenLine } from "lucide-react";
+import { X, ShieldAlert, Highlighter, PenLine, Bookmark } from "lucide-react";
 import TagInput from "../ui/TagInput";
 import { analytics } from "../../lib/analytics";
 
@@ -74,8 +75,14 @@ export default function Composer({
 
   const hasQuote = !!(highlightedText || quoteText.trim());
   const hasText = !!text.trim();
-  const mode: "highlight" | "annotation" | "note" =
-    hasQuote && !hasText ? "highlight" : hasQuote ? "annotation" : "note";
+  const mode: "highlight" | "annotation" | "note" | "bookmark" =
+    hasQuote && !hasText
+      ? "highlight"
+      : hasQuote
+        ? "annotation"
+        : hasText
+          ? "note"
+          : "bookmark";
 
   const modeCopy = {
     highlight: {
@@ -96,12 +103,24 @@ export default function Composer({
       submit: t("composer.postNote"),
       hint: null,
     },
+    bookmark: {
+      title: t("composer.newBookmark"),
+      icon: Bookmark,
+      submit: t("composer.saveBookmark"),
+      hint: t("composer.bookmarkHint"),
+    },
   }[mode];
   const ModeIcon = modeCopy.icon;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!text.trim() && !highlightedText && !quoteText.trim()) return;
+    if (
+      mode !== "bookmark" &&
+      !text.trim() &&
+      !highlightedText &&
+      !quoteText.trim()
+    )
+      return;
 
     try {
       setLoading(true);
@@ -118,7 +137,20 @@ export default function Composer({
       const quoteSelector = asTextQuote(finalSelector);
       const tagList = tags.filter(Boolean);
 
-      if (!text.trim()) {
+      if (mode === "bookmark") {
+        const result = await createBookmark({
+          url,
+          tags: tagList.length > 0 ? tagList : undefined,
+        });
+        if (result && "error" in result && result.error) {
+          throw new Error(result.error);
+        }
+        analytics.capture("bookmark_created", {
+          url,
+          tag_count: tagList.length,
+          source: "web",
+        });
+      } else if (!text.trim()) {
         if (!quoteSelector) throw new Error("No text selected");
         await createHighlight({
           url,
@@ -338,7 +370,12 @@ export default function Composer({
             type="submit"
             className="bg-primary-600 hover:bg-primary-700 text-white font-medium px-4 py-1.5 rounded-lg transition-colors disabled:opacity-50 text-sm"
             disabled={
-              loading || (!text.trim() && !highlightedText && !quoteText.trim())
+              loading ||
+              (mode !== "bookmark" &&
+                !text.trim() &&
+                !highlightedText &&
+                !quoteText.trim()) ||
+              (mode === "bookmark" && !url)
             }
           >
             {loading ? "…" : modeCopy.submit}

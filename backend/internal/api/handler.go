@@ -328,7 +328,10 @@ func (h *Handler) GetAnnotations(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	lc, _ := h.hydration.Load(r.Context(), notes, h.getViewerDID(r))
+	viewerDID := h.getViewerDID(r)
+	notes = h.filterHiddenNotes(r.Context(), viewerDID, notes)
+
+	lc, _ := h.hydration.Load(r.Context(), notes, viewerDID)
 	items := make([]service.APINote, len(notes))
 	for i, n := range notes {
 		items[i] = h.hydration.ToAPINote(n, lc)
@@ -444,6 +447,7 @@ func (h *Handler) GetFeed(w http.ResponseWriter, r *http.Request) {
 
 		if len(collItems) > 0 {
 			viewerDID := h.getViewerDID(r)
+			collItems = h.filterHiddenCollectionItems(r.Context(), viewerDID, collItems)
 			hydrated, hydrateErr := hydrateCollectionItems(h.db, collItems, viewerDID)
 			if hydrateErr == nil {
 				noteURIsInFeed := make(map[string]bool, len(resp.Items))
@@ -586,14 +590,19 @@ func (h *Handler) GetByTarget(w http.ResponseWriter, r *http.Request) {
 		notes = mergeNotes(notes, rawNotes)
 	}
 
-	lc, _ := h.hydration.Load(r.Context(), notes, h.getViewerDID(r))
+	viewerDID := h.getViewerDID(r)
+	notes = h.filterHiddenNotes(r.Context(), viewerDID, notes)
+
+	lc, _ := h.hydration.Load(r.Context(), notes, viewerDID)
 	items := make([]service.APINote, len(notes))
 	for i, n := range notes {
 		items[i] = h.hydration.ToAPINote(n, lc)
 	}
 	annotations, highlights, bookmarks := notesByMotivation(items)
 
-	if len(items) == 0 {
+	if viewerDID != "" {
+		w.Header().Set("Cache-Control", "private, max-age=0, no-store")
+	} else if len(items) == 0 {
 		w.Header().Set("Cache-Control", "public, max-age=60, s-maxage=300")
 	} else {
 		w.Header().Set("Cache-Control", "private, max-age=0, no-store")
@@ -767,6 +776,33 @@ func (h *Handler) DiscoverForURL(w http.ResponseWriter, r *http.Request) {
 	}
 
 	viewerDID := h.getViewerDID(r)
+	hidden := h.hiddenDIDSet(r.Context(), viewerDID)
+	if len(hidden) > 0 {
+		filteredAnnos := mergedAnnotations[:0]
+		for _, a := range mergedAnnotations {
+			if !hidden[a.AuthorDID] {
+				filteredAnnos = append(filteredAnnos, a)
+			}
+		}
+		mergedAnnotations = filteredAnnos
+
+		filteredHighs := mergedHighlights[:0]
+		for _, hi := range mergedHighlights {
+			if !hidden[hi.AuthorDID] {
+				filteredHighs = append(filteredHighs, hi)
+			}
+		}
+		mergedHighlights = filteredHighs
+
+		filteredBooks := mergedBookmarks[:0]
+		for _, b := range mergedBookmarks {
+			if !hidden[b.AuthorDID] {
+				filteredBooks = append(filteredBooks, b)
+			}
+		}
+		mergedBookmarks = filteredBooks
+	}
+
 	enrichedAnnotations, _ := hydrateAnnotations(h.db, mergedAnnotations, viewerDID)
 	enrichedHighlights, _ := hydrateHighlights(h.db, mergedHighlights, viewerDID)
 	enrichedBookmarks, _ := hydrateBookmarks(h.db, mergedBookmarks, viewerDID)
@@ -802,7 +838,10 @@ func (h *Handler) GetHighlights(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	lc, _ := h.hydration.Load(r.Context(), notes, h.getViewerDID(r))
+	viewerDID := h.getViewerDID(r)
+	notes = h.filterHiddenNotes(r.Context(), viewerDID, notes)
+
+	lc, _ := h.hydration.Load(r.Context(), notes, viewerDID)
 	items := make([]service.APINote, len(notes))
 	for i, n := range notes {
 		items[i] = h.hydration.ToAPINote(n, lc)
@@ -837,7 +876,10 @@ func (h *Handler) GetBookmarks(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	lc, _ := h.hydration.Load(r.Context(), notes, h.getViewerDID(r))
+	viewerDID := h.getViewerDID(r)
+	notes = h.filterHiddenNotes(r.Context(), viewerDID, notes)
+
+	lc, _ := h.hydration.Load(r.Context(), notes, viewerDID)
 	items := make([]service.APINote, len(notes))
 	for i, n := range notes {
 		items[i] = h.hydration.ToAPINote(n, lc)
@@ -878,6 +920,8 @@ func (h *Handler) GetUserAnnotations(w http.ResponseWriter, r *http.Request) {
 		WriteInternalError(w, "Internal server error")
 		return
 	}
+
+	notes = h.filterHiddenNotes(r.Context(), viewerDID, notes)
 
 	lc, _ := h.hydration.Load(r.Context(), notes, viewerDID)
 	items := make([]service.APINote, len(notes))
@@ -922,6 +966,8 @@ func (h *Handler) GetUserHighlights(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	notes = h.filterHiddenNotes(r.Context(), viewerDID, notes)
+
 	lc, _ := h.hydration.Load(r.Context(), notes, viewerDID)
 	items := make([]service.APINote, len(notes))
 	for i, n := range notes {
@@ -964,6 +1010,8 @@ func (h *Handler) GetUserBookmarks(w http.ResponseWriter, r *http.Request) {
 		WriteInternalError(w, "Internal server error")
 		return
 	}
+
+	notes = h.filterHiddenNotes(r.Context(), viewerDID, notes)
 
 	lc, _ := h.hydration.Load(r.Context(), notes, viewerDID)
 	items := make([]service.APINote, len(notes))
@@ -1012,7 +1060,10 @@ func (h *Handler) GetUserTargetItems(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	lc, _ := h.hydration.Load(r.Context(), notes, h.getViewerDID(r))
+	viewerDID := h.getViewerDID(r)
+	notes = h.filterHiddenNotes(r.Context(), viewerDID, notes)
+
+	lc, _ := h.hydration.Load(r.Context(), notes, viewerDID)
 	items := make([]service.APINote, len(notes))
 	for i, n := range notes {
 		items[i] = h.hydration.ToAPINote(n, lc)
@@ -1407,6 +1458,69 @@ func (h *Handler) getViewerDID(r *http.Request) string {
 	return sess.DID
 }
 
+func hiddenDIDSet(ctx context.Context, database *db.DB, viewerDID string) map[string]bool {
+	hidden := make(map[string]bool)
+	if database == nil {
+		return hidden
+	}
+	if banned, err := database.GetBannedDIDs(ctx); err == nil {
+		for _, did := range banned {
+			hidden[did] = true
+		}
+	}
+	if viewerDID == "" {
+		return hidden
+	}
+
+	all, err := database.GetAllHiddenDIDs(ctx, viewerDID)
+	if err == nil {
+		for did := range all {
+			hidden[did] = true
+		}
+	}
+	return hidden
+}
+
+func filterHiddenNotes(ctx context.Context, database *db.DB, viewerDID string, notes []db.Note) []db.Note {
+	hidden := hiddenDIDSet(ctx, database, viewerDID)
+	if len(hidden) == 0 {
+		return notes
+	}
+	filtered := notes[:0]
+	for _, n := range notes {
+		if !hidden[n.AuthorDID] {
+			filtered = append(filtered, n)
+		}
+	}
+	return filtered
+}
+
+func filterHiddenCollectionItems(ctx context.Context, database *db.DB, viewerDID string, items []db.CollectionItem) []db.CollectionItem {
+	hidden := hiddenDIDSet(ctx, database, viewerDID)
+	if len(hidden) == 0 {
+		return items
+	}
+	filtered := items[:0]
+	for _, ci := range items {
+		if !hidden[ci.AuthorDID] {
+			filtered = append(filtered, ci)
+		}
+	}
+	return filtered
+}
+
+func (h *Handler) hiddenDIDSet(ctx context.Context, viewerDID string) map[string]bool {
+	return hiddenDIDSet(ctx, h.db, viewerDID)
+}
+
+func (h *Handler) filterHiddenNotes(ctx context.Context, viewerDID string, notes []db.Note) []db.Note {
+	return filterHiddenNotes(ctx, h.db, viewerDID, notes)
+}
+
+func (h *Handler) filterHiddenCollectionItems(ctx context.Context, viewerDID string, items []db.CollectionItem) []db.CollectionItem {
+	return filterHiddenCollectionItems(ctx, h.db, viewerDID, items)
+}
+
 type fullProfileRepository struct {
 	db *db.DB
 }
@@ -1455,7 +1569,10 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	lc, _ := h.hydration.Load(r.Context(), notes, h.getViewerDID(r))
+	viewerDID := h.getViewerDID(r)
+	notes = h.filterHiddenNotes(r.Context(), viewerDID, notes)
+
+	lc, _ := h.hydration.Load(r.Context(), notes, viewerDID)
 	items := make([]service.APINote, len(notes))
 	for i, n := range notes {
 		items[i] = h.hydration.ToAPINote(n, lc)
