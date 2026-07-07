@@ -43,7 +43,6 @@ NOTES.md
 extension.zip
 
 # Xcode
-extension/safari-xcode/
 xcuserdata/
 *.xccheckout
 *.moved-aside

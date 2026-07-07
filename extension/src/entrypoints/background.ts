@@ -222,6 +222,19 @@ export default defineBackground(() => {
     }
   }
 
+  const recentActions = new Map<string, number>();
+  const ACTION_DEDUP_TTL = 5000;
+
+  function shouldProcessAction(key: string): boolean {
+    const now = Date.now();
+    const last = recentActions.get(key);
+    if (last !== undefined && now - last < ACTION_DEDUP_TTL) {
+      return false;
+    }
+    recentActions.set(key, now);
+    return true;
+  }
+
   async function ensureContextMenus() {
     await browser.contextMenus.removeAll();
 
@@ -301,6 +314,9 @@ export default defineBackground(() => {
     const apiUrl = await apiUrlItem.getValue();
 
     if (info.menuItemId === 'margin-bookmark' && tab?.url) {
+      const resolvedUrl = resolveTabUrl(tab.url);
+      if (!shouldProcessAction(`bookmark:${resolvedUrl}`)) return;
+
       const session = await checkSession();
       if (!session.authenticated) {
         await browser.tabs.create({ url: `${apiUrl}/login` });
@@ -308,7 +324,7 @@ export default defineBackground(() => {
       }
 
       const result = await createBookmark({
-        url: resolveTabUrl(tab.url),
+        url: resolvedUrl,
         title: tab.title,
       });
 
@@ -317,7 +333,7 @@ export default defineBackground(() => {
         const session = await checkSession();
         analytics.capture(
           'bookmark_created',
-          { url: resolveTabUrl(tab.url), tag_count: 0, source: 'extension' },
+          { url: resolvedUrl, tag_count: 0, source: 'extension' },
           session.did ?? undefined
         );
       }
@@ -373,6 +389,8 @@ export default defineBackground(() => {
       } catch {
         /* ignore */
       }
+
+      if (!shouldProcessAction(`highlight:${highlightUrl}:${info.selectionText}`)) return;
 
       const result = await createHighlight({
         url: highlightUrl,
@@ -469,6 +487,9 @@ export default defineBackground(() => {
     }
 
     if (command === 'bookmark-page' && tab?.url) {
+      const resolvedUrl = resolveTabUrl(tab.url);
+      if (!shouldProcessAction(`bookmark:${resolvedUrl}`)) return;
+
       const session = await checkSession();
       if (!session.authenticated) {
         const apiUrl = await apiUrlItem.getValue();
@@ -477,7 +498,7 @@ export default defineBackground(() => {
       }
 
       const result = await createBookmark({
-        url: resolveTabUrl(tab.url),
+        url: resolvedUrl,
         title: tab.title,
       });
 
@@ -486,7 +507,7 @@ export default defineBackground(() => {
         const session = await checkSession();
         analytics.capture(
           'bookmark_created',
-          { url: resolveTabUrl(tab.url), tag_count: 0, source: 'extension' },
+          { url: resolvedUrl, tag_count: 0, source: 'extension' },
           session.did ?? undefined
         );
       }
@@ -520,8 +541,11 @@ export default defineBackground(() => {
             },
           });
         } else if (command === 'highlight-selection') {
+          const resolvedHighlightUrl = resolveTabUrl(tab.url!);
+          if (!shouldProcessAction(`highlight:${resolvedHighlightUrl}:${selection.text}`)) return;
+
           const result = await createHighlight({
-            url: resolveTabUrl(tab.url!),
+            url: resolvedHighlightUrl,
             title: tab.title,
             selector: {
               type: 'TextQuoteSelector',
@@ -536,7 +560,7 @@ export default defineBackground(() => {
             const session = await checkSession();
             analytics.capture(
               'highlight_created',
-              { url: resolveTabUrl(tab.url!), tag_count: 0, has_color: false, source: 'extension' },
+              { url: resolvedHighlightUrl, tag_count: 0, has_color: false, source: 'extension' },
               session.did ?? undefined
             );
             await browser.tabs.sendMessage(tab.id, { type: 'REFRESH_ANNOTATIONS' });

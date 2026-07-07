@@ -1,7 +1,7 @@
 services:
   margin:
-    image: ghcr.io/margin-at/margin:latest
-    container_name: margin-at
+    image: ghcr.io/paddinglabs/margin:latest
+    container_name: margin
     environment:
       - PORT=8080
       - API_PORT=8081

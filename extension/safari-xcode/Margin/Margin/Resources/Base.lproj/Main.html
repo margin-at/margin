@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <style>
+        * {
+            -webkit-user-select: none;
+            -webkit-user-drag: none;
+            cursor: default;
+            box-sizing: border-box;
+        }
+
+        :root {
+            color-scheme: light dark;
+            --bg: #f4f4f5;
+            --fg: #18181b;
+            --fg-secondary: #52525b;
+            --border: #e4e4e7;
+            --blue: #027bff;
+            --blue-hover: #026ae0;
+            --green: #22c55e;
+            --step-bg: #ffffff;
+            --ready-bg: #f0fdf4;
+            --ready-fg: #16a34a;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #18181b;
+                --fg: #fafafa;
+                --fg-secondary: #a1a1aa;
+                --border: #3f3f46;
+                --step-bg: #27272a;
+                --ready-bg: #052e16;
+                --ready-fg: #4ade80;
+            }
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background: var(--bg);
+            color: var(--fg);
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            font-size: 13px;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100%;
+            padding: 40px 48px;
+            text-align: center;
+            gap: 16px;
+        }
+
+        .icon {
+            margin-bottom: 4px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            color: var(--fg);
+        }
+
+        .subtitle {
+            margin: 0;
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--fg-secondary);
+            max-width: 300px;
+        }
+
+        .status-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--fg-secondary);
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--fg-secondary);
+            opacity: 0.4;
+        }
+
+        body.state-on .status-dot {
+            background: var(--green);
+            opacity: 1;
+        }
+
+        .steps {
+            width: 100%;
+            max-width: 320px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin: 4px 0;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--step-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 12px;
+            color: var(--fg-secondary);
+            text-align: left;
+        }
+
+        .step strong {
+            color: var(--fg);
+        }
+
+        .step-num {
+            flex-shrink: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 6px;
+            background: var(--blue);
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .ready {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--ready-fg);
+            background: var(--ready-bg);
+            border-radius: 10px;
+            padding: 10px 16px;
+        }
+
+        .ready svg {
+            width: 15px;
+            height: 15px;
+        }
+
+        button.open-preferences {
+            margin-top: 4px;
+            background: var(--blue);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 20px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            -webkit-user-select: none;
+        }
+
+        button.open-preferences:hover {
+            background: var(--blue-hover);
+        }
+
+        /* State visibility. Default (no state class) shows only the "not yet enabled"
+           message plus the enable steps, so the window is never blank even if the
+           native state callback never fires. */
+        .state-on,
+        .state-off,
+        .ready { display: none; }
+
+        /* enabled */
+        body.state-on .state-unknown,
+        body.state-on .state-off,
+        body.state-on .steps { display: none; }
+        body.state-on .state-on { display: inline; }
+        body.state-on .ready { display: flex; }
+
+        /* disabled */
+        body.state-off .state-unknown,
+        body.state-off .state-on { display: none; }
+        body.state-off .state-off { display: inline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <svg class="icon" width="80" height="70" viewBox="0 0 265 231" fill="#027bff" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Margin">
+            <path d="M0 230 V0 H199 V65.7156 H149.5 V115.216 H182.5 L199 131.716 V230 Z"/>
+            <path d="M215 214.224 V230 H264.5 V0 H215.07 V16.2242 H248.5 V214.224 H215 Z"/>
+        </svg>
+        <h1>Margin</h1>
+        <p class="subtitle">Annotate and highlight any webpage, with your notes saved to the AT Protocol.</p>
+
+        <div class="status-row">
+            <div class="status-dot"></div>
+            <span class="state-unknown">Extension not yet enabled</span>
+            <span class="state-on">Extension is enabled</span>
+            <span class="state-off">Extension is disabled</span>
+        </div>
+
+        <div class="steps">
+            <div class="step">
+                <span class="step-num">1</span>
+                <span>Open <strong>Safari &rsaquo; Settings &rsaquo; Extensions</strong></span>
+            </div>
+            <div class="step">
+                <span class="step-num">2</span>
+                <span>Enable <strong>Margin</strong> in the list</span>
+            </div>
+            <div class="step">
+                <span class="step-num">3</span>
+                <span>Set &ldquo;Allow on&rdquo; to <strong>All Websites</strong></span>
+            </div>
+        </div>
+
+        <div class="ready">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
+            Ready to use on every website
+        </div>
+
+        <button class="open-preferences">Open Safari Settings</button>
+    </div>
+
+    <script>
+        function show(enabled, useSettingsInsteadOfPreferences) {
+            if (useSettingsInsteadOfPreferences) {
+                document.querySelector('button.open-preferences').innerText = 'Open Safari Settings';
+            }
+
+            if (typeof enabled === 'boolean') {
+                document.body.classList.toggle('state-on', enabled);
+                document.body.classList.toggle('state-off', !enabled);
+            } else {
+                document.body.classList.remove('state-on');
+                document.body.classList.remove('state-off');
+            }
+        }
+
+        function openPreferences() {
+            if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.controller) {
+                window.webkit.messageHandlers.controller.postMessage('open-preferences');
+            }
+        }
+
+        document.querySelector('button.open-preferences').addEventListener('click', openPreferences);
+    </script>
+</body>
+</html>
