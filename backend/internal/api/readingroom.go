@@ -772,28 +772,29 @@ func (h *Handler) HandleStripeWebhook(w http.ResponseWriter, r *http.Request) {
 	case "customer.subscription.updated":
 		subID := event.GetString("id")
 		customerID := event.GetString("customer")
-		status := event.GetString("status")
-		periodEnd := event.GetInt64("current_period_end")
-		priceID := event.GetString("plan.id")
-		if customerID == "" {
+		if customerID == "" || subID == "" {
 			break
 		}
 		existingSub, _ := h.db.GetSubscriptionByCustomerID(r.Context(), customerID)
 		if existingSub == nil {
 			break
 		}
+		stripeSub, _ := h.stripe.GetSubscription(subID)
+		if stripeSub == nil {
+			break
+		}
+		pe := time.Unix(stripeSub.CurrentPeriodEnd, 0)
 		plan := existingSub.Plan
-		if priceID == h.stripe.PriceID("yearly") {
+		if stripeSub.Plan.ID == h.stripe.PriceID("yearly") {
 			plan = "yearly"
-		} else if priceID == h.stripe.PriceID("monthly") {
+		} else if stripeSub.Plan.ID == h.stripe.PriceID("monthly") {
 			plan = "monthly"
 		}
-		pe := time.Unix(periodEnd, 0)
 		h.db.UpsertSubscription(r.Context(), &db.ReadingRoomSubscription{
 			DID:                  existingSub.DID,
 			StripeCustomerID:     customerID,
 			StripeSubscriptionID: subID,
-			Status:               status,
+			Status:               stripeSub.Status,
 			Plan:                 plan,
 			CurrentPeriodEnd:     &pe,
 		})
