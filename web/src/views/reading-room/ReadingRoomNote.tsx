@@ -58,38 +58,54 @@ function ReadingRoomNoteView({
     };
   }, [handle, uri]);
 
-  const avatar =
+  const rawAvatar =
     data?.avatar ||
     (data?.did ? `https://margin.at/api/avatar/${data.did}` : "");
+  const avatar =
+    onCustomDomain && rawAvatar.startsWith("https://margin.at")
+      ? rawAvatar.slice("https://margin.at".length)
+      : rawAvatar;
 
   useEffect(() => {
     if (!data?.did) return;
     let link: HTMLLinkElement | null = null;
     const oldLink = document.querySelector("link[rel='icon']");
 
-    fetch(avatar)
-      .then((res) => res.blob())
-      .then((blob) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          const dataUri = reader.result as string;
-          const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><defs><clipPath id="c"><circle cx="32" cy="32" r="30"/></clipPath></defs><image href="${dataUri}" width="64" height="64" clip-path="url(#c)"/></svg>`;
-          link = document.createElement("link");
-          link.rel = "icon";
-          link.type = "image/svg+xml";
-          link.href = `data:image/svg+xml,${encodeURIComponent(svg)}`;
-          if (oldLink) oldLink.remove();
-          document.head.appendChild(link);
-        };
-        reader.readAsDataURL(blob);
-      })
-      .catch(() => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = 64;
+      canvas.height = 64;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      ctx.beginPath();
+      ctx.arc(32, 32, 30, 0, Math.PI * 2);
+      ctx.closePath();
+      ctx.clip();
+      ctx.drawImage(img, 0, 0, 64, 64);
+      try {
+        link = document.createElement("link");
+        link.rel = "icon";
+        link.href = canvas.toDataURL("image/png");
+        if (oldLink) oldLink.remove();
+        document.head.appendChild(link);
+      } catch {
         link = document.createElement("link");
         link.rel = "icon";
         link.href = avatar;
         if (oldLink) oldLink.remove();
         document.head.appendChild(link);
-      });
+      }
+    };
+    img.onerror = () => {
+      link = document.createElement("link");
+      link.rel = "icon";
+      link.href = avatar;
+      if (oldLink) oldLink.remove();
+      document.head.appendChild(link);
+    };
+    img.src = avatar;
 
     return () => {
       if (link) link.remove();

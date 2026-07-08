@@ -492,7 +492,11 @@ export default function ReadingRoomSettings() {
 
           {user?.handle && (
             <a
-              href={`/reading-room/${user.handle}`}
+              href={
+                domain?.status === "active" && domain?.domain
+                  ? `https://${domain.domain}`
+                  : `/reading-room/${user.handle}`
+              }
               className="shrink-0 text-sm font-medium flex items-center gap-1.5 hover:opacity-80 transition-opacity text-primary-600 dark:text-primary-400"
             >
               {t("settings.readingRoom.view")}
