@@ -113,6 +113,8 @@ async function apiRequest(
       if (window.location.pathname !== "/login") {
         window.location.href = "/login";
       }
+    } else if (fetchOptions.method && fetchOptions.method !== "GET") {
+      window.location.href = "/auth/start";
     }
   }
 

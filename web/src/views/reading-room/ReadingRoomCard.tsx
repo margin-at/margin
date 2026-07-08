@@ -178,12 +178,15 @@ export default function ReadingRoomCard({
     .replace(/\/$/, "");
   const displayTitle = targetTitle || cleanUrl || domain;
 
-  const noteUrl =
-    linkable && note.id ? readingRoomNoteUrl(roomHandle, note.id) : "";
+  const onCustomDomain = typeof window !== "undefined" && !!(window as unknown as { __READING_ROOM_HANDLE__?: string }).__READING_ROOM_HANDLE__;
+  const notePath = onCustomDomain
+    ? `/note?uri=${encodeURIComponent(note.id)}`
+    : readingRoomNoteUrl(roomHandle, note.id);
+  const noteUrl = linkable && note.id ? notePath : "";
 
   const handleCopyLink = async () => {
     if (!note.id) return;
-    const url = `${window.location.origin}${readingRoomNoteUrl(roomHandle, note.id)}`;
+    const url = `${window.location.origin}${notePath}`;
     try {
       await navigator.clipboard.writeText(url);
       setCopied(true);

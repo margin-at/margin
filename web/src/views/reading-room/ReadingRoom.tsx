@@ -79,6 +79,21 @@ function ReadingRoomView({ handle }: { handle?: string }) {
     };
   }, [data?.did, data?.avatar]);
 
+  useEffect(() => {
+    if (!data?.avatar) return;
+    const link = document.createElement("link");
+    link.rel = "icon";
+    link.type = "image/svg+xml";
+    link.href = `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><defs><clipPath id="c"><circle cx="32" cy="32" r="30"/></clipPath></defs><image href="${data.avatar}" width="64" height="64" clip-path="url(#c)"/></svg>`)}`;
+    const old = document.querySelector("link[rel='icon']");
+    if (old) old.remove();
+    document.head.appendChild(link);
+    return () => {
+      link.remove();
+      if (old) document.head.appendChild(old);
+    };
+  }, [data?.avatar]);
+
   const fontFam = data?.theme?.fontFamily || "sans-serif";
   useEffect(() => {
     ensureFontLoaded(fontFam);

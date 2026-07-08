@@ -14,35 +14,31 @@ export default {
       return new Response("Reading room not found", { status: 404 });
     }
 
+    const path = url.pathname;
     const originUrl = new URL(request.url);
     originUrl.hostname = ROOT_DOMAIN;
-
-    let pathPrefix = "/reading-room/" + handle;
+    const pathPrefix = "/reading-room/" + handle;
     let isNote = false;
 
-    if (url.pathname === "/" || url.pathname === "") {
+    if (path === "/" || path === "") {
       originUrl.pathname = pathPrefix;
-    } else if (url.pathname === "/feed" || url.pathname === "/feed.xml" || url.pathname === "/rss") {
-      originUrl.pathname = "/api/reading-room/rss/" + handle;
-    } else if (url.pathname === "/.well-known/site.standard.publication" || url.pathname.startsWith("/.well-known/site.standard.publication/")) {
-      originUrl.pathname = "/.well-known/site.standard.publication/reading-room/" + handle;
-    } else if (
-      url.pathname.startsWith("/api/") ||
-      url.pathname.startsWith("/_astro/") ||
-      url.pathname.startsWith("/dist/") ||
-      url.pathname.startsWith("/fonts/") ||
-      url.pathname.startsWith("/.well-known/") ||
-      /\.(js|css|woff2?|ttf|svg|png|jpg|jpeg|gif|ico|webp|webmanifest|map)$/.test(url.pathname)
-    ) {
-      originUrl.pathname = url.pathname;
-    } else if (url.pathname === "/note" || url.pathname.startsWith("/note/")) {
+    } else if (path === "/note" || path.startsWith("/note/")) {
       isNote = true;
       originUrl.pathname = pathPrefix + "/note";
-    } else if (url.pathname.startsWith("/reading-room/")) {
-      originUrl.pathname = url.pathname;
+    } else if (path === "/feed" || path === "/feed.xml" || path === "/rss") {
+      originUrl.pathname = "/api/reading-room/rss/" + handle;
+    } else if (path === "/.well-known/site.standard.publication" || path.startsWith("/.well-known/site.standard.publication/")) {
+      originUrl.pathname = "/.well-known/site.standard.publication/reading-room/" + handle;
+    } else if (
+      path.startsWith("/api/reading-room/") ||
+      path.startsWith("/_astro/") ||
+      path.startsWith("/dist/") ||
+      path.startsWith("/fonts/") ||
+      /\.(js|css|woff2?|ttf|svg|png|jpg|jpeg|gif|ico|webp|webmanifest|map)$/.test(path)
+    ) {
+      originUrl.pathname = path;
     } else {
-      const redirectUrl = new URL(url.pathname + url.search, "https://" + ROOT_DOMAIN);
-      return Response.redirect(redirectUrl.toString(), 302);
+      return Response.redirect("https://" + ROOT_DOMAIN + path + url.search, 302);
     }
 
     const modifiedRequest = new Request(originUrl, {
