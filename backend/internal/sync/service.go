@@ -38,6 +38,7 @@ func (s *Service) PerformSync(ctx context.Context, did string, getClient func(co
 		xrpc.CollectionCollectionItem,
 		xrpc.CollectionAPIKey,
 		xrpc.CollectionPreferences,
+		xrpc.CollectionReadingRoom,
 		xrpc.CollectionSembleCard,
 		xrpc.CollectionSembleCollection,
 		xrpc.CollectionSembleCollectionLink,
@@ -773,6 +774,30 @@ func (s *Service) upsertRecord(did, collection, uri, cid string, value json.RawM
 			IndexedAt:                    time.Now(),
 			CID:                          cidPtr,
 		})
+
+	case xrpc.CollectionReadingRoom:
+		var record xrpc.ReadingRoomRecord
+		if err := json.Unmarshal(value, &record); err != nil {
+			return err
+		}
+
+		themeJSON := "{}"
+		if record.Theme != nil {
+			b, _ := json.Marshal(record.Theme)
+			themeJSON = string(b)
+		}
+		featuredURIsJSON := "[]"
+		if len(record.FeaturedURIs) > 0 {
+			b, _ := json.Marshal(record.FeaturedURIs)
+			featuredURIsJSON = string(b)
+		}
+
+		showExternal := true
+		if record.ShowExternalBookmarks != nil {
+			showExternal = *record.ShowExternalBookmarks
+		}
+
+		return s.db.UpsertReadingRoomConfigFromRecord(context.Background(), did, record.Title, record.Subtitle, record.Description, themeJSON, featuredURIsJSON, showExternal)
 	}
 	return nil
 }

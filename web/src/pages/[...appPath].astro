@@ -96,6 +96,55 @@ try {
       description = profile.description?.slice(0, 200) || `${name}'s profile on Margin`;
     }
   }
+
+  if (segments.length === 2 && segments[0] === 'reading-room' && segments[1]) {
+    const rrHandle = decodeURIComponent(segments[1]);
+    const rrRes = await fetch(`${API_URL}/api/reading-room/${encodeURIComponent(rrHandle)}`);
+    if (rrRes.ok) {
+      const rr = await rrRes.json();
+      const name = rr.displayName || rrHandle;
+      title = rr.title || `${name}'s Reading Room`;
+      description =
+        (rr.subtitle === "null" ? "" : rr.subtitle) ||
+        (rr.description === "null" ? "" : rr.description) ||
+        `Highlights and annotations by ${name}`;
+      image = `${BASE_URL}/og-image?readingRoom=${encodeURIComponent(rrHandle)}`;
+    }
+  }
+
+  if (segments.length === 3 && segments[0] === 'reading-room' && segments[2] === 'note') {
+    const rrHandle = decodeURIComponent(segments[1]);
+    const noteUri = Astro.url.searchParams.get('uri');
+    if (noteUri) {
+      const noteRes = await fetch(
+        `${API_URL}/api/reading-room/${encodeURIComponent(rrHandle)}/note?uri=${encodeURIComponent(noteUri)}`
+      );
+      if (noteRes.ok) {
+        const payload = await noteRes.json();
+        const note = payload.note || {};
+        const name = payload.displayName || rrHandle;
+        const roomName = payload.roomTitle || `${name}'s Reading Room`;
+        const bodyText = note.body?.value || '';
+        const selectorText = note.target?.selector?.exact || '';
+        const targetTitle = note.target?.title || '';
+
+        if (note.motivation === 'highlighting') {
+          title = selectorText
+            ? `"${selectorText.slice(0, 100)}" — highlighted by ${name}`
+            : `Highlight by ${name}`;
+          description = targetTitle || `From ${roomName}`;
+        } else if (note.motivation === 'bookmarking') {
+          title = targetTitle ? `${targetTitle} — bookmarked by ${name}` : `Bookmark by ${name}`;
+          description = bodyText?.slice(0, 200) || `From ${roomName}`;
+        } else {
+          title = bodyText ? `${bodyText.slice(0, 100)} — ${name}` : `Note by ${name}`;
+          description = selectorText ? `"${selectorText.slice(0, 200)}"` : targetTitle || `From ${roomName}`;
+        }
+
+        image = `${BASE_URL}/og-image?readingRoom=${encodeURIComponent(rrHandle)}&uri=${encodeURIComponent(noteUri)}`;
+      }
+    }
+  }
 } catch (e) {
   // Fall through
 }

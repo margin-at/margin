@@ -40,6 +40,9 @@ import AnnotationDetail from "./content/AnnotationDetail";
 import UrlPage from "./content/UrlPage";
 import UserUrlPage from "./content/UserUrlPage";
 import Profile from "./profile/Profile";
+import ReadingRoom from "./reading-room/ReadingRoom";
+import ReadingRoomNote from "./reading-room/ReadingRoomNote";
+import ReadingRoomSettings from "./core/ReadingRoomSettings";
 
 const PAGE_TITLES: Record<string, string> = {
   "/home": "Home — Margin",
@@ -160,6 +163,7 @@ function AppLayout() {
       "/terms",
       "/brand",
       "/imprint",
+      "/pro",
       "/auth/",
       "/api/",
       "/og-image",
@@ -180,153 +184,182 @@ function AppLayout() {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen bg-surface-100 dark:bg-surface-900 flex">
-      <Sidebar currentPath={location.pathname} onNavigate={navigate} />
-
-      <div className="flex-1 min-w-0 transition-all duration-200">
-        <div className="flex w-full max-w-[1800px] mx-auto">
-          <main className="flex-1 w-full min-w-0 p-2 md:py-3 md:px-0">
-            <div className="bg-white dark:bg-surface-800 rounded-2xl min-h-[calc(100vh-16px)] md:min-h-[calc(100vh-24px)] py-6 px-4 md:px-6 lg:px-8 pb-28 md:pb-6">
-              <Routes>
-                <Route
-                  path="/home"
-                  element={
-                    <Feed
-                      key="home"
-                      initialType="all"
-                      initialTag={searchParams.get("tag") ?? undefined}
-                    />
-                  }
-                />
-                <Route
-                  path="/bookmarks"
-                  element={
-                    <Feed
-                      key="bookmarks"
-                      initialType="all"
-                      motivation="bookmarking"
-                      showTabs={false}
-                    />
-                  }
-                />
-                <Route
-                  path="/highlights"
-                  element={
-                    <Feed
-                      key="highlights"
-                      initialType="all"
-                      motivation="highlighting"
-                      showTabs={false}
-                    />
-                  }
-                />
-                <Route
-                  path="/annotations"
-                  element={
-                    <Feed
-                      key="annotations"
-                      initialType="all"
-                      motivation="commenting"
-                      showTabs={false}
-                    />
-                  }
-                />
-                <Route path="/discover" element={<Discover />} />
-                <Route
-                  path="/search"
-                  element={
-                    <Search
-                      key={searchParams.get("q") ?? ""}
-                      initialQuery={searchParams.get("q") ?? undefined}
-                    />
-                  }
-                />
-                <Route
-                  path="/notifications"
-                  element={
-                    <AuthGuard>
-                      <Notifications />
-                    </AuthGuard>
-                  }
-                />
-                <Route
-                  path="/new"
-                  element={
-                    <AuthGuard>
-                      <New
-                        initialUrl={searchParams.get("url") ?? undefined}
-                        initialSelectorJson={
-                          searchParams.get("selector") ?? undefined
-                        }
-                        initialQuote={searchParams.get("quote") ?? undefined}
-                      />
-                    </AuthGuard>
-                  }
-                />
-                <Route path="/settings" element={<Settings />} />
-                <Route
-                  path="/admin/moderation"
-                  element={
-                    <AuthGuard>
-                      <AdminModeration />
-                    </AuthGuard>
-                  }
-                />
-                <Route path="/collections" element={<Collections />} />
-                <Route
-                  path="/collections/:rkey"
-                  element={<CollectionDetail />}
-                />
-                <Route
-                  path="/:handle/collection/:rkey"
-                  element={<CollectionDetailRoute />}
-                />
-                <Route
-                  path="/:handle/note/:rkey"
-                  element={<AnnotationDetailRoute />}
-                />
-                <Route
-                  path="/:handle/annotation/:rkey"
-                  element={<AnnotationDetailRoute />}
-                />
-                <Route
-                  path="/:handle/highlight/:rkey"
-                  element={<AnnotationDetailRoute />}
-                />
-                <Route
-                  path="/:handle/bookmark/:rkey"
-                  element={<AnnotationDetailRoute />}
-                />
-                <Route
-                  path="/annotation/:uri"
-                  element={<UriAnnotationRoute />}
-                />
-                <Route path="/at/:did/:rkey" element={<AtAnnotationRoute />} />
-                <Route
-                  path="/at/:did/:collection/:rkey"
-                  element={<AtCollectionAnnotationRoute />}
-                />
-                <Route path="/url/*" element={<UrlRoute />} />
-                <Route path="/:handle/url/*" element={<UserUrlRoute />} />
-                <Route path="/profile/:did" element={<ProfileRoute />} />
-                <Route
-                  path="/profile"
-                  element={
-                    <AuthGuard>
-                      <ProfileSelfRedirect />
-                    </AuthGuard>
-                  }
-                />
-                <Route path="*" element={<Navigate to="/home" replace />} />
-              </Routes>
-            </div>
-          </main>
-
-          <RightSidebar onNavigate={navigate} />
+    <div className={`min-h-screen flex ${location.pathname.startsWith("/reading-room/") ? "" : "bg-surface-100 dark:bg-surface-900"}`}>
+      {location.pathname.startsWith("/reading-room/") && (
+        <div className="flex-1 min-w-0">
+          <Routes>
+            <Route
+              path="/reading-room/:handle/note"
+              element={<ReadingRoomNote />}
+            />
+            <Route path="/reading-room/:handle" element={<ReadingRoom />} />
+          </Routes>
         </div>
-      </div>
+      )}
 
-      <MobileNav currentPath={location.pathname} onNavigate={navigate} />
+      {!location.pathname.startsWith("/reading-room/") && (
+        <>
+          <Sidebar currentPath={location.pathname} onNavigate={navigate} />
+
+          <div className="flex-1 min-w-0 transition-all duration-200">
+            <div className="flex w-full max-w-[1800px] mx-auto">
+              <main className="flex-1 w-full min-w-0 p-2 md:py-3 md:px-0">
+                <div className="bg-white dark:bg-surface-800 rounded-2xl min-h-[calc(100vh-16px)] md:min-h-[calc(100vh-24px)] py-6 px-4 md:px-6 lg:px-8 pb-28 md:pb-6">
+                  <Routes>
+                    <Route
+                      path="/home"
+                      element={
+                        <Feed
+                          key="home"
+                          initialType="all"
+                          initialTag={searchParams.get("tag") ?? undefined}
+                        />
+                      }
+                    />
+                    <Route
+                      path="/bookmarks"
+                      element={
+                        <Feed
+                          key="bookmarks"
+                          initialType="all"
+                          motivation="bookmarking"
+                          showTabs={false}
+                        />
+                      }
+                    />
+                    <Route
+                      path="/highlights"
+                      element={
+                        <Feed
+                          key="highlights"
+                          initialType="all"
+                          motivation="highlighting"
+                          showTabs={false}
+                        />
+                      }
+                    />
+                    <Route
+                      path="/annotations"
+                      element={
+                        <Feed
+                          key="annotations"
+                          initialType="all"
+                          motivation="commenting"
+                          showTabs={false}
+                        />
+                      }
+                    />
+                    <Route path="/discover" element={<Discover />} />
+                    <Route
+                      path="/search"
+                      element={
+                        <Search
+                          key={searchParams.get("q") ?? ""}
+                          initialQuery={searchParams.get("q") ?? undefined}
+                        />
+                      }
+                    />
+                    <Route
+                      path="/notifications"
+                      element={
+                        <AuthGuard>
+                          <Notifications />
+                        </AuthGuard>
+                      }
+                    />
+                    <Route
+                      path="/new"
+                      element={
+                        <AuthGuard>
+                          <New
+                            initialUrl={searchParams.get("url") ?? undefined}
+                            initialSelectorJson={
+                              searchParams.get("selector") ?? undefined
+                            }
+                            initialQuote={
+                              searchParams.get("quote") ?? undefined
+                            }
+                          />
+                        </AuthGuard>
+                      }
+                    />
+                    <Route path="/settings" element={<Settings />} />
+                    <Route
+                      path="/settings/reading-room"
+                      element={
+                        <AuthGuard>
+                          <ReadingRoomSettings />
+                        </AuthGuard>
+                      }
+                    />
+                    <Route
+                      path="/admin/moderation"
+                      element={
+                        <AuthGuard>
+                          <AdminModeration />
+                        </AuthGuard>
+                      }
+                    />
+                    <Route path="/collections" element={<Collections />} />
+                    <Route
+                      path="/collections/:rkey"
+                      element={<CollectionDetail />}
+                    />
+                    <Route
+                      path="/:handle/collection/:rkey"
+                      element={<CollectionDetailRoute />}
+                    />
+                    <Route
+                      path="/:handle/note/:rkey"
+                      element={<AnnotationDetailRoute />}
+                    />
+                    <Route
+                      path="/:handle/annotation/:rkey"
+                      element={<AnnotationDetailRoute />}
+                    />
+                    <Route
+                      path="/:handle/highlight/:rkey"
+                      element={<AnnotationDetailRoute />}
+                    />
+                    <Route
+                      path="/:handle/bookmark/:rkey"
+                      element={<AnnotationDetailRoute />}
+                    />
+                    <Route
+                      path="/annotation/:uri"
+                      element={<UriAnnotationRoute />}
+                    />
+                    <Route
+                      path="/at/:did/:rkey"
+                      element={<AtAnnotationRoute />}
+                    />
+                    <Route
+                      path="/at/:did/:collection/:rkey"
+                      element={<AtCollectionAnnotationRoute />}
+                    />
+                    <Route path="/url/*" element={<UrlRoute />} />
+                    <Route path="/:handle/url/*" element={<UserUrlRoute />} />
+                    <Route path="/profile/:did" element={<ProfileRoute />} />
+                    <Route
+                      path="/profile"
+                      element={
+                        <AuthGuard>
+                          <ProfileSelfRedirect />
+                        </AuthGuard>
+                      }
+                    />
+                    <Route path="*" element={<Navigate to="/home" replace />} />
+                  </Routes>
+                </div>
+              </main>
+
+              <RightSidebar onNavigate={navigate} />
+            </div>
+          </div>
+
+          <MobileNav currentPath={location.pathname} onNavigate={navigate} />
+        </>
+      )}
     </div>
   );
 }

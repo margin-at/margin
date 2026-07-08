@@ -113,10 +113,10 @@ export default function UrlPage({ urlPath }: UrlPageProps) {
     }
   }, []);
 
-  const handleNavigateMyAnnotations = useCallback(async () => {
+  const handleNavigateMyAnnotations = async () => {
     if (!user?.handle || !targetUrl) return;
     window.location.href = `/${user.handle}/url/${encodeURIComponent(targetUrl)}`;
-  }, [user?.handle, targetUrl]);
+  };
 
   const totalItems = annotations.length + highlights.length;
 

@@ -11,6 +11,7 @@ const PROXY_PATHS = [
   "/auth/",
   "/oauth-client-metadata.json",
   "/jwks.json",
+  "/.well-known/site.standard.publication",
 ];
 
 const CORS_HEADERS = {

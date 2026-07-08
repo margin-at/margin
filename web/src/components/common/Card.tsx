@@ -165,12 +165,25 @@ export default function Card({
 }: CardProps) {
   const { t } = useTranslation();
   const [item, setItem] = useState(initialItem);
+  const [prevInitial, setPrevInitial] = useState(initialItem);
+  if (initialItem !== prevInitial) {
+    setPrevInitial(initialItem);
+    setItem(initialItem);
+  }
   const user = useStore($user);
   const preferences = useStore($preferences);
   const isAuthor = user && item.author?.did === user.did;
 
   const [liked, setLiked] = useState(!!item.viewer?.like);
   const [likes, setLikes] = useState(item.likeCount || 0);
+  const [prevLike, setPrevLike] = useState(item.viewer?.like);
+  const [prevLikeCount, setPrevLikeCount] = useState(item.likeCount);
+  if (item.viewer?.like !== prevLike || item.likeCount !== prevLikeCount) {
+    setPrevLike(item.viewer?.like);
+    setPrevLikeCount(item.likeCount);
+    setLiked(!!item.viewer?.like);
+    setLikes(item.likeCount || 0);
+  }
   const [showCollectionModal, setShowCollectionModal] = useState(false);
   const [showExternalLinkModal, setShowExternalLinkModal] = useState(false);
   const [externalLinkUrl, setExternalLinkUrl] = useState<string | null>(null);
@@ -201,15 +214,6 @@ export default function Card({
   const [iconError, setIconError] = useState(false);
 
   const contentWarning = getContentWarning(item.labels, preferences);
-
-  React.useEffect(() => {
-    setItem(initialItem);
-  }, [initialItem]);
-
-  React.useEffect(() => {
-    setLiked(!!item.viewer?.like);
-    setLikes(item.likeCount || 0);
-  }, [item.viewer?.like, item.likeCount]);
 
   const type =
     item.motivation === "highlighting"
@@ -598,7 +602,7 @@ export default function Card({
                     className="text-surface-400 dark:text-surface-500 fill-current"
                   />
                   <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1 rounded-lg bg-surface-800 dark:bg-surface-700 text-white text-[11px] font-medium whitespace-nowrap opacity-0 group-hover/cb:opacity-100 transition-opacity shadow-lg">
-                    {t("card.communityBookmark")}
+                    {t("card.externalBookmark")}
                     <span className="absolute top-full left-1/2 -translate-x-1/2 -mt-px border-4 border-transparent border-t-surface-800 dark:border-t-surface-700" />
                   </span>
                 </span>

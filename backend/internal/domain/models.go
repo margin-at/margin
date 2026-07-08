@@ -210,3 +210,30 @@ type ContentLabel struct {
 	CreatedBy string    `json:"createdBy"`
 	CreatedAt time.Time `json:"createdAt"`
 }
+
+type ReadingRoomConfig struct {
+	DID                       string    `json:"did"`
+	Title                     string    `json:"title"`
+	Subtitle                  string    `json:"subtitle"`
+	Description               string    `json:"description"`
+	Theme                     string    `json:"theme"`
+	FeaturedURIs             string    `json:"featuredUris"`
+	CustomDomain              string    `json:"customDomain"`
+	CFHostnameID              string    `json:"cfHostnameId"`
+	DomainStatus              string    `json:"domainStatus"`
+	DomainVerificationRecords string    `json:"domainVerificationRecords"`
+	ShowExternalBookmarks     bool      `json:"showExternalBookmarks"`
+	CreatedAt                 time.Time `json:"createdAt"`
+	UpdatedAt                 time.Time `json:"updatedAt"`
+}
+
+type ReadingRoomSubscription struct {
+	DID                   string     `json:"did"`
+	StripeCustomerID      string     `json:"-"`
+	StripeSubscriptionID  string     `json:"-"`
+	Status                string     `json:"status"`
+	Plan                  string     `json:"plan"`
+	CurrentPeriodEnd      *time.Time `json:"currentPeriodEnd,omitempty"`
+	CreatedAt             time.Time  `json:"createdAt"`
+	UpdatedAt             time.Time  `json:"updatedAt"`
+}

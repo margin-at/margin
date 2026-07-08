@@ -19,6 +19,7 @@ const (
 	CollectionCollectionItem    = "at.margin.collectionItem"
 	CollectionProfile           = "at.margin.profile"
 	CollectionPreferences       = "at.margin.preferences"
+	CollectionReadingRoom       = "at.margin.readingRoom"
 	CollectionAPIKey            = "at.margin.apikey"
 	CollectionDocument          = "site.standard.document"
 	CollectionPublication       = "site.standard.publication"
@@ -552,5 +553,95 @@ func NewAPIKeyRecord(name, keyHash string) *APIKeyRecord {
 		Name:      name,
 		KeyHash:   keyHash,
 		CreatedAt: time.Now().UTC().Format(time.RFC3339),
+	}
+}
+
+type ReadingRoomThemeRecord struct {
+	BackgroundColor string `json:"backgroundColor,omitempty"`
+	AccentColor     string `json:"accentColor,omitempty"`
+	FontFamily      string `json:"fontFamily,omitempty"`
+	Layout          string `json:"layout,omitempty"`
+}
+
+type ReadingRoomRecord struct {
+	Type                  string                  `json:"$type"`
+	Title                 string                  `json:"title,omitempty"`
+	Subtitle              string                  `json:"subtitle,omitempty"`
+	Description           string                  `json:"description,omitempty"`
+	Theme                 *ReadingRoomThemeRecord `json:"theme,omitempty"`
+	FeaturedURIs          []string                `json:"featuredUris,omitempty"`
+	ShowExternalBookmarks *bool                   `json:"showExternalBookmarks,omitempty"`
+	CreatedAt             string                  `json:"createdAt"`
+}
+
+func (r *ReadingRoomRecord) Validate() error {
+	if len(r.Title) > 200 {
+		return fmt.Errorf("title too long")
+	}
+	if len(r.Subtitle) > 300 {
+		return fmt.Errorf("subtitle too long")
+	}
+	if len(r.Description) > 2000 {
+		return fmt.Errorf("description too long")
+	}
+	if len(r.FeaturedURIs) > 12 {
+		return fmt.Errorf("too many featured uris")
+	}
+	if r.Theme != nil {
+		if len(r.Theme.BackgroundColor) > 20 {
+			return fmt.Errorf("backgroundColor too long")
+		}
+		if len(r.Theme.AccentColor) > 20 {
+			return fmt.Errorf("accentColor too long")
+		}
+		if len(r.Theme.FontFamily) > 100 {
+			return fmt.Errorf("fontFamily too long")
+		}
+	}
+	return nil
+}
+
+func NewReadingRoomRecord(title, subtitle, description string, theme *ReadingRoomThemeRecord, featuredURIs []string, showExternalBookmarks *bool) *ReadingRoomRecord {
+	return &ReadingRoomRecord{
+		Type:                  CollectionReadingRoom,
+		Title:                 title,
+		Subtitle:              subtitle,
+		Description:           description,
+		Theme:                 theme,
+		FeaturedURIs:          featuredURIs,
+		ShowExternalBookmarks: showExternalBookmarks,
+		CreatedAt:             time.Now().UTC().Format(time.RFC3339),
+	}
+}
+
+type PublicationRecord struct {
+	Type        string `json:"$type"`
+	URL         string `json:"url"`
+	Name        string `json:"name"`
+	Description string `json:"description,omitempty"`
+}
+
+func (r *PublicationRecord) Validate() error {
+	if r.URL == "" {
+		return fmt.Errorf("url is required")
+	}
+	if r.Name == "" {
+		return fmt.Errorf("name is required")
+	}
+	if len(r.Name) > 5000 {
+		return fmt.Errorf("name too long")
+	}
+	if len(r.Description) > 30000 {
+		return fmt.Errorf("description too long")
+	}
+	return nil
+}
+
+func NewPublicationRecord(url, name, description string) *PublicationRecord {
+	return &PublicationRecord{
+		Type:        CollectionPublication,
+		URL:         url,
+		Name:        name,
+		Description: description,
 	}
 }

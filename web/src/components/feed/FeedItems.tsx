@@ -40,12 +40,35 @@ export default function FeedItems({
   initialHasMore,
 }: FeedItemsProps) {
   const { t } = useTranslation();
-  const [items, setItems] = useState<AnnotationItem[]>(initialItems || []);
-  const [loading, setLoading] = useState(!initialItems);
+  const [cacheState] = useState(() => {
+    const key = JSON.stringify({ type, motivation, tag, creator, source });
+    const c = feedCache.get(key);
+    return {
+      cached: c,
+      hasCache: !!c && Date.now() - c.timestamp < 5 * 60 * 1000,
+    };
+  });
+  const { cached, hasCache } = cacheState;
+
+  const [items, setItems] = useState<AnnotationItem[]>(
+    initialItems || (hasCache ? cached!.items : []),
+  );
+  const [loading, setLoading] = useState(!initialItems && !hasCache);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [hasMore, setHasMore] = useState(initialHasMore ?? false);
-  const [offset, setOffset] = useState(initialItems?.length ?? 0);
-  const skipInitialFetch = useRef(!!initialItems);
+  const [hasMore, setHasMore] = useState(
+    initialHasMore ?? (hasCache ? cached!.hasMore : false),
+  );
+  const [offset, setOffset] = useState(
+    initialItems?.length ?? (hasCache ? cached!.offset : 0),
+  );
+  const skipInitialFetch = useRef(!!initialItems || hasCache);
+
+  const depsKey = JSON.stringify({ type, motivation, tag, creator, source });
+  const [prevDepsKey, setPrevDepsKey] = useState(depsKey);
+  if (depsKey !== prevDepsKey) {
+    setPrevDepsKey(depsKey);
+    setLoading(true);
+  }
 
   useEffect(() => {
     if (skipInitialFetch.current) {
@@ -54,15 +77,9 @@ export default function FeedItems({
     }
 
     let cancelled = false;
-    const cacheKey = JSON.stringify({ type, motivation, tag, creator, source });
-    const cached = feedCache.get(cacheKey);
+    const cacheKey = depsKey;
 
-    if (cached && Date.now() - cached.timestamp < 5 * 60 * 1000) {
-      setItems(cached.items);
-      setHasMore(cached.hasMore);
-      setOffset(cached.offset);
-      setLoading(false);
-
+    if (hasCache) {
       getFeed({
         type,
         motivation,
@@ -74,12 +91,11 @@ export default function FeedItems({
       })
         .then((data) => {
           if (cancelled) return;
-          const fetched = data.items;
-          setItems(fetched);
+          setItems(data.items);
           setHasMore(data.hasMore);
           setOffset(data.fetchedCount);
           feedCache.set(cacheKey, {
-            items: fetched,
+            items: data.items,
             hasMore: data.hasMore,
             offset: data.fetchedCount,
             timestamp: Date.now(),
@@ -92,17 +108,15 @@ export default function FeedItems({
       };
     }
 
-    setLoading(true);
     getFeed({ type, motivation, tag, creator, source, limit: LIMIT, offset: 0 })
       .then((data) => {
         if (cancelled) return;
-        const fetched = data.items;
-        setItems(fetched);
+        setItems(data.items);
         setHasMore(data.hasMore);
         setOffset(data.fetchedCount);
         setLoading(false);
         feedCache.set(cacheKey, {
-          items: fetched,
+          items: data.items,
           hasMore: data.hasMore,
           offset: data.fetchedCount,
           timestamp: Date.now(),
@@ -119,7 +133,7 @@ export default function FeedItems({
     return () => {
       cancelled = true;
     };
-  }, [type, motivation, tag, creator, source]);
+  }, [type, motivation, tag, creator, source, depsKey, hasCache]);
 
   const loadMore = useCallback(async () => {
     setLoadingMore(true);

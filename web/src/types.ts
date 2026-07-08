@@ -209,12 +209,7 @@ export interface ModerationReport {
 }
 
 export type ReportReasonType =
-  | "spam"
-  | "violation"
-  | "misleading"
-  | "sexual"
-  | "rude"
-  | "other";
+  "spam" | "violation" | "misleading" | "sexual" | "rude" | "other";
 
 export interface ContentLabel {
   val: string;
@@ -223,12 +218,7 @@ export interface ContentLabel {
 }
 
 export type ContentLabelValue =
-  | "sexual"
-  | "nudity"
-  | "violence"
-  | "gore"
-  | "spam"
-  | "misleading";
+  "sexual" | "nudity" | "violence" | "gore" | "spam" | "misleading";
 
 export type LabelVisibility = "hide" | "warn" | "ignore";
 

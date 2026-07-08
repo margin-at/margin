@@ -20,6 +20,7 @@
             "at.margin.collection",
             "at.margin.collectionItem",
             "at.margin.profile",
+            "at.margin.readingRoom",
             "at.margin.apikey",
             "at.margin.preferences"
           ]

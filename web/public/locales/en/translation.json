@@ -36,6 +36,9 @@
     "downloadForEdge": "Download for Edge",
     "downloadForSafari": "Download for Safari",
     "downloadForChrome": "Download for Chrome",
+    "proTitle": "Margin Pro",
+    "proTagline": "Your own Reading Room with custom themes, fonts, and domain.",
+    "proCta": "Upgrade",
     "trending": "Trending",
     "nothingTrending": "Nothing trending right now.",
     "searchPlaceholder": "Search people, tags, URLs…",
@@ -291,7 +294,7 @@
     "addedTo": "Added to",
     "addedToLower": "added to",
     "and": "and",
-    "communityBookmark": "Community bookmark",
+    "externalBookmark": "External bookmark",
     "lichenBookmark": "Lichen bookmark",
     "openInSemble": "Open in Semble",
     "deleteConfirm": "Delete this item?",
@@ -475,7 +478,21 @@
       "apiKeys": "API Keys",
       "moderation": "Moderation",
       "contentFiltering": "Content Filtering",
-      "iosShortcut": "iOS Shortcut"
+      "iosShortcut": "iOS Shortcut",
+      "readingRoom": "Reading Room",
+      "billing": "Margin Pro"
+    },
+    "billing": {
+      "proActive": "Margin Pro is active",
+      "monthlyPlan": "Monthly plan",
+      "yearlyPlan": "Yearly plan",
+      "renewsOn": "Renews {{date}}",
+      "endsOn": "Ends {{date}}",
+      "manage": "Manage billing",
+      "freeTitle": "You're on the free plan",
+      "freeDesc": "Unlock Reading Room, custom domains, premium fonts, and more.",
+      "upgrade": "Upgrade to Pro",
+      "learnMore": "Learn more"
     },
     "language": {
       "label": "Interface Language",
@@ -524,6 +541,49 @@
     "iosShortcut": {
       "description": "Save pages to Margin from Safari on iPhone and iPad",
       "setupButton": "Setup iOS Shortcut"
+    },
+    "readingRoom": {
+      "description": "Publish your highlights and annotations as a beautiful, shareable page",
+      "lockedTitle": "Reading Room is a Pro feature",
+      "lockedDesc": "Turn your highlights and annotations into a beautiful, shareable page with a custom theme, fonts, and your own domain.",
+      "lockedCta": "Upgrade to Pro",
+      "lockedLearnMore": "See everything in Pro",
+      "profileDesc": "How your room introduces itself to visitors.",
+      "themeDesc": "Colors, type, and layout for your public page.",
+      "manage": "Manage",
+      "titleLabel": "Title",
+      "titlePlaceholder": "My Reading Room",
+      "subtitleLabel": "Subtitle",
+      "subtitlePlaceholder": "A tagline for your reading room",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Tell visitors what you read about...",
+      "showExternalBookmarks": "Show external bookmarks",
+      "showExternalBookmarksDesc": "Display bookmarks from Semble, Lichen, and other services.",
+      "profile": "Profile",
+      "theme": "Theme",
+      "backgroundColor": "Background color",
+      "accentColor": "Accent color",
+      "font": "Font",
+      "layout": "Layout",
+      "socialPreview": "Social preview",
+      "socialPreviewDesc": "This is the image shown when your Reading Room is shared on social media or in a chat. Reflects your last saved settings.",
+      "refreshPreview": "Refresh",
+      "previewUnavailable": "Preview unavailable",
+      "discovery": "Discovery & access",
+      "save": "Save",
+      "saved": "Saved",
+      "saveFailed": "Couldn't save — please try again",
+      "yourRoom": "Your reading room",
+      "view": "View",
+      "customDomain": "Custom Domain",
+      "addDomain": "Add",
+      "dnsInstructions": "Add these DNS records to verify your domain:",
+      "dnsCname": "CNAME record (point your domain to):",
+      "domainStatus": {
+        "pending": "Pending verification",
+        "pending_ssl": "SSL pending",
+        "active": "Active"
+      }
     },
     "logout": "Log out"
   },
@@ -810,6 +870,112 @@
         "signIn": "Sign in with your handle",
         "open": "Open Margin"
       }
+    }
+  },
+  "pro": {
+    "nav": {
+      "openApp": "Open app",
+      "signIn": "Sign in"
+    },
+    "hero": {
+      "badge": "Margin Pro",
+      "title": "Your reading, beautifully published.",
+      "lede": "Margin Pro turns your highlights and annotations into a shareable Reading Room, with custom themes, premium fonts, and your own domain. One subscription, everything unlocked.",
+      "ctaUpgrade": "Upgrade to Pro",
+      "ctaManage": "Manage subscription",
+      "ctaSignIn": "Sign in to upgrade",
+      "activeNote": "You're on Margin Pro. Thank you.",
+      "note": "Cancel anytime. Your annotations are always yours and always free."
+    },
+    "features": {
+      "heading": "What you get",
+      "subheading": "A polished home for everything you read and annotate.",
+      "readingRoom": {
+        "title": "Reading Room",
+        "desc": "A public, shareable page collecting your highlights and notes, with featured items, filtering, and per-note permalinks."
+      },
+      "customDomain": {
+        "title": "Custom domain",
+        "desc": "Host your Reading Room on your own domain, like notes.yoursite.com, with automatic SSL."
+      },
+      "themes": {
+        "title": "Themes & colors",
+        "desc": "Pick your background and accent colors, or set your own. Your room, your palette."
+      },
+      "fonts": {
+        "title": "Premium fonts",
+        "desc": "Choose from a curated library of typefaces built for long-form reading."
+      },
+      "layouts": {
+        "title": "Flexible layouts",
+        "desc": "Show your notes as a masonry wall, a tidy grid, or a focused list."
+      },
+      "social": {
+        "title": "Social preview cards",
+        "desc": "Every shared link gets a rich preview image generated from your room's theme."
+      }
+    },
+    "pricing": {
+      "heading": "Simple pricing",
+      "subheading": "One plan. Everything included.",
+      "monthly": "Monthly",
+      "yearly": "Yearly",
+      "perMonth": "/mo",
+      "perYear": "/yr",
+      "monthlyPrice": "$5",
+      "yearlyPrice": "$48",
+      "yearlyNote": "2 months free",
+      "billedYearly": "Billed annually at $48",
+      "choosePlan": "Choose plan",
+      "currentPlan": "Current plan",
+      "includesTitle": "Both plans include",
+      "includes": {
+        "readingRoom": "Reading Room publishing",
+        "customDomain": "Custom domain + SSL",
+        "themes": "All themes, fonts & layouts",
+        "social": "Social preview cards",
+        "future": "Every future Pro feature"
+      }
+    },
+    "faq": {
+      "heading": "Questions",
+      "q1": "What happens to my data if I cancel?",
+      "a1": "Your highlights and annotations always belong to you and stay on your PDS. Canceling only turns off Pro features like the public Reading Room and custom domain.",
+      "q2": "Is my annotation data free?",
+      "a2": "Yes. Creating, syncing, and browsing your annotations is completely free. Pro only covers the publishing and customization features.",
+      "q3": "Can I switch between monthly and yearly?",
+      "a3": "Anytime, from the billing portal. Changes are prorated automatically.",
+      "q4": "Which payment methods do you accept?",
+      "a4": "All major cards, handled securely by Stripe. We never see your card details."
+    },
+    "footer": {
+      "tagline": "Annotate the web.",
+      "back": "Back to Margin"
+    }
+  },
+  "readingRoom": {
+    "notFound": "Reading room not found",
+    "notFoundDesc": "This user hasn't set up their reading room yet.",
+    "featured": "Featured",
+    "recent": "Recent",
+    "empty": "No annotations yet.",
+    "noMatches": "Nothing matches this filter.",
+    "clearFilters": "Clear filters",
+    "jumpToText": "Jump to this passage on the page",
+    "noteNotFound": "Note not found",
+    "viewFullRoom": "View full room",
+    "copyLink": "Copy link",
+    "copied": "Copied",
+    "type": {
+      "highlight": "Highlight",
+      "note": "Note",
+      "bookmark": "Bookmark"
+    },
+    "filter": {
+      "all": "All",
+      "highlights": "Highlights",
+      "notes": "Notes",
+      "bookmarks": "Bookmarks"
     }
   }
 }

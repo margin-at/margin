@@ -1,11 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Search, Coffee, Heart } from "lucide-react";
+import { useStore } from "@nanostores/react";
+import { Search, Coffee, Heart, ArrowRight } from "lucide-react";
 import {
   getTrendingTags,
   searchActors,
+  getBillingStatus,
   type ActorSearchItem,
   type Tag,
+  type BillingStatus,
 } from "../../api/client";
+import { $user } from "../../store/auth";
 import { Avatar } from "../ui";
 import { displayHandle } from "../../lib/handle";
 import { useTranslation } from "react-i18next";
@@ -25,11 +29,13 @@ interface RightSidebarProps {
 
 export default function RightSidebar({ onNavigate }: RightSidebarProps) {
   const { t } = useTranslation();
+  const user = useStore($user);
   const navigate = (path: string) => {
     if (onNavigate) onNavigate(path);
     else window.location.href = path;
   };
   const [tags, setTags] = useState<Tag[]>([]);
+  const [billing, setBilling] = useState<BillingStatus | null>(null);
   const [browser] = useState<
     "chrome" | "firefox" | "edge" | "safari" | "other"
   >(() => {
@@ -141,6 +147,13 @@ export default function RightSidebar({ onNavigate }: RightSidebarProps) {
     getTrendingTags(10).then(setTags);
   }, []);
 
+  useEffect(() => {
+    if (!user) return;
+    getBillingStatus().then((b) => setBilling(b));
+  }, [user]);
+
+  const showProCard = !billing?.hasSubscription;
+
   const extensionLink =
     browser === "firefox"
       ? "https://addons.mozilla.org/en-US/firefox/addon/margin/"
@@ -232,11 +245,11 @@ export default function RightSidebar({ onNavigate }: RightSidebarProps) {
           </a>
         </div>
 
-        <div>
-          <h3 className="font-semibold text-sm px-1 mb-3 text-surface-900 dark:text-white tracking-tight">
-            {t("sidebar.trending")}
-          </h3>
-          {tags.length > 0 ? (
+        {tags.length > 0 && (
+          <div>
+            <h3 className="font-semibold text-sm px-1 mb-3 text-surface-900 dark:text-white tracking-tight">
+              {t("sidebar.trending")}
+            </h3>
             <div className="flex flex-col">
               {tags.map((tag) => (
                 <a
@@ -253,14 +266,28 @@ export default function RightSidebar({ onNavigate }: RightSidebarProps) {
                 </a>
               ))}
             </div>
-          ) : (
-            <div className="px-2">
-              <p className="text-sm text-surface-400 dark:text-surface-500">
-                {t("sidebar.nothingTrending")}
-              </p>
+          </div>
+        )}
+
+        {showProCard && (
+          <a
+            href="/pro"
+            className="group block rounded-xl p-4 bg-gradient-to-br from-primary-50 to-primary-100/50 dark:from-primary-950/30 dark:to-primary-900/10 border border-primary-200/40 dark:border-primary-800/30 transition-colors hover:border-primary-300/60 dark:hover:border-primary-700/50"
+          >
+            <div className="flex items-start justify-between gap-2 mb-1">
+              <h3 className="font-semibold text-sm text-surface-900 dark:text-white">
+                {t("sidebar.proTitle")}
+              </h3>
+              <ArrowRight
+                size={14}
+                className="shrink-0 mt-0.5 text-surface-400 dark:text-surface-500 transition-transform duration-200 group-hover:translate-x-0.5"
+              />
             </div>
-          )}
-        </div>
+            <p className="text-surface-500 dark:text-surface-400 text-xs leading-relaxed">
+              {t("sidebar.proTagline")}
+            </p>
+          </a>
+        )}
 
         <div className="px-1 pt-2">
           <div className="flex flex-wrap gap-x-3 gap-y-1 text-[12px] text-surface-400 dark:text-surface-500 leading-relaxed">

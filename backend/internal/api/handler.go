@@ -18,6 +18,7 @@ import (
 	xcharset "golang.org/x/net/html/charset"
 
 	"margin.at/internal/analytics"
+	"margin.at/internal/cloudflare"
 	"margin.at/internal/config"
 	"margin.at/internal/db"
 	"margin.at/internal/domain"
@@ -25,6 +26,7 @@ import (
 	"margin.at/internal/recommendations"
 	"margin.at/internal/repository/postgres"
 	"margin.at/internal/service"
+	stripepkg "margin.at/internal/stripe"
 	internal_sync "margin.at/internal/sync"
 	"margin.at/internal/xrpc"
 )
@@ -98,9 +100,11 @@ type Handler struct {
 	metaCache        *urlMetaCache
 	metaSem          chan struct{}
 	analytics        *analytics.Client
+	stripe           *stripepkg.Client
+	cloudflare       *cloudflare.Client
 }
 
-func NewHandler(database *db.DB, noteWriter *NoteWriteService, refresher *TokenRefresher, syncService *internal_sync.Service, recService *recommendations.Service, ac *analytics.Client) *Handler {
+func NewHandler(database *db.DB, noteWriter *NoteWriteService, refresher *TokenRefresher, syncService *internal_sync.Service, recService *recommendations.Service, ac *analytics.Client, sc *stripepkg.Client, cfc *cloudflare.Client) *Handler {
 	noteRepo := postgres.NewNoteRepository(database.Pool())
 	engagementRepo := postgres.NewEngagementRepository(database.Pool())
 	notificationRepo := postgres.NewNotificationRepository(database.Pool())
@@ -126,11 +130,14 @@ func NewHandler(database *db.DB, noteWriter *NoteWriteService, refresher *TokenR
 		metaCache:        newURLMetaCache(),
 		metaSem:          make(chan struct{}, 5),
 		analytics:        ac,
+		stripe:           sc,
+		cloudflare:       cfc,
 	}
 }
 
 func (h *Handler) RegisterRoutes(r chi.Router) {
 	r.Get("/health", h.Health)
+	r.Get("/.well-known/site.standard.publication/reading-room/{handle}", h.GetPublicationVerification)
 
 	collectionService := NewCollectionService(h.db, h.refresher)
 
@@ -258,6 +265,22 @@ func (h *Handler) RegisterRoutes(r chi.Router) {
 
 		// Analytics proxy
 		r.Post("/analytics/capture", h.CaptureEvent)
+
+		r.Get("/reading-room/rss/{handle}", h.GetRSSFeed)
+		r.Get("/reading-room/{handle}/note", h.GetPublicReadingRoomNote)
+		r.Get("/reading-room/{handle}", h.GetPublicReadingRoom)
+		r.Get("/reading-room/config", h.GetReadingRoomConfig)
+		r.Put("/reading-room/config", h.UpdateReadingRoomConfig)
+		r.Put("/reading-room/featured", h.UpdateFeaturedItems)
+		r.Get("/reading-room/domain", h.GetCustomDomainStatus)
+		r.Post("/reading-room/domain", h.AddCustomDomain)
+		r.Post("/reading-room/domain/poll", h.PollCustomDomain)
+		r.Delete("/reading-room/domain", h.RemoveCustomDomain)
+
+		r.Post("/billing/checkout", h.CreateCheckout)
+		r.Post("/billing/portal", h.CreatePortal)
+		r.Get("/billing/status", h.GetBillingStatus)
+		r.Post("/billing/webhook", h.HandleStripeWebhook)
 	})
 }
 

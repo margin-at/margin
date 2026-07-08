@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../layouts/StaticLayout.astro';
 
-const lastUpdated = 'April 27, 2026';
+const lastUpdated = 'July 8, 2026';
 const effectiveDate = 'May 1, 2026';
 
 const sections = [
@@ -63,6 +63,7 @@ const sections = [
 									<li>Vector embeddings of your User Content and of public AT Protocol records, and an interest profile derived from those embeddings, used to generate recommendations on the Discover page.</li>
 									<li>Usage data, including IP address, browser type, operating system, extension version, and product analytics events such as page views and feature interactions.</li>
 									<li>For accounts on margin.cafe: your email address, used for account recovery and security notices, and a salted hash of your password. We do not store passwords in plain text.</li>
+									<li>Billing data: your Stripe customer ID and subscription status, used to manage your Margin Pro subscription. Payment card details are processed by Stripe and are not stored on our servers.</li>
 									<li>Any correspondence you send to <a href="mailto:hello@margin.at" class="text-primary-600 dark:text-primary-400 hover:underline font-medium">hello@margin.at</a>.</li>
 								</ul>
 								<p>We do not knowingly process special categories of personal data (such as health, biometric, or government identification data), and ask that you do not include such information in your User Content.</p>
@@ -75,7 +76,7 @@ const sections = [
 							<div class="space-y-3 text-[15px] text-surface-700 dark:text-surface-300 leading-relaxed">
 								<p>Where the GDPR or UK GDPR applies, we rely on the following legal bases under Article 6(1):</p>
 								<ul class="list-disc pl-5 space-y-1.5 marker:text-surface-400 dark:marker:text-surface-600">
-									<li><strong>Performance of contract:</strong> authenticating you, storing and synchronising your User Content, and providing the core features of the Service.</li>
+									<li><strong>Performance of contract:</strong> authenticating you, storing and synchronising your User Content, processing subscription payments for Margin Pro, and providing the core features of the Service.</li>
 									<li><strong>Legitimate interests:</strong> maintaining a server-side index of public AT Protocol records, generating recommendations, conducting product analytics, preventing abuse, and improving the Service.</li>
 									<li><strong>Consent:</strong> for analytics cookies in jurisdictions such as the EEA and the United Kingdom. You may withdraw consent at any time.</li>
 									<li><strong>Legal obligation:</strong> to comply with applicable law or valid legal process.</li>
@@ -86,12 +87,14 @@ const sections = [
 
 						<section id="recipients" data-toc-section class="scroll-mt-6">
 							<h2 class="font-display font-bold text-xl text-surface-900 dark:text-white tracking-tight mb-2">Recipients and transfers</h2>
-							<p class="text-sm italic text-surface-500 dark:text-surface-400 mb-4">Two sub-processors. Both are based in the United States.</p>
+							<p class="text-sm italic text-surface-500 dark:text-surface-400 mb-4">Four sub-processors. All are based in the United States.</p>
 							<div class="space-y-3 text-[15px] text-surface-700 dark:text-surface-300 leading-relaxed">
 								<p>We engage the following sub-processors:</p>
 								<ul class="list-disc pl-5 space-y-1.5 marker:text-surface-400 dark:marker:text-surface-600">
 									<li><strong>OpenAI</strong> generates vector embeddings of User Content and of public AT Protocol records under its API data usage policy. OpenAI does not use API inputs to train its models.</li>
 									<li><strong>PostHog</strong> provides product analytics. We identify users to PostHog by DID, handle, and display name.</li>
+									<li><strong>Stripe</strong> processes subscription payments for Margin Pro. We share your DID with Stripe as customer metadata. Stripe collects and processes payment details directly; we do not handle or store card information.</li>
+									<li><strong>Cloudflare</strong> provides DNS, SSL termination, and request routing for custom Reading Room domains. Cloudflare processes IP addresses and HTTP request metadata for visitors to Reading Rooms served on custom domains.</li>
 								</ul>
 								<p>Where personal data is transferred from the European Economic Area, the United Kingdom, or Switzerland to a country without an adequacy decision, we rely on the European Commission's Standard Contractual Clauses (Decision 2021/914), supplemented by the UK International Data Transfer Addendum or the Swiss equivalent, as applicable.</p>
 								<p>We may also disclose personal data where required by law, to enforce these Terms, to protect users, or in connection with a merger, acquisition, or sale, subject to commitments at least as protective as this Policy.</p>
@@ -109,6 +112,7 @@ const sections = [
 									<li>Product analytics events: up to 12 months.</li>
 									<li>Server and security logs: up to 90 days.</li>
 									<li>margin.cafe account data: for the life of the account, deleted within 30 days of a verified deletion request, subject to any legal retention obligations.</li>
+									<li>Billing data (Stripe customer ID, subscription status): retained for the life of the subscription and deleted within 30 days of cancellation, subject to Stripe's own retention practices.</li>
 								</ul>
 								<p>Once a record has federated to the wider AT Protocol, third parties may retain copies outside our control even after deletion from your Personal Data Server.</p>
 							</div>

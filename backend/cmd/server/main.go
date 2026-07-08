@@ -19,6 +19,7 @@ import (
 
 	"margin.at/internal/analytics"
 	"margin.at/internal/api"
+	"margin.at/internal/cloudflare"
 	"margin.at/internal/db"
 	"margin.at/internal/embeddings"
 	"margin.at/internal/firehose"
@@ -27,6 +28,7 @@ import (
 	internalMiddleware "margin.at/internal/middleware"
 	"margin.at/internal/oauth"
 	"margin.at/internal/recommendations"
+	stripepkg "margin.at/internal/stripe"
 	"margin.at/internal/sync"
 )
 
@@ -80,6 +82,9 @@ func main() {
 
 	analyticsCl := analytics.New()
 	defer analyticsCl.Close()
+
+	stripeClient := stripepkg.NewClient()
+	cfClient := cloudflare.NewClient()
 
 	oauthHandler, err := oauth.NewHandler(database, syncSvc, analyticsCl)
 	if err != nil {
@@ -171,7 +176,7 @@ func main() {
 	tokenRefresher := api.NewTokenRefresher(database, oauthHandler.GetSigningKey())
 	noteWriteSvc := api.NewNoteWriteService(database, tokenRefresher)
 
-	handler := api.NewHandler(database, noteWriteSvc, tokenRefresher, syncSvc, recService, analyticsCl)
+	handler := api.NewHandler(database, noteWriteSvc, tokenRefresher, syncSvc, recService, analyticsCl, stripeClient, cfClient)
 	handler.RegisterRoutes(r)
 
 	r.Route("/auth", func(r chi.Router) {

@@ -1,0 +1,19 @@
+name = "margin-reading-rooms"
+main = "worker.js"
+compatibility_date = "2025-12-18"
+
+workers_dev = true
+
+routes = [
+  { pattern = "*/*", zone_name = "margin.at" }
+]
+
+kv_namespaces = [
+  { binding = "ROUTING", id = "3abfd2a52a61436081d5722707acce2a" }
+]
+
+[vars]
+ROOT_DOMAIN = "margin.at"
+
+[placement]
+mode = "smart"

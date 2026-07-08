@@ -36,22 +36,27 @@ export default function EditCollectionModal({
   const [error, setError] = useState<string | null>(null);
   const theme = useStore($theme);
 
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+  const [prevCollection, setPrevCollection] = useState(collection);
+  if (isOpen && (!prevIsOpen || prevCollection !== collection)) {
+    setPrevIsOpen(isOpen);
+    setPrevCollection(collection);
+    setName(collection.name);
+    setDescription(collection.description || "");
+    const isIcon = collection.icon?.startsWith("icon:") ?? false;
+    setActiveTab(isIcon || !collection.icon ? "icon" : "emoji");
+    setIcon(collection.icon?.replace("icon:", "") || "");
+    setError(null);
+  }
+
   useEffect(() => {
     if (isOpen) {
-      setName(collection.name);
-      setDescription(collection.description || "");
-
-      const isIcon = collection.icon?.startsWith("icon:") ?? false;
-      setActiveTab(isIcon || !collection.icon ? "icon" : "emoji");
-      setIcon(collection.icon?.replace("icon:", "") || "");
-
-      setError(null);
       document.body.style.overflow = "hidden";
     }
     return () => {
       document.body.style.overflow = "unset";
     };
-  }, [isOpen, collection]);
+  }, [isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

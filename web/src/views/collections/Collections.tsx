@@ -32,10 +32,25 @@ export default function Collections({ initialCollections }: CollectionsProps) {
   const { t } = useTranslation();
   const user = useStore($user);
   const theme = useStore($theme);
+  const [cacheState] = useState(() => {
+    const c = collectionsCache.data;
+    return {
+      data: c,
+      hasCache: !!c && Date.now() - collectionsCache.timestamp < 5 * 60 * 1000,
+    };
+  });
+  const { data: cachedData, hasCache } = cacheState;
+
   const [collections, setCollections] = useState<Collection[]>(
-    Array.isArray(initialCollections) ? initialCollections : [],
+    Array.isArray(initialCollections)
+      ? initialCollections
+      : hasCache
+        ? cachedData!
+        : [],
   );
-  const [loading, setLoading] = useState(!Array.isArray(initialCollections));
+  const [loading, setLoading] = useState(
+    !Array.isArray(initialCollections) && !hasCache,
+  );
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newItemName, setNewItemName] = useState("");
   const [newItemDesc, setNewItemDesc] = useState("");
@@ -44,25 +59,7 @@ export default function Collections({ initialCollections }: CollectionsProps) {
   const [creating, setCreating] = useState(false);
 
   const fetchCollections = async () => {
-    if (
-      collectionsCache.data &&
-      Date.now() - collectionsCache.timestamp < 5 * 60 * 1000
-    ) {
-      setCollections(collectionsCache.data);
-      setLoading(false);
-
-      getCollections()
-        .then((data) => {
-          setCollections(data);
-          collectionsCache.data = data;
-          collectionsCache.timestamp = Date.now();
-        })
-        .catch(console.error);
-      return;
-    }
-
     try {
-      setLoading(true);
       const data = await getCollections();
       setCollections(data);
       collectionsCache.data = data;
@@ -76,8 +73,34 @@ export default function Collections({ initialCollections }: CollectionsProps) {
 
   useEffect(() => {
     if (initialCollections) return;
-    fetchCollections();
-  }, [initialCollections]);
+    if (hasCache) {
+      getCollections()
+        .then((data) => {
+          setCollections(data);
+          collectionsCache.data = data;
+          collectionsCache.timestamp = Date.now();
+        })
+        .catch(console.error);
+      return;
+    }
+    let cancelled = false;
+    getCollections()
+      .then((data) => {
+        if (cancelled) return;
+        setCollections(data);
+        collectionsCache.data = data;
+        collectionsCache.timestamp = Date.now();
+      })
+      .catch((err) => {
+        if (!cancelled) console.error("Failed to load collections:", err);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [initialCollections, hasCache]);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();

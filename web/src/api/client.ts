@@ -1470,6 +1470,232 @@ export async function getRecommendations(
     return await res.json();
   } catch (e) {
     console.error("Failed to fetch recommendations:", e);
-    return { items: [], totalItems: 0 };
+    return { items: [], totalItems: 0, unavailable: true };
+  }
+}
+
+export interface ReadingRoomTheme {
+  backgroundColor: string;
+  accentColor: string;
+  fontFamily: string;
+  layout: string;
+}
+
+export interface ReadingRoomConfig {
+  enabled: boolean;
+  title: string;
+  subtitle: string;
+  description: string;
+  theme: ReadingRoomTheme;
+  featuredUris: string[];
+  hasSubscription: boolean;
+  showExternalBookmarks: boolean;
+}
+
+export interface ReadingRoomPublic {
+  handle: string;
+  did: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  theme: ReadingRoomTheme;
+  displayName: string;
+  avatar: string;
+  bio: string;
+  featured: AnnotationItem[];
+  recent: AnnotationItem[];
+  totalCount: number;
+}
+
+export interface BillingStatus {
+  status: string;
+  plan: string;
+  currentPeriodEnd?: string;
+  hasSubscription: boolean;
+}
+
+export interface CustomDomainInfo {
+  domain: string;
+  status: string;
+  verificationRecords: Array<{
+    type: string;
+    name?: string;
+    value?: string;
+    httpUrl?: string;
+    httpBody?: string;
+  }>;
+}
+
+export async function getPublicReadingRoom(
+  handle: string,
+): Promise<ReadingRoomPublic | null> {
+  try {
+    const res = await apiRequest(
+      `/api/reading-room/${encodeURIComponent(handle)}`,
+      { skipAuthRedirect: true },
+    );
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (e) {
+    console.error("Failed to fetch reading room:", e);
+    return null;
+  }
+}
+
+export interface ReadingRoomNotePublic {
+  handle: string;
+  did: string;
+  roomTitle: string;
+  displayName: string;
+  avatar: string;
+  theme: ReadingRoomTheme;
+  note: AnnotationItem;
+}
+
+export async function getReadingRoomNote(
+  handle: string,
+  uri: string,
+): Promise<ReadingRoomNotePublic | null> {
+  try {
+    const res = await apiRequest(
+      `/api/reading-room/${encodeURIComponent(handle)}/note?uri=${encodeURIComponent(uri)}`,
+      { skipAuthRedirect: true },
+    );
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (e) {
+    console.error("Failed to fetch reading room note:", e);
+    return null;
+  }
+}
+
+export async function getReadingRoomConfig(): Promise<ReadingRoomConfig | null> {
+  try {
+    const res = await apiRequest("/api/reading-room/config");
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (e) {
+    console.error("Failed to fetch reading room config:", e);
+    return null;
+  }
+}
+
+export async function updateReadingRoomConfig(
+  config: Partial<ReadingRoomConfig>,
+): Promise<boolean> {
+  try {
+    const res = await apiRequest("/api/reading-room/config", {
+      method: "PUT",
+      body: JSON.stringify(config),
+    });
+    return res.ok;
+  } catch (e) {
+    console.error("Failed to update reading room config:", e);
+    return false;
+  }
+}
+
+export async function updateFeaturedItems(uris: string[]): Promise<boolean> {
+  try {
+    const res = await apiRequest("/api/reading-room/featured", {
+      method: "PUT",
+      body: JSON.stringify({ uris }),
+    });
+    return res.ok;
+  } catch (e) {
+    console.error("Failed to update featured items:", e);
+    return false;
+  }
+}
+
+export async function getCustomDomainStatus(): Promise<CustomDomainInfo | null> {
+  try {
+    const res = await apiRequest("/api/reading-room/domain");
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (e) {
+    console.error("Failed to fetch custom domain status:", e);
+    return null;
+  }
+}
+
+export async function addCustomDomain(
+  domain: string,
+): Promise<CustomDomainInfo | null> {
+  try {
+    const res = await apiRequest("/api/reading-room/domain", {
+      method: "POST",
+      body: JSON.stringify({ domain }),
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (e) {
+    console.error("Failed to add custom domain:", e);
+    return null;
+  }
+}
+
+export async function pollCustomDomain(): Promise<CustomDomainInfo | null> {
+  try {
+    const res = await apiRequest("/api/reading-room/domain/poll", {
+      method: "POST",
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (e) {
+    console.error("Failed to poll custom domain:", e);
+    return null;
+  }
+}
+
+export async function removeCustomDomain(): Promise<boolean> {
+  try {
+    const res = await apiRequest("/api/reading-room/domain", {
+      method: "DELETE",
+    });
+    return res.ok;
+  } catch (e) {
+    console.error("Failed to remove custom domain:", e);
+    return false;
+  }
+}
+
+export async function createCheckout(plan: string): Promise<string | null> {
+  try {
+    const res = await apiRequest("/api/billing/checkout", {
+      method: "POST",
+      body: JSON.stringify({ plan }),
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.url;
+  } catch (e) {
+    console.error("Failed to create checkout:", e);
+    return null;
+  }
+}
+
+export async function createPortal(): Promise<string | null> {
+  try {
+    const res = await apiRequest("/api/billing/portal", {
+      method: "POST",
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.url;
+  } catch (e) {
+    console.error("Failed to create portal session:", e);
+    return null;
+  }
+}
+
+export async function getBillingStatus(): Promise<BillingStatus | null> {
+  try {
+    const res = await apiRequest("/api/billing/status");
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (e) {
+    console.error("Failed to fetch billing status:", e);
+    return null;
   }
 }

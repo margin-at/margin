@@ -1,0 +1,86 @@
+{
+  "lexicon": 1,
+  "id": "at.margin.readingRoom",
+  "description": "A user's public reading room configuration",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "Presentational configuration for a user's public reading room — a curated, themed view over their annotations. One per user.",
+      "key": "literal:self",
+      "record": {
+        "type": "object",
+        "required": ["createdAt"],
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 200,
+            "maxGraphemes": 100,
+            "description": "Title shown at the top of the reading room."
+          },
+          "subtitle": {
+            "type": "string",
+            "maxLength": 300,
+            "maxGraphemes": 150,
+            "description": "Tagline shown beneath the title."
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "maxGraphemes": 600,
+            "description": "Longer description of what the room collects."
+          },
+          "theme": {
+            "type": "ref",
+            "ref": "#theme",
+            "description": "Visual theme for the room."
+          },
+          "featuredUris": {
+            "type": "array",
+            "description": "AT URIs of annotations pinned to the top of the room.",
+            "items": {
+              "type": "string",
+              "format": "at-uri"
+            },
+            "maxLength": 12
+          },
+          "showExternalBookmarks": {
+            "type": "boolean",
+            "default": true,
+            "description": "Whether bookmarks from external services (Semble, Lichen, etc.) are shown in the room."
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "datetime"
+          }
+        }
+      }
+    },
+    "theme": {
+      "type": "object",
+      "description": "Visual theme for a reading room. Omitted fields fall back to app defaults.",
+      "properties": {
+        "backgroundColor": {
+          "type": "string",
+          "maxLength": 20,
+          "description": "Page background color as a hex string (e.g. #fcfcfc)."
+        },
+        "accentColor": {
+          "type": "string",
+          "maxLength": 20,
+          "description": "Accent color as a hex string (e.g. #3b82f6)."
+        },
+        "fontFamily": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "CSS font family identifier for body text."
+        },
+        "layout": {
+          "type": "string",
+          "knownValues": ["masonry", "grid", "list"],
+          "default": "masonry",
+          "description": "Arrangement of notes on the room page."
+        }
+      }
+    }
+  }
+}

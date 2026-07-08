@@ -89,6 +89,7 @@ func NewIngester(database *db.DB, syncService *internal_sync.Service) *Ingester 
 	i.RegisterHandler(CollectionProfile, i.handleProfile)
 	i.RegisterHandler(CollectionAPIKey, i.handleAPIKey)
 	i.RegisterHandler(CollectionPreferences, i.handlePreferences)
+	i.RegisterHandler(xrpc.CollectionReadingRoom, i.handleReadingRoom)
 	i.RegisterHandler(CollectionSembleCard, i.handleSembleCard)
 	i.RegisterHandler(CollectionSembleCollection, i.handleSembleCollection)
 	i.RegisterHandler(xrpc.CollectionSembleCollectionLink, i.handleSembleCollectionLink)
@@ -1064,6 +1065,48 @@ func (i *Ingester) handlePreferences(event *FirehoseEvent) {
 		logger.Error("Failed to index preferences: %v", err)
 	} else {
 		logger.Info("Indexed preferences from %s", event.Repo)
+	}
+}
+
+func (i *Ingester) handleReadingRoom(event *FirehoseEvent) {
+	if event.Rkey != "self" {
+		return
+	}
+
+	var record struct {
+		Title                 string          `json:"title"`
+		Subtitle              string          `json:"subtitle"`
+		Description           string          `json:"description"`
+		Theme                 json.RawMessage `json:"theme"`
+		FeaturedUris          []string        `json:"featuredUris"`
+		ShowExternalBookmarks *bool           `json:"showExternalBookmarks"`
+		CreatedAt             string          `json:"createdAt"`
+	}
+
+	if err := json.Unmarshal(event.Record, &record); err != nil {
+		return
+	}
+
+	themeJSON := "{}"
+	if len(record.Theme) > 0 && string(record.Theme) != "null" {
+		themeJSON = string(record.Theme)
+	}
+
+	featuredURIsJSON := "[]"
+	if len(record.FeaturedUris) > 0 {
+		b, _ := json.Marshal(record.FeaturedUris)
+		featuredURIsJSON = string(b)
+	}
+
+	showExternal := true
+	if record.ShowExternalBookmarks != nil {
+		showExternal = *record.ShowExternalBookmarks
+	}
+
+	if err := i.db.UpsertReadingRoomConfigFromRecord(context.Background(), event.Repo, record.Title, record.Subtitle, record.Description, themeJSON, featuredURIsJSON, showExternal); err != nil {
+		logger.Error("Failed to index reading room: %v", err)
+	} else {
+		logger.Info("Indexed reading room from %s", event.Repo)
 	}
 }
 

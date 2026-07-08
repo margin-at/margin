@@ -1,0 +1,11 @@
+---
+import BaseLayout from '../layouts/StaticLayout.astro';
+import Pro from '../views/Pro';
+---
+
+<BaseLayout
+	title="Margin Pro"
+	description="Turn your highlights and annotations into a shareable Reading Room with custom themes, premium fonts, and your own domain."
+>
+	<Pro client:only="react" />
+</BaseLayout>

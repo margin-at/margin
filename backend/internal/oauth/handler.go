@@ -19,7 +19,7 @@ import (
 	"margin.at/internal/xrpc"
 )
 
-const oauthScope = "atproto blob:* blob:image/jpeg blob:image/png include:at.margin.authFull repo:community.lexicon.bookmarks.bookmark"
+const oauthScope = "atproto blob:* blob:image/jpeg blob:image/png include:at.margin.authFull repo:community.lexicon.bookmarks.bookmark repo:site.standard.publication"
 
 type Handler struct {
 	db                *db.DB

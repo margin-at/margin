@@ -23,7 +23,10 @@ import {
   unblockUser,
   unmuteUser,
   getLabelerInfo,
+  getBillingStatus,
+  createPortal,
   type APIKey,
+  type BillingStatus,
 } from "../../api/client";
 import type {
   BlockedUser,
@@ -52,6 +55,9 @@ import {
   EyeOff,
   XCircle,
   Upload,
+  Sparkles,
+  CreditCard,
+  ArrowRight,
 } from "lucide-react";
 import {
   Avatar,
@@ -84,6 +90,8 @@ export default function Settings() {
   const [newLabelerDid, setNewLabelerDid] = useState("");
   const [addingLabeler, setAddingLabeler] = useState(false);
   const [isShortcutModalOpen, setIsShortcutModalOpen] = useState(false);
+  const [billing, setBilling] = useState<BillingStatus | null>(null);
+  const [portalLoading, setPortalLoading] = useState(false);
   const preferences = useStore($preferences);
   const { i18n: i18nInstance } = useTranslation();
   const [currentLanguage, setCurrentLanguage] = useState(
@@ -121,7 +129,15 @@ export default function Settings() {
 
     loadPreferences();
     getLabelerInfo().then(setLabelerInfo);
+    getBillingStatus().then(setBilling);
   }, []);
+
+  const handlePortal = async () => {
+    setPortalLoading(true);
+    const url = await createPortal();
+    if (url) window.location.href = url;
+    else setPortalLoading(false);
+  };
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -746,6 +762,82 @@ export default function Settings() {
             <AppleIcon size={16} />
             {t("settings.iosShortcut.setupButton")}
           </button>
+        </section>
+
+        <section className="card p-5">
+          <h2 className="text-xs font-semibold text-surface-500 dark:text-surface-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+            <Sparkles size={16} />
+            {t("settings.sections.billing")}
+          </h2>
+          {billing?.hasSubscription ? (
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-surface-900 dark:text-white flex items-center gap-2">
+                  <Check
+                    size={15}
+                    className="text-emerald-600 dark:text-emerald-400"
+                  />
+                  {t("settings.billing.proActive")}
+                </p>
+                <p className="text-sm text-surface-500 dark:text-surface-400 mt-1">
+                  {billing.plan === "yearly"
+                    ? t("settings.billing.yearlyPlan")
+                    : t("settings.billing.monthlyPlan")}
+                  {billing.currentPeriodEnd &&
+                    ` · ${t("settings.billing.renewsOn", {
+                      date: new Date(
+                        billing.currentPeriodEnd,
+                      ).toLocaleDateString(),
+                    })}`}
+                </p>
+              </div>
+              <Button
+                onClick={handlePortal}
+                loading={portalLoading}
+                variant="secondary"
+                size="sm"
+                icon={<CreditCard size={14} />}
+              >
+                {t("settings.billing.manage")}
+              </Button>
+            </div>
+          ) : (
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-surface-900 dark:text-white">
+                  {t("settings.billing.freeTitle")}
+                </p>
+                <p className="text-sm text-surface-500 dark:text-surface-400 mt-1 max-w-md">
+                  {t("settings.billing.freeDesc")}
+                </p>
+              </div>
+              <a
+                href="/pro"
+                className="inline-flex items-center gap-1.5 px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-500 transition-colors shrink-0"
+              >
+                <Sparkles size={14} />
+                {t("settings.billing.upgrade")}
+                <ArrowRight size={14} />
+              </a>
+            </div>
+          )}
+        </section>
+
+        <section className="card p-5">
+          <a
+            href="/settings/reading-room"
+            className="flex items-center justify-between gap-3 w-full text-left p-3 -m-3 rounded-xl transition-colors hover:bg-surface-50 dark:hover:bg-surface-800"
+          >
+            <div className="flex flex-col">
+              <span className="font-medium text-surface-900 dark:text-white">
+                {t("settings.sections.readingRoom")}
+              </span>
+              <span className="text-sm text-surface-500">
+                {t("settings.readingRoom.description")}
+              </span>
+            </div>
+            <ChevronRight size={18} className="text-surface-400" />
+          </a>
         </section>
 
         <section className="card p-5">

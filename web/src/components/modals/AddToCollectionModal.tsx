@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import {
   X,
@@ -90,29 +90,30 @@ export default function AddToCollectionModal({
     };
   }, [isOpen]);
 
-  const loadCollections = useCallback(async () => {
-    if (!user) return;
-    try {
-      setLoading(true);
-      const data = await getCollections(user.did);
-      setCollections(data);
-    } catch (err) {
-      console.error(err);
-      setError(t("addToCollection.failedLoad"));
-    } finally {
-      setLoading(false);
-    }
-  }, [user, t]);
-
   useEffect(() => {
-    if (isOpen && user) {
-      loadCollections();
-      setError(null);
-      getCollectionsContaining(annotationUri).then((uris) => {
-        setAddedTo(new Set(uris));
+    if (!isOpen || !user) return;
+    let cancelled = false;
+
+    getCollections(user.did)
+      .then((data) => {
+        if (!cancelled) setCollections(data);
+      })
+      .catch((err) => {
+        console.error(err);
+        if (!cancelled) setError(t("addToCollection.failedLoad"));
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
       });
-    }
-  }, [isOpen, user, loadCollections, annotationUri]);
+
+    getCollectionsContaining(annotationUri).then((uris) => {
+      if (!cancelled) setAddedTo(new Set(uris));
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isOpen, user, annotationUri, t]);
 
   const handleAdd = async (collectionUri: string) => {
     if (addedTo.has(collectionUri)) return;

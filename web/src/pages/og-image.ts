@@ -3,6 +3,11 @@ import satori from "satori";
 import { Resvg } from "@resvg/resvg-js";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import {
+  buildPalette,
+  highlightBg,
+  HIGHLIGHT_INK,
+} from "../views/reading-room/theme";
 
 function getPublicDir(): string {
   if (import.meta.env.PROD) {
@@ -41,6 +46,17 @@ interface RecordData {
   color: string;
 }
 
+function normalizeAvatarUrl(avatar: string): string {
+  if (!avatar) return "";
+  if (!avatar.includes("cdn.bsky.app") && !avatar.includes("bsky")) {
+    return avatar;
+  }
+  return (
+    avatar.replace(/@[a-z]+$/, "@jpeg") +
+    (/@[a-z]+$/.test(avatar) ? "" : "@jpeg")
+  );
+}
+
 async function resolveAvatarUrl(did: string): Promise<string> {
   if (!did) return "";
   try {
@@ -49,19 +65,13 @@ async function resolveAvatarUrl(did: string): Promise<string> {
     );
     if (!res.ok) return "";
     const profile = await res.json();
-    const avatar = profile.avatar || "";
-    if (!avatar) return "";
-    return (
-      avatar.replace(/@[a-z]+$/, "@jpeg") +
-      (/@[a-z]+$/.test(avatar) ? "" : "@jpeg")
-    );
+    return normalizeAvatarUrl(profile.avatar || "");
   } catch {
     return "";
   }
 }
 
-async function fetchAvatarDataUri(did: string): Promise<string> {
-  const url = await resolveAvatarUrl(did);
+async function fetchImageDataUri(url: string): Promise<string> {
   if (!url) return "";
   try {
     const res = await fetch(url, { headers: { "User-Agent": "margin.at/og" } });
@@ -73,6 +83,10 @@ async function fetchAvatarDataUri(did: string): Promise<string> {
   } catch {
     return "";
   }
+}
+
+async function fetchAvatarDataUri(did: string): Promise<string> {
+  return fetchImageDataUri(await resolveAvatarUrl(did));
 }
 
 async function fetchRecordData(uri: string): Promise<RecordData | null> {
@@ -195,6 +209,10 @@ async function fetchRecordData(uri: string): Promise<RecordData | null> {
 function truncate(str: string, max: number): string {
   if (str.length <= max) return str;
   return str.slice(0, max - 3) + "\u2026";
+}
+
+function clean(v: string | undefined | null): string {
+  return v && v !== "null" && v !== "undefined" ? v : "";
 }
 
 function extractBody(body: unknown): string {
@@ -369,7 +387,7 @@ function accentBar(color: string): unknown {
   };
 }
 
-function bgPattern(): unknown {
+function bgPattern(patternColor = "rgba(255,255,255,0.03)"): unknown {
   return {
     type: "div",
     props: {
@@ -379,8 +397,7 @@ function bgPattern(): unknown {
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundImage:
-          "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.03) 1px, transparent 0)",
+        backgroundImage: `radial-gradient(circle at 1px 1px, ${patternColor} 1px, transparent 0)`,
         backgroundSize: "32px 32px",
       },
     },
@@ -494,7 +511,13 @@ function footerEl(source: string): unknown | null {
   };
 }
 
-function card(children: unknown[], accentColor: string): unknown {
+function card(
+  children: unknown[],
+  accentColor: string,
+  opts?: { bg?: string; patternColor?: string },
+): unknown {
+  const bg = opts?.bg ?? C.bg;
+  const patternColor = opts?.patternColor ?? "rgba(255,255,255,0.03)";
   return {
     type: "div",
     props: {
@@ -502,13 +525,13 @@ function card(children: unknown[], accentColor: string): unknown {
         display: "flex",
         width: "100%",
         height: "100%",
-        background: C.bg,
+        background: bg,
         padding: 0,
         fontFamily: "Inter",
         position: "relative",
       },
       children: [
-        bgPattern(),
+        bgPattern(patternColor),
         accentBar(accentColor),
         {
           type: "div",
@@ -824,35 +847,583 @@ function buildCollectionImage(data: RecordData) {
   return card(children, accent);
 }
 
+function rrAvatar(
+  url: string,
+  name: string,
+  size: number,
+  pal: { border: string; accentTint: string; accentText: string },
+): unknown {
+  if (url) {
+    return {
+      type: "img",
+      props: {
+        src: url,
+        width: size,
+        height: size,
+        style: {
+          borderRadius: size / 2,
+          flexShrink: 0,
+          border: `2px solid ${pal.border}`,
+        },
+      },
+    };
+  }
+  const letter = (
+    name[0] === "@" ? name[1] || "?" : name[0] || "?"
+  ).toUpperCase();
+  return {
+    type: "div",
+    props: {
+      style: {
+        width: size,
+        height: size,
+        borderRadius: size / 2,
+        background: pal.accentTint,
+        border: `2px solid ${pal.border}`,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        color: pal.accentText,
+        fontSize: Math.round(size * 0.42),
+        fontWeight: 700,
+        flexShrink: 0,
+      },
+      children: letter,
+    },
+  };
+}
+
+function roomCornerUrl(rr: { customDomain?: string }, handle: string): string {
+  const cd = clean(rr.customDomain);
+  if (cd) return cd;
+  let host = "margin.at";
+  try {
+    host = new URL(process.env.BASE_URL || "https://margin.at").hostname;
+  } catch {
+    /* keep default */
+  }
+  return `${host}/reading-room/${handle}`;
+}
+
+function buildReadingRoomImage(
+  rr: {
+    title?: string;
+    subtitle?: string;
+    description?: string;
+    displayName?: string;
+    handle?: string;
+    avatar?: string;
+    customDomain?: string;
+    theme?: { accentColor?: string; backgroundColor?: string };
+    featured?: unknown[];
+    recent?: unknown[];
+  },
+  handle: string,
+): unknown {
+  const pal = buildPalette(
+    rr.theme?.backgroundColor || "#fcfcfc",
+    rr.theme?.accentColor || "#3b82f6",
+  );
+  const accent = sanitizeColor(pal.accent);
+  const title =
+    clean(rr.title) || `${clean(rr.displayName) || handle}'s Reading Room`;
+  const subtitle = clean(rr.subtitle) || clean(rr.description) || "";
+  const name = rr.displayName || handle;
+
+  const hero: unknown[] = [
+    {
+      type: "div",
+      props: {
+        style: {
+          color: pal.ink,
+          fontSize: title.length > 40 ? 54 : 72,
+          fontWeight: 700,
+          lineHeight: 1.08,
+          letterSpacing: -0.025,
+          textAlign: "center",
+          maxWidth: 940,
+          overflow: "hidden",
+        },
+        children: truncate(title, 70),
+      },
+    },
+  ];
+
+  if (subtitle) {
+    hero.push({
+      type: "div",
+      props: {
+        style: {
+          color: pal.muted,
+          fontSize: 29,
+          lineHeight: 1.4,
+          textAlign: "center",
+          maxWidth: 760,
+          marginTop: 26,
+          overflow: "hidden",
+        },
+        children: truncate(subtitle, 130),
+      },
+    });
+  }
+
+  return {
+    type: "div",
+    props: {
+      style: {
+        display: "flex",
+        flexDirection: "column",
+        width: "100%",
+        height: "100%",
+        background: pal.bg,
+        padding: "76px 88px",
+        fontFamily: "Inter",
+      },
+      children: [
+        {
+          type: "div",
+          props: {
+            style: {
+              display: "flex",
+              flexDirection: "column",
+              flex: 1,
+              alignItems: "center",
+              justifyContent: "center",
+              width: "100%",
+            },
+            children: hero,
+          },
+        },
+        {
+          type: "div",
+          props: {
+            style: {
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              width: "100%",
+            },
+            children: [
+              {
+                type: "div",
+                props: {
+                  style: {
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 16,
+                  },
+                  children: [
+                    rrAvatar(rr.avatar || "", name, 50, pal),
+                    {
+                      type: "span",
+                      props: {
+                        style: {
+                          color: accent,
+                          fontSize: 26,
+                          fontWeight: 600,
+                        },
+                        children: `@${handle}`,
+                      },
+                    },
+                  ],
+                },
+              },
+              {
+                type: "span",
+                props: {
+                  style: {
+                    color: pal.muted,
+                    fontSize: 23,
+                  },
+                  children: truncate(roomCornerUrl(rr, handle), 42),
+                },
+              },
+            ],
+          },
+        },
+      ],
+    },
+  };
+}
+
+function extractNote(note: {
+  motivation?: string;
+  color?: string;
+  target?: { selector?: { exact?: string }; title?: string; source?: string };
+  body?: { value?: string };
+}): {
+  kind: "highlight" | "bookmark" | "note";
+  quote: string;
+  body: string;
+  title: string;
+  domain: string;
+  color: string;
+} {
+  const motivation = note?.motivation || "";
+  const exact = note?.target?.selector?.exact || "";
+  const title = note?.target?.title || "";
+  const body = note?.body?.value || "";
+  const source = note?.target?.source || "";
+  const color = note?.color || "";
+  let domain = "";
+  try {
+    domain = source ? new URL(source).hostname.replace(/^www\./, "") : "";
+  } catch {
+    /* ignore */
+  }
+  const kind =
+    motivation === "highlighting"
+      ? "highlight"
+      : motivation === "bookmarking"
+        ? "bookmark"
+        : "note";
+  return { kind, quote: exact, body, title, domain, color };
+}
+
+function buildReadingRoomNoteImage(
+  payload: {
+    displayName?: string;
+    handle?: string;
+    avatar?: string;
+    customDomain?: string;
+    roomTitle?: string;
+    theme?: { accentColor?: string; backgroundColor?: string };
+    note?: unknown;
+  },
+  handle: string,
+  avatarDataUri: string,
+): unknown {
+  const pal = buildPalette(
+    payload.theme?.backgroundColor || "#fcfcfc",
+    payload.theme?.accentColor || "#3b82f6",
+  );
+  const accent = sanitizeColor(pal.accent);
+  const name = payload.displayName || handle;
+  const note = extractNote(
+    (payload.note as Parameters<typeof extractNote>[0]) || {},
+  );
+
+  const iconName =
+    note.kind === "highlight"
+      ? "quote"
+      : note.kind === "bookmark"
+        ? "bookmark"
+        : "message-square";
+  const iconUri = lucideIconUri(iconName, pal.accentText);
+  const typeLabel =
+    note.kind === "highlight"
+      ? "Highlight"
+      : note.kind === "bookmark"
+        ? "Bookmark"
+        : "Note";
+
+  const cardChildren: unknown[] = [];
+
+  const chipChildren: unknown[] = [];
+  if (iconUri) {
+    chipChildren.push({
+      type: "img",
+      props: { src: iconUri, width: 18, height: 18 },
+    });
+  }
+  chipChildren.push({
+    type: "span",
+    props: {
+      style: { color: pal.accentText, fontSize: 22, fontWeight: 600 },
+      children: typeLabel,
+    },
+  });
+  const typeChip: unknown = {
+    type: "div",
+    props: {
+      style: {
+        display: "flex",
+        alignItems: "center",
+        gap: 10,
+        background: pal.accentTint,
+        borderRadius: 24,
+        padding: "10px 18px 10px 14px",
+        flexShrink: 0,
+      },
+      children: chipChildren,
+    },
+  };
+
+  if (note.kind === "bookmark") {
+    const displayTitle = note.title || note.domain;
+    if (displayTitle) {
+      cardChildren.push({
+        type: "div",
+        props: {
+          style: {
+            color: pal.ink,
+            fontSize: 42,
+            fontWeight: 700,
+            overflow: "hidden",
+          },
+          children: truncate(displayTitle, 80),
+        },
+      });
+    }
+  }
+
+  const hlBg = sanitizeColor(highlightBg(note.color));
+  const mark = (text: string, big: boolean, marginTop: number) => ({
+    type: "div",
+    props: {
+      style: {
+        alignSelf: "flex-start",
+        background: hlBg,
+        color: HIGHLIGHT_INK,
+        fontSize: big ? 38 : 22,
+        fontWeight: 500,
+        lineHeight: 1.4,
+        borderRadius: 6,
+        padding: big ? "14px 18px" : "8px 12px",
+        maxWidth: "100%",
+        marginTop,
+        overflow: "hidden",
+      },
+      children: truncate(text, 170),
+    },
+  });
+
+  if (note.kind === "highlight") {
+    if (note.quote) {
+      const hlColor = sanitizeColor(resolveHighlightColor(note.color));
+      cardChildren.push({
+        type: "div",
+        props: {
+          style: {
+            color: hlColor,
+            fontSize: 76,
+            fontWeight: 700,
+            lineHeight: 0.7,
+          },
+          children: "\u201C",
+        },
+      });
+      cardChildren.push({
+        type: "div",
+        props: {
+          style: {
+            color: pal.ink,
+            fontSize: 38,
+            lineHeight: 1.4,
+            fontStyle: "italic",
+            marginTop: 6,
+            overflow: "hidden",
+          },
+          children: truncate(note.quote, 170),
+        },
+      });
+    }
+  } else if (note.kind === "bookmark") {
+    if (note.body) {
+      cardChildren.push({
+        type: "div",
+        props: {
+          style: {
+            color: pal.ink,
+            fontSize: 30,
+            lineHeight: 1.45,
+            marginTop: 20,
+            overflow: "hidden",
+          },
+          children: truncate(note.body, 220),
+        },
+      });
+    }
+  } else {
+    if (note.quote) cardChildren.push(mark(note.quote, false, 0));
+    if (note.body) {
+      cardChildren.push({
+        type: "div",
+        props: {
+          style: {
+            color: pal.ink,
+            fontSize: 36,
+            lineHeight: 1.4,
+            marginTop: 18,
+            overflow: "hidden",
+          },
+          children: truncate(note.body, 220),
+        },
+      });
+    }
+  }
+
+  return {
+    type: "div",
+    props: {
+      style: {
+        display: "flex",
+        flexDirection: "column",
+        width: "100%",
+        height: "100%",
+        background: pal.bg,
+        padding: "64px 72px",
+        fontFamily: "Inter",
+      },
+      children: [
+        {
+          type: "div",
+          props: {
+            style: {
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              width: "100%",
+            },
+            children: [
+              {
+                type: "div",
+                props: {
+                  style: {
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 16,
+                  },
+                  children: [
+                    rrAvatar(avatarDataUri, name, 50, pal),
+                    {
+                      type: "span",
+                      props: {
+                        style: {
+                          color: accent,
+                          fontSize: 26,
+                          fontWeight: 600,
+                        },
+                        children: `@${handle}`,
+                      },
+                    },
+                  ],
+                },
+              },
+              typeChip,
+            ],
+          },
+        },
+        {
+          type: "div",
+          props: {
+            style: {
+              display: "flex",
+              flexDirection: "column",
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              width: "100%",
+            },
+            children: [
+              {
+                type: "div",
+                props: {
+                  style: {
+                    display: "flex",
+                    flexDirection: "column",
+                    width: "100%",
+                    maxWidth: 1000,
+                    background: pal.card,
+                    border: `1px solid ${pal.border}`,
+                    borderRadius: 16,
+                    padding: "28px 36px",
+                  },
+                  children: cardChildren,
+                },
+              },
+            ],
+          },
+        },
+        {
+          type: "div",
+          props: {
+            style: {
+              display: "flex",
+              justifyContent: "space-between",
+              width: "100%",
+            },
+            children: [
+              {
+                type: "span",
+                props: {
+                  style: { color: pal.muted, fontSize: 22 },
+                  children: note.domain || "",
+                },
+              },
+              {
+                type: "span",
+                props: {
+                  style: { color: pal.muted, fontSize: 22 },
+                  children: truncate(roomCornerUrl(payload, handle), 42),
+                },
+              },
+            ],
+          },
+        },
+      ],
+    },
+  };
+}
+
 export const GET: APIRoute = async ({ url }) => {
   const uri = url.searchParams.get("uri");
-  if (!uri) {
-    return new Response("uri parameter required", { status: 400 });
+  const readingRoomHandle = url.searchParams.get("readingRoom");
+
+  if (!uri && !readingRoomHandle) {
+    return new Response("uri or readingRoom parameter required", {
+      status: 400,
+    });
   }
 
   try {
-    const data = await fetchRecordData(uri);
-    if (!data) {
-      return new Response("Record not found", { status: 404 });
-    }
-
     const fonts = loadFonts();
-
     let element: unknown;
-    switch (data.type) {
-      case "collection":
-        element = buildCollectionImage(data);
-        break;
-      case "bookmark":
-        element = buildBookmarkImage(data);
-        break;
-      case "highlight":
-        element = buildHighlightImage(data);
-        break;
-      case "annotation":
-      default:
-        element = buildAnnotationImage(data);
-        break;
+
+    if (readingRoomHandle && uri) {
+      const noteRes = await fetch(
+        `${API_URL}/api/reading-room/${encodeURIComponent(readingRoomHandle)}/note?uri=${encodeURIComponent(uri)}`,
+      );
+      if (!noteRes.ok) {
+        return new Response("Note not found", { status: 404 });
+      }
+      const payload = await noteRes.json();
+      const avatarDataUri = await fetchAvatarDataUri(payload.did || "");
+      element = buildReadingRoomNoteImage(
+        payload,
+        readingRoomHandle,
+        avatarDataUri,
+      );
+    } else if (readingRoomHandle) {
+      const rrRes = await fetch(
+        `${API_URL}/api/reading-room/${encodeURIComponent(readingRoomHandle)}`,
+      );
+      if (!rrRes.ok) {
+        return new Response("Reading room not found", { status: 404 });
+      }
+      const rr = await rrRes.json();
+      rr.avatar = await fetchAvatarDataUri(rr.did || "");
+      element = buildReadingRoomImage(rr, readingRoomHandle);
+    } else {
+      const data = await fetchRecordData(uri!);
+      if (!data) {
+        return new Response("Record not found", { status: 404 });
+      }
+      switch (data.type) {
+        case "collection":
+          element = buildCollectionImage(data);
+          break;
+        case "bookmark":
+          element = buildBookmarkImage(data);
+          break;
+        case "highlight":
+          element = buildHighlightImage(data);
+          break;
+        case "annotation":
+        default:
+          element = buildAnnotationImage(data);
+          break;
+      }
     }
 
     const svg = await satori(element as React.ReactNode, {

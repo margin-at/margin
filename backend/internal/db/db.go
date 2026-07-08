@@ -42,7 +42,9 @@ type (
 	Mute             = domain.Mute
 	ModerationReport = domain.ModerationReport
 	ModerationAction = domain.ModerationAction
-	ContentLabel     = domain.ContentLabel
+	ContentLabel            = domain.ContentLabel
+	ReadingRoomConfig       = domain.ReadingRoomConfig
+	ReadingRoomSubscription = domain.ReadingRoomSubscription
 )
 
 func New(dsn string) (*DB, error) {
