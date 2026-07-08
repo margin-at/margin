@@ -64,27 +64,16 @@ function ReadingRoomView({ handle }: { handle?: string }) {
 
   useEffect(() => {
     if (!data?.did || data.avatar) return;
-    let cancelled = false;
-    fetch(
-      `https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile?actor=${encodeURIComponent(data.did)}`,
-    )
-      .then((res) => (res.ok ? res.json() : null))
-      .then((bsky) => {
-        if (cancelled || !bsky?.avatar) return;
-        setData((prev) => (prev ? { ...prev, avatar: bsky.avatar } : prev));
-      })
-      .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
+    setData((prev) => prev ? { ...prev, avatar: `https://margin.at/api/avatar/${data.did}` } : prev);
   }, [data?.did, data?.avatar]);
 
   useEffect(() => {
-    if (!data?.avatar) return;
+    if (!data?.did) return;
+    const avatarUrl = data.avatar || `https://margin.at/api/avatar/${data.did}`;
     const link = document.createElement("link");
     link.rel = "icon";
     link.type = "image/svg+xml";
-    link.href = `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><defs><clipPath id="c"><circle cx="32" cy="32" r="30"/></clipPath></defs><image href="${data.avatar}" width="64" height="64" clip-path="url(#c)"/></svg>`)}`;
+    link.href = `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><defs><clipPath id="c"><circle cx="32" cy="32" r="30"/></clipPath></defs><image href="${avatarUrl}" width="64" height="64" clip-path="url(#c)"/></svg>`)}`;
     const old = document.querySelector("link[rel='icon']");
     if (old) old.remove();
     document.head.appendChild(link);
@@ -92,7 +81,7 @@ function ReadingRoomView({ handle }: { handle?: string }) {
       link.remove();
       if (old) document.head.appendChild(old);
     };
-  }, [data?.avatar]);
+  }, [data?.did, data?.avatar]);
 
   const fontFam = data?.theme?.fontFamily || "sans-serif";
   useEffect(() => {

@@ -774,6 +774,7 @@ func (h *Handler) HandleStripeWebhook(w http.ResponseWriter, r *http.Request) {
 		customerID := event.GetString("customer")
 		status := event.GetString("status")
 		periodEnd := event.GetInt64("current_period_end")
+		priceID := event.GetString("plan.id")
 		if customerID == "" {
 			break
 		}
@@ -781,13 +782,19 @@ func (h *Handler) HandleStripeWebhook(w http.ResponseWriter, r *http.Request) {
 		if existingSub == nil {
 			break
 		}
+		plan := existingSub.Plan
+		if priceID == h.stripe.PriceID("yearly") {
+			plan = "yearly"
+		} else if priceID == h.stripe.PriceID("monthly") {
+			plan = "monthly"
+		}
 		pe := time.Unix(periodEnd, 0)
 		h.db.UpsertSubscription(r.Context(), &db.ReadingRoomSubscription{
 			DID:                  existingSub.DID,
 			StripeCustomerID:     customerID,
 			StripeSubscriptionID: subID,
 			Status:               status,
-			Plan:                 existingSub.Plan,
+			Plan:                 plan,
 			CurrentPeriodEnd:     &pe,
 		})
 

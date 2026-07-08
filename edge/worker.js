@@ -51,6 +51,8 @@ export default {
     modifiedRequest.headers.set("X-Reading-Room-Domain", hostname);
     modifiedRequest.headers.delete("host");
     modifiedRequest.headers.set("host", ROOT_DOMAIN);
+    modifiedRequest.headers.delete("origin");
+    modifiedRequest.headers.delete("referer");
 
     const response = await fetch(modifiedRequest);
 
@@ -65,11 +67,13 @@ export default {
         headers: response.headers,
       });
       newResponse.headers.set("X-Reading-Room-Domain", hostname);
+      newResponse.headers.set("Access-Control-Allow-Origin", "*");
       return newResponse;
     }
 
     const newResponse = new Response(response.body, response);
     newResponse.headers.set("X-Reading-Room-Domain", hostname);
+    newResponse.headers.set("Access-Control-Allow-Origin", "*");
     return newResponse;
   },
 };

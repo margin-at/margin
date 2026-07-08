@@ -113,8 +113,6 @@ async function apiRequest(
       if (window.location.pathname !== "/login") {
         window.location.href = "/login";
       }
-    } else if (fetchOptions.method && fetchOptions.method !== "GET") {
-      window.location.href = "/auth/start";
     }
   }
 
@@ -1533,7 +1531,7 @@ export async function getPublicReadingRoom(
 ): Promise<ReadingRoomPublic | null> {
   try {
     const res = await apiRequest(
-      `/api/reading-room/${encodeURIComponent(handle)}`,
+      `/api/reading-room/${handle}`,
       { skipAuthRedirect: true },
     );
     if (!res.ok) return null;
@@ -1560,7 +1558,7 @@ export async function getReadingRoomNote(
 ): Promise<ReadingRoomNotePublic | null> {
   try {
     const res = await apiRequest(
-      `/api/reading-room/${encodeURIComponent(handle)}/note?uri=${encodeURIComponent(uri)}`,
+      `/api/reading-room/${handle}/note?uri=${encodeURIComponent(uri)}`,
       { skipAuthRedirect: true },
     );
     if (!res.ok) return null;

@@ -30,8 +30,11 @@ func (db *DB) Migrate() error {
 		return err
 	}
 	if !acquired {
-		_, err = db.AdvisoryLock(ctx, LockMigrate, func() error { return nil })
-		return err
+		goose.SetBaseFS(migrationsFS)
+		if err := goose.SetDialect("postgres"); err != nil {
+			return err
+		}
+		return goose.Up(db.migrationDB, "migrations")
 	}
 	return nil
 }

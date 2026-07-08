@@ -60,19 +60,7 @@ function ReadingRoomNoteView({
 
   useEffect(() => {
     if (!data?.did || data.avatar) return;
-    let cancelled = false;
-    fetch(
-      `https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile?actor=${encodeURIComponent(data.did)}`,
-    )
-      .then((res) => (res.ok ? res.json() : null))
-      .then((bsky) => {
-        if (cancelled || !bsky?.avatar) return;
-        setData((prev) => (prev ? { ...prev, avatar: bsky.avatar } : prev));
-      })
-      .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
+    setData((prev) => prev ? { ...prev, avatar: `https://margin.at/api/avatar/${data.did}` } : prev);
   }, [data?.did, data?.avatar]);
 
   const fontFam = data?.theme?.fontFamily || "sans-serif";
