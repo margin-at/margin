@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useParams, useSearchParams, Link } from "react-router-dom";
+import { useSearchParams, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { getReadingRoomNote } from "../../api/client";
@@ -8,8 +8,20 @@ import { ensureFontLoaded, fontStack } from "../../lib/fonts";
 import { buildPalette, type RRNote } from "./theme";
 import ReadingRoomCard from "./ReadingRoomCard";
 
-export default function ReadingRoomNote() {
-  const { handle } = useParams<{ handle: string }>();
+const ROOT_DOMAIN = "margin.at";
+const onCustomDomain =
+  typeof window !== "undefined" &&
+  !!(window as unknown as { __READING_ROOM_HANDLE__?: string })
+    .__READING_ROOM_HANDLE__;
+const externalHref = (path: string) =>
+  onCustomDomain ? `https://${ROOT_DOMAIN}${path}` : path;
+const roomHref = (path: string) => (onCustomDomain ? path : path);
+
+export default function ReadingRoomNote({
+  handle: propHandle,
+}: { handle?: string } = {}) {
+  const { handle: paramHandle } = useParams<{ handle: string }>();
+  const handle = propHandle || paramHandle;
   const [searchParams] = useSearchParams();
   const uri = searchParams.get("uri") || "";
   return (
@@ -94,12 +106,12 @@ function ReadingRoomNoteView({
         <p className="text-surface-500 dark:text-surface-400">
           {t("readingRoom.notFoundDesc")}
         </p>
-        <Link
-          to="/home"
+        <a
+          href={externalHref("/home")}
           className="text-primary-500 hover:underline text-sm mt-2"
         >
           ← Back to Margin
-        </Link>
+        </a>
       </div>
     );
   }
@@ -119,22 +131,24 @@ function ReadingRoomNoteView({
     >
       <header style={{ borderBottom: `1px solid ${pal.border}` }}>
         <div className="max-w-2xl mx-auto px-6 pt-10 pb-6">
-          <Link
-            to={`/reading-room/${encodeURIComponent(data.handle)}`}
+          <a
+            href={roomHref("/")}
             className="inline-flex items-center gap-2 text-sm hover:underline underline-offset-4"
             style={{ color: pal.muted }}
           >
             <ArrowLeft size={14} />
             {roomTitle}
-          </Link>
+          </a>
           <div className="flex items-center gap-3 mt-4">
             {data.avatar && (
-              <img
-                src={data.avatar}
-                alt={data.displayName || data.handle}
-                className="w-9 h-9 rounded-full object-cover"
-                style={{ border: `2px solid ${pal.border}` }}
-              />
+              <a href={externalHref(`/profile/${data.did}`)}>
+                <img
+                  src={data.avatar}
+                  alt={data.displayName || data.handle}
+                  className="w-9 h-9 rounded-full object-cover"
+                  style={{ border: `2px solid ${pal.border}` }}
+                />
+              </a>
             )}
             <div className="min-w-0">
               <p
@@ -143,13 +157,13 @@ function ReadingRoomNoteView({
               >
                 {data.displayName || data.handle}
               </p>
-              <Link
-                to={`/profile/${data.did}`}
+              <a
+                href={externalHref(`/profile/${data.did}`)}
                 className="text-xs hover:underline underline-offset-4"
                 style={{ color: pal.accentText }}
               >
                 @{displayHandle(data.handle)}
-              </Link>
+              </a>
             </div>
           </div>
         </div>
@@ -175,20 +189,20 @@ function ReadingRoomNoteView({
           className="w-full max-w-2xl mx-auto px-6 py-6 flex items-center justify-between text-sm"
           style={{ color: pal.muted }}
         >
-          <Link
-            to="/home"
+          <a
+            href={externalHref("/home")}
             className="hover:underline underline-offset-4"
             style={{ color: pal.muted }}
           >
             Powered by Margin
-          </Link>
-          <Link
-            to={`/reading-room/${encodeURIComponent(data.handle)}`}
+          </a>
+          <a
+            href={roomHref("/")}
             className="hover:underline underline-offset-4"
             style={{ color: pal.muted }}
           >
             {t("readingRoom.viewFullRoom")}
-          </Link>
+          </a>
         </div>
       </footer>
     </div>

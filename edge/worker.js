@@ -18,6 +18,7 @@ export default {
     originUrl.hostname = ROOT_DOMAIN;
 
     let pathPrefix = "/reading-room/" + handle;
+    let isNote = false;
 
     if (url.pathname === "/" || url.pathname === "") {
       originUrl.pathname = pathPrefix;
@@ -25,10 +26,23 @@ export default {
       originUrl.pathname = "/api/reading-room/rss/" + handle;
     } else if (url.pathname === "/.well-known/site.standard.publication" || url.pathname.startsWith("/.well-known/site.standard.publication/")) {
       originUrl.pathname = "/.well-known/site.standard.publication/reading-room/" + handle;
-    } else if (url.pathname.startsWith("/api/")) {
+    } else if (
+      url.pathname.startsWith("/api/") ||
+      url.pathname.startsWith("/_astro/") ||
+      url.pathname.startsWith("/dist/") ||
+      url.pathname.startsWith("/fonts/") ||
+      url.pathname.startsWith("/.well-known/") ||
+      /\.(js|css|woff2?|ttf|svg|png|jpg|jpeg|gif|ico|webp|webmanifest|map)$/.test(url.pathname)
+    ) {
+      originUrl.pathname = url.pathname;
+    } else if (url.pathname === "/note" || url.pathname.startsWith("/note/")) {
+      isNote = true;
+      originUrl.pathname = pathPrefix + "/note";
+    } else if (url.pathname.startsWith("/reading-room/")) {
       originUrl.pathname = url.pathname;
     } else {
-      originUrl.pathname = pathPrefix + url.pathname;
+      const redirectUrl = new URL(url.pathname + url.search, "https://" + ROOT_DOMAIN);
+      return Response.redirect(redirectUrl.toString(), 302);
     }
 
     const modifiedRequest = new Request(originUrl, {
@@ -43,6 +57,20 @@ export default {
     modifiedRequest.headers.set("host", ROOT_DOMAIN);
 
     const response = await fetch(modifiedRequest);
+
+    const contentType = response.headers.get("content-type") || "";
+    if (contentType.includes("text/html")) {
+      let html = await response.text();
+      const inject = `<script>window.__READING_ROOM_HANDLE__=${JSON.stringify(handle)};window.__READING_ROOM_IS_NOTE__=${isNote};</script>`;
+      html = html.replace("</head>", inject + "</head>");
+      const newResponse = new Response(html, {
+        status: response.status,
+        statusText: response.statusText,
+        headers: response.headers,
+      });
+      newResponse.headers.set("X-Reading-Room-Domain", hostname);
+      return newResponse;
+    }
 
     const newResponse = new Response(response.body, response);
     newResponse.headers.set("X-Reading-Room-Domain", hostname);

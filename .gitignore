@@ -38,6 +38,9 @@ Thumbs.db
 # Go
 backend/vendor/
 
+# Wrangler
+.wrangler/
+
 # other
 NOTES.md
 extension.zip

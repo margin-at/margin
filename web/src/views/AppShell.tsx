@@ -183,21 +183,38 @@ function AppLayout() {
     return () => document.removeEventListener("click", handleClick);
   }, [navigate]);
 
+  const rrHandle = (window as unknown as { __READING_ROOM_HANDLE__?: string })
+    .__READING_ROOM_HANDLE__;
+  const rrIsNote = (window as unknown as { __READING_ROOM_IS_NOTE__?: boolean })
+    .__READING_ROOM_IS_NOTE__;
+  const isReadingRoom =
+    location.pathname.startsWith("/reading-room/") || !!rrHandle;
+
   return (
-    <div className={`min-h-screen flex ${location.pathname.startsWith("/reading-room/") ? "" : "bg-surface-100 dark:bg-surface-900"}`}>
-      {location.pathname.startsWith("/reading-room/") && (
+    <div
+      className={`min-h-screen flex ${isReadingRoom ? "" : "bg-surface-100 dark:bg-surface-900"}`}
+    >
+      {isReadingRoom && (
         <div className="flex-1 min-w-0">
-          <Routes>
-            <Route
-              path="/reading-room/:handle/note"
-              element={<ReadingRoomNote />}
-            />
-            <Route path="/reading-room/:handle" element={<ReadingRoom />} />
-          </Routes>
+          {rrHandle ? (
+            rrIsNote ? (
+              <ReadingRoomNote handle={rrHandle} />
+            ) : (
+              <ReadingRoom handle={rrHandle} />
+            )
+          ) : (
+            <Routes>
+              <Route
+                path="/reading-room/:handle/note"
+                element={<ReadingRoomNote />}
+              />
+              <Route path="/reading-room/:handle" element={<ReadingRoom />} />
+            </Routes>
+          )}
         </div>
       )}
 
-      {!location.pathname.startsWith("/reading-room/") && (
+      {!isReadingRoom && (
         <>
           <Sidebar currentPath={location.pathname} onNavigate={navigate} />
 

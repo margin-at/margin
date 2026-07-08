@@ -879,7 +879,12 @@ func (h *Handler) AddCustomDomain(w http.ResponseWriter, r *http.Request) {
 	h.db.UpsertReadingRoomConfig(r.Context(), rrConfig)
 
 	if status == "active" {
-		h.cloudflare.EnsureRouting(domain, session.DID)
+		var handle string
+		h.db.Pool().QueryRow(r.Context(), "SELECT handle FROM oauth_sessions WHERE did = $1 LIMIT 1", session.DID).Scan(&handle)
+		if handle == "" {
+			handle = session.DID
+		}
+		h.cloudflare.EnsureRouting(domain, handle)
 	}
 
 	WriteSuccess(w, CustomDomainResponse{
@@ -926,7 +931,12 @@ func (h *Handler) PollCustomDomain(w http.ResponseWriter, r *http.Request) {
 	h.db.UpdateReadingRoomDomain(r.Context(), session.DID, rrConfig.CustomDomain, rrConfig.CFHostnameID, status, string(recordsJSON))
 
 	if status == "active" && rrConfig.DomainStatus != "active" {
-		h.cloudflare.EnsureRouting(rrConfig.CustomDomain, session.DID)
+		var handle string
+		h.db.Pool().QueryRow(r.Context(), "SELECT handle FROM oauth_sessions WHERE did = $1 LIMIT 1", session.DID).Scan(&handle)
+		if handle == "" {
+			handle = session.DID
+		}
+		h.cloudflare.EnsureRouting(rrConfig.CustomDomain, handle)
 		rrConfig.DomainStatus = "active"
 		h.writeReadingRoomPublication(r, session, rrConfig.Title, rrConfig.Description, rrConfig)
 	}

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useParams, useSearchParams, Link } from "react-router-dom";
+import { useSearchParams, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Rss, X, Loader2 } from "lucide-react";
 import { getPublicReadingRoom, type ReadingRoomPublic } from "../../api/client";
@@ -7,6 +7,14 @@ import { displayHandle } from "../../lib/handle";
 import { ensureFontLoaded, fontStack } from "../../lib/fonts";
 import { buildPalette, noteKind, type NoteKind, type RRNote } from "./theme";
 import ReadingRoomCard from "./ReadingRoomCard";
+
+const ROOT_DOMAIN = "margin.at";
+const onCustomDomain =
+  typeof window !== "undefined" &&
+  !!(window as unknown as { __READING_ROOM_HANDLE__?: string })
+    .__READING_ROOM_HANDLE__;
+const externalHref = (path: string) =>
+  onCustomDomain ? `https://${ROOT_DOMAIN}${path}` : path;
 
 const TYPE_ORDER: (NoteKind | "all")[] = [
   "all",
@@ -21,8 +29,11 @@ const FILTER_KEY: Record<string, string> = {
   bookmark: "bookmarks",
 };
 
-export default function ReadingRoom() {
-  const { handle } = useParams<{ handle: string }>();
+export default function ReadingRoom({
+  handle: propHandle,
+}: { handle?: string } = {}) {
+  const { handle: paramHandle } = useParams<{ handle: string }>();
+  const handle = propHandle || paramHandle;
   return <ReadingRoomView key={handle} handle={handle} />;
 }
 
@@ -99,12 +110,12 @@ function ReadingRoomView({ handle }: { handle?: string }) {
         <p className="text-surface-500 dark:text-surface-400">
           {t("readingRoom.notFoundDesc")}
         </p>
-        <Link
-          to="/home"
+        <a
+          href={externalHref("/home")}
           className="text-primary-500 hover:underline text-sm mt-2"
         >
           ← Back to Margin
-        </Link>
+        </a>
       </div>
     );
   }
@@ -164,14 +175,17 @@ function ReadingRoomView({ handle }: { handle?: string }) {
       <header style={{ borderBottom: `1px solid ${pal.border}` }}>
         <div className="max-w-2xl mx-auto px-6 pt-16 pb-12 text-center">
           {data.avatar && (
-            <Link to={`/profile/${data.did}`} className="inline-block mb-5">
+            <a
+              href={externalHref(`/profile/${data.did}`)}
+              className="inline-block mb-5"
+            >
               <img
                 src={data.avatar}
                 alt={data.displayName || data.handle}
                 className="w-16 h-16 rounded-full object-cover"
                 style={{ border: `2px solid ${pal.border}` }}
               />
-            </Link>
+            </a>
           )}
           <h1
             className="text-3xl md:text-4xl font-semibold leading-tight [text-wrap:balance]"
@@ -185,13 +199,13 @@ function ReadingRoomView({ handle }: { handle?: string }) {
             </p>
           )}
           <div className="flex items-center justify-center gap-4 mt-5 text-sm">
-            <Link
-              to={`/profile/${data.did}`}
+            <a
+              href={externalHref(`/profile/${data.did}`)}
               className="hover:underline underline-offset-4 font-medium"
               style={{ color: pal.accentText }}
             >
               @{displayHandle(data.handle)}
-            </Link>
+            </a>
             <a
               href={`/api/reading-room/rss/${encodeURIComponent(data.handle)}`}
               className="flex items-center gap-1.5 hover:underline underline-offset-4"
@@ -327,20 +341,20 @@ function ReadingRoomView({ handle }: { handle?: string }) {
           className={`w-full ${containerWidth} mx-auto px-6 py-6 flex items-center justify-between text-sm`}
           style={{ color: pal.muted }}
         >
-          <Link
-            to="/home"
+          <a
+            href={externalHref("/home")}
             className="hover:underline underline-offset-4"
             style={{ color: pal.muted }}
           >
             Powered by Margin
-          </Link>
-          <Link
-            to={`/profile/${data.did}`}
+          </a>
+          <a
+            href={externalHref(`/profile/${data.did}`)}
             className="hover:underline underline-offset-4"
             style={{ color: pal.muted }}
           >
             @{displayHandle(data.handle)}
-          </Link>
+          </a>
         </div>
       </footer>
     </div>
