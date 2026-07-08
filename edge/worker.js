@@ -31,6 +31,7 @@ export default {
       originUrl.pathname = "/.well-known/site.standard.publication/reading-room/" + handle;
     } else if (
       path.startsWith("/api/reading-room/") ||
+      path.startsWith("/api/avatar/") ||
       path.startsWith("/_astro/") ||
       path.startsWith("/dist/") ||
       path.startsWith("/fonts/") ||
@@ -45,7 +46,7 @@ export default {
       method: request.method,
       headers: new Headers(request.headers),
       body: request.body,
-      redirect: "manual",
+      redirect: "follow",
     });
     modifiedRequest.headers.set("X-Reading-Room-Handle", handle);
     modifiedRequest.headers.set("X-Reading-Room-Domain", hostname);

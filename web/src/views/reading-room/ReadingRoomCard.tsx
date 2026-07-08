@@ -178,7 +178,10 @@ export default function ReadingRoomCard({
     .replace(/\/$/, "");
   const displayTitle = targetTitle || cleanUrl || domain;
 
-  const onCustomDomain = typeof window !== "undefined" && !!(window as unknown as { __READING_ROOM_HANDLE__?: string }).__READING_ROOM_HANDLE__;
+  const onCustomDomain =
+    typeof window !== "undefined" &&
+    !!(window as unknown as { __READING_ROOM_HANDLE__?: string })
+      .__READING_ROOM_HANDLE__;
   const notePath = onCustomDomain
     ? `/note?uri=${encodeURIComponent(note.id)}`
     : readingRoomNoteUrl(roomHandle, note.id);

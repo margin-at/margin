@@ -961,6 +961,8 @@
     "empty": "No annotations yet.",
     "noMatches": "Nothing matches this filter.",
     "clearFilters": "Clear filters",
+    "loadMore": "Load more",
+    "loading": "Loading...",
     "jumpToText": "Jump to this passage on the page",
     "noteNotFound": "Note not found",
     "viewFullRoom": "View full room",

@@ -132,6 +132,19 @@ func (db *DB) ListNotes(ctx context.Context, f NoteFilter) ([]Note, error) {
 	return scanNotes(rows)
 }
 
+func (db *DB) CountNotesByAuthor(ctx context.Context, did string, excludeExternal bool) (int, error) {
+	query := `SELECT COUNT(*) FROM unified_notes WHERE author_did = $1`
+	if excludeExternal {
+		query += ` AND uri NOT LIKE '%network.cosmik%'
+AND uri NOT LIKE '%semble%'
+AND uri NOT LIKE '%wiki.lichen.bookmark%'
+AND uri NOT LIKE '%community.lexicon.bookmarks.bookmark%'`
+	}
+	var count int
+	err := db.pool.QueryRow(ctx, query, did).Scan(&count)
+	return count, err
+}
+
 func (db *DB) GetNoteByURIFromUnified(ctx context.Context, uri string) (*Note, error) {
 	query := `
 		SELECT uri, author_did, motivation, color, description, body_value, body_format, body_uri,

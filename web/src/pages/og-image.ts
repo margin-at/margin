@@ -1382,7 +1382,7 @@ export const GET: APIRoute = async ({ url }) => {
 
     if (readingRoomHandle && uri) {
       const noteRes = await fetch(
-        `${API_URL}/api/reading-room/${encodeURIComponent(readingRoomHandle)}/note?uri=${encodeURIComponent(uri)}`,
+        `${API_URL}/api/reading-room/${readingRoomHandle}/note?uri=${encodeURIComponent(uri)}`,
       );
       if (!noteRes.ok) {
         return new Response("Note not found", { status: 404 });
@@ -1396,7 +1396,7 @@ export const GET: APIRoute = async ({ url }) => {
       );
     } else if (readingRoomHandle) {
       const rrRes = await fetch(
-        `${API_URL}/api/reading-room/${encodeURIComponent(readingRoomHandle)}`,
+        `${API_URL}/api/reading-room/${readingRoomHandle}`,
       );
       if (!rrRes.ok) {
         return new Response("Reading room not found", { status: 404 });

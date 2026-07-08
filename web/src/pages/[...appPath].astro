@@ -99,16 +99,16 @@ try {
 
   if (segments.length === 2 && segments[0] === 'reading-room' && segments[1]) {
     const rrHandle = decodeURIComponent(segments[1]);
-    const rrRes = await fetch(`${API_URL}/api/reading-room/${encodeURIComponent(rrHandle)}`);
+    const rrRes = await fetch(`${API_URL}/api/reading-room/${rrHandle}`);
     if (rrRes.ok) {
       const rr = await rrRes.json();
-      const name = rr.displayName || rrHandle;
+      const name = rr.displayName || rr.handle || rrHandle;
       title = rr.title || `${name}'s Reading Room`;
       description =
         (rr.subtitle === "null" ? "" : rr.subtitle) ||
         (rr.description === "null" ? "" : rr.description) ||
         `Highlights and annotations by ${name}`;
-      image = `${BASE_URL}/og-image?readingRoom=${encodeURIComponent(rrHandle)}`;
+      image = `${BASE_URL}/og-image?readingRoom=${rrHandle}`;
     }
   }
 
@@ -117,7 +117,7 @@ try {
     const noteUri = Astro.url.searchParams.get('uri');
     if (noteUri) {
       const noteRes = await fetch(
-        `${API_URL}/api/reading-room/${encodeURIComponent(rrHandle)}/note?uri=${encodeURIComponent(noteUri)}`
+        `${API_URL}/api/reading-room/${rrHandle}/note?uri=${encodeURIComponent(noteUri)}`
       );
       if (noteRes.ok) {
         const payload = await noteRes.json();
@@ -141,7 +141,7 @@ try {
           description = selectorText ? `"${selectorText.slice(0, 200)}"` : targetTitle || `From ${roomName}`;
         }
 
-        image = `${BASE_URL}/og-image?readingRoom=${encodeURIComponent(rrHandle)}&uri=${encodeURIComponent(noteUri)}`;
+        image = `${BASE_URL}/og-image?readingRoom=${rrHandle}&uri=${encodeURIComponent(noteUri)}`;
       }
     }
   }

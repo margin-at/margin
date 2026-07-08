@@ -138,9 +138,12 @@ function AppLayout() {
   const navigate = useNavigate();
   const searchParams = new URLSearchParams(location.search);
 
-  const rrHandle = (window as unknown as { __READING_ROOM_HANDLE__?: string }).__READING_ROOM_HANDLE__;
-  const rrIsNote = (window as unknown as { __READING_ROOM_IS_NOTE__?: boolean }).__READING_ROOM_IS_NOTE__;
-  const isReadingRoom = location.pathname.startsWith("/reading-room/") || !!rrHandle;
+  const rrHandle = (window as unknown as { __READING_ROOM_HANDLE__?: string })
+    .__READING_ROOM_HANDLE__;
+  const rrIsNote = (window as unknown as { __READING_ROOM_IS_NOTE__?: boolean })
+    .__READING_ROOM_IS_NOTE__;
+  const isReadingRoom =
+    location.pathname.startsWith("/reading-room/") || !!rrHandle;
 
   useEffect(() => {
     if (isReadingRoom) return;

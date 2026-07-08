@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -103,6 +104,12 @@ func (h *Handler) resolveHandleOrDID(r *http.Request, handleOrDID string) string
 	return did
 }
 
+func (h *Handler) resolveDIDToHandle(r *http.Request, did string) string {
+	var handle string
+	h.db.Pool().QueryRow(r.Context(), "SELECT handle FROM oauth_sessions WHERE did = $1 ORDER BY created_at DESC LIMIT 1", did).Scan(&handle)
+	return handle
+}
+
 func isExternalBookmark(uri string) bool {
 	return strings.Contains(uri, "network.cosmik") ||
 		strings.Contains(uri, "semble") ||
@@ -176,7 +183,8 @@ func (h *Handler) GetPublicReadingRoom(w http.ResponseWriter, r *http.Request) {
 		recentNotes = nil
 	}
 	recentNotes = h.filterHiddenNotes(r.Context(), h.getViewerDID(r), recentNotes)
-	if rrConfig != nil && !rrConfig.ShowExternalBookmarks {
+	excludeExternal := rrConfig != nil && !rrConfig.ShowExternalBookmarks
+	if excludeExternal {
 		filtered := recentNotes[:0]
 		for _, n := range recentNotes {
 			if !isExternalBookmark(n.URI) {
@@ -191,13 +199,23 @@ func (h *Handler) GetPublicReadingRoom(w http.ResponseWriter, r *http.Request) {
 		recent[i] = h.hydration.ToAPINote(n, lc)
 	}
 
+	totalCount, _ := h.db.CountNotesByAuthor(r.Context(), did, excludeExternal)
+
 	customDomain := ""
 	if rrConfig.DomainStatus == "active" {
 		customDomain = rrConfig.CustomDomain
 	}
 
+	resolvedHandle := handle
+	if strings.HasPrefix(handle, "did:") {
+		resolvedHandle = h.resolveDIDToHandle(r, did)
+		if resolvedHandle == "" {
+			resolvedHandle = did
+		}
+	}
+
 	WriteSuccess(w, ReadingRoomPublicResponse{
-		Handle:       handle,
+		Handle:       resolvedHandle,
 		DID:          did,
 		Title:        rrConfig.Title,
 		Subtitle:     rrConfig.Subtitle,
@@ -209,7 +227,7 @@ func (h *Handler) GetPublicReadingRoom(w http.ResponseWriter, r *http.Request) {
 		CustomDomain: customDomain,
 		Featured:     featured,
 		Recent:       recent,
-		TotalCount:   len(recentNotes),
+		TotalCount:   totalCount,
 	})
 }
 
@@ -295,14 +313,89 @@ func (h *Handler) GetPublicReadingRoomNote(w http.ResponseWriter, r *http.Reques
 
 	lc, _ := h.hydration.Load(r.Context(), []db.Note{*note}, h.getViewerDID(r))
 
+	resolvedHandle := handle
+	if strings.HasPrefix(handle, "did:") {
+		resolvedHandle = h.resolveDIDToHandle(r, did)
+		if resolvedHandle == "" {
+			resolvedHandle = did
+		}
+	}
+
 	WriteSuccess(w, ReadingRoomNoteResponse{
-		Handle:      handle,
+		Handle:      resolvedHandle,
 		DID:         did,
 		RoomTitle:   rrConfig.Title,
 		DisplayName: displayName,
 		Avatar:      avatar,
 		Theme:       theme,
 		Note:        h.hydration.ToAPINote(*note, lc),
+	})
+}
+
+func (h *Handler) GetReadingRoomNotes(w http.ResponseWriter, r *http.Request) {
+	handle := chi.URLParam(r, "handle")
+	if handle == "" {
+		WriteBadRequest(w, "handle required")
+		return
+	}
+
+	did := h.resolveHandleOrDID(r, handle)
+	if did == "" {
+		WriteNotFound(w, "Reading room not found")
+		return
+	}
+
+	if !h.db.HasActiveSubscription(r.Context(), did) {
+		WriteNotFound(w, "Reading room not found")
+		return
+	}
+
+	rrConfig, _ := h.db.GetReadingRoomConfig(r.Context(), did)
+	excludeExternal := rrConfig != nil && !rrConfig.ShowExternalBookmarks
+
+	offset := 20
+	limit := 20
+	if s := r.URL.Query().Get("offset"); s != "" {
+		if v, err := strconv.Atoi(s); err == nil && v >= 0 {
+			offset = v
+		}
+	}
+	if s := r.URL.Query().Get("limit"); s != "" {
+		if v, err := strconv.Atoi(s); err == nil && v > 0 && v <= 50 {
+			limit = v
+		}
+	}
+
+	notes, err := h.noteRepo.List(r.Context(), db.NoteFilter{
+		AuthorDID: did,
+		Limit:     limit,
+		Offset:    offset,
+	})
+	if err != nil {
+		notes = nil
+	}
+	notes = h.filterHiddenNotes(r.Context(), h.getViewerDID(r), notes)
+	if excludeExternal {
+		filtered := notes[:0]
+		for _, n := range notes {
+			if !isExternalBookmark(n.URI) {
+				filtered = append(filtered, n)
+			}
+		}
+		notes = filtered
+	}
+
+	lc, _ := h.hydration.Load(r.Context(), notes, h.getViewerDID(r))
+	result := make([]interface{}, len(notes))
+	for i, n := range notes {
+		result[i] = h.hydration.ToAPINote(n, lc)
+	}
+
+	totalCount, _ := h.db.CountNotesByAuthor(r.Context(), did, excludeExternal)
+
+	WriteSuccess(w, map[string]interface{}{
+		"notes":      result,
+		"totalCount": totalCount,
 	})
 }
 

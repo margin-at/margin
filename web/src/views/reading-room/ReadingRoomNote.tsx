@@ -58,10 +58,44 @@ function ReadingRoomNoteView({
     };
   }, [handle, uri]);
 
+  const avatar =
+    data?.avatar ||
+    (data?.did ? `https://margin.at/api/avatar/${data.did}` : "");
+
   useEffect(() => {
-    if (!data?.did || data.avatar) return;
-    setData((prev) => prev ? { ...prev, avatar: `https://margin.at/api/avatar/${data.did}` } : prev);
-  }, [data?.did, data?.avatar]);
+    if (!data?.did) return;
+    let link: HTMLLinkElement | null = null;
+    const oldLink = document.querySelector("link[rel='icon']");
+
+    fetch(avatar)
+      .then((res) => res.blob())
+      .then((blob) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const dataUri = reader.result as string;
+          const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><defs><clipPath id="c"><circle cx="32" cy="32" r="30"/></clipPath></defs><image href="${dataUri}" width="64" height="64" clip-path="url(#c)"/></svg>`;
+          link = document.createElement("link");
+          link.rel = "icon";
+          link.type = "image/svg+xml";
+          link.href = `data:image/svg+xml,${encodeURIComponent(svg)}`;
+          if (oldLink) oldLink.remove();
+          document.head.appendChild(link);
+        };
+        reader.readAsDataURL(blob);
+      })
+      .catch(() => {
+        link = document.createElement("link");
+        link.rel = "icon";
+        link.href = avatar;
+        if (oldLink) oldLink.remove();
+        document.head.appendChild(link);
+      });
+
+    return () => {
+      if (link) link.remove();
+      if (oldLink) document.head.appendChild(oldLink);
+    };
+  }, [data?.did, avatar]);
 
   const fontFam = data?.theme?.fontFamily || "sans-serif";
   useEffect(() => {
@@ -128,10 +162,10 @@ function ReadingRoomNoteView({
             {roomTitle}
           </a>
           <div className="flex items-center gap-3 mt-4">
-            {data.avatar && (
+            {avatar && (
               <a href={externalHref(`/profile/${data.did}`)}>
                 <img
-                  src={data.avatar}
+                  src={avatar}
                   alt={data.displayName || data.handle}
                   className="w-9 h-9 rounded-full object-cover"
                   style={{ border: `2px solid ${pal.border}` }}

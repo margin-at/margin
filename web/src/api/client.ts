@@ -1530,10 +1530,9 @@ export async function getPublicReadingRoom(
   handle: string,
 ): Promise<ReadingRoomPublic | null> {
   try {
-    const res = await apiRequest(
-      `/api/reading-room/${handle}`,
-      { skipAuthRedirect: true },
-    );
+    const res = await apiRequest(`/api/reading-room/${handle}`, {
+      skipAuthRedirect: true,
+    });
     if (!res.ok) return null;
     return await res.json();
   } catch (e) {
@@ -1565,6 +1564,29 @@ export async function getReadingRoomNote(
     return await res.json();
   } catch (e) {
     console.error("Failed to fetch reading room note:", e);
+    return null;
+  }
+}
+
+export interface ReadingRoomNotesPage {
+  notes: AnnotationItem[];
+  totalCount: number;
+}
+
+export async function getReadingRoomNotes(
+  handle: string,
+  offset: number,
+  limit = 20,
+): Promise<ReadingRoomNotesPage | null> {
+  try {
+    const res = await apiRequest(
+      `/api/reading-room/${handle}/notes?offset=${offset}&limit=${limit}`,
+      { skipAuthRedirect: true },
+    );
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (e) {
+    console.error("Failed to fetch reading room notes:", e);
     return null;
   }
 }

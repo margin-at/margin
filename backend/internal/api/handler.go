@@ -268,6 +268,7 @@ func (h *Handler) RegisterRoutes(r chi.Router) {
 
 		r.Get("/reading-room/rss/{handle}", h.GetRSSFeed)
 		r.Get("/reading-room/{handle}/note", h.GetPublicReadingRoomNote)
+		r.Get("/reading-room/{handle}/notes", h.GetReadingRoomNotes)
 		r.Get("/reading-room/{handle}", h.GetPublicReadingRoom)
 		r.Get("/reading-room/config", h.GetReadingRoomConfig)
 		r.Put("/reading-room/config", h.UpdateReadingRoomConfig)

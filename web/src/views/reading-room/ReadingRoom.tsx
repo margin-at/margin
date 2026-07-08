@@ -1,8 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { useSearchParams, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Rss, X, Loader2 } from "lucide-react";
-import { getPublicReadingRoom, type ReadingRoomPublic } from "../../api/client";
+import {
+  getPublicReadingRoom,
+  getReadingRoomNotes,
+  type ReadingRoomPublic,
+} from "../../api/client";
 import { displayHandle } from "../../lib/handle";
 import { ensureFontLoaded, fontStack } from "../../lib/fonts";
 import { buildPalette, noteKind, type NoteKind, type RRNote } from "./theme";
@@ -47,6 +51,9 @@ function ReadingRoomView({ handle }: { handle?: string }) {
   const [activeTag, setActiveTag] = useState<string | null>(
     () => searchParams.get("tag") || null,
   );
+  const [extraNotes, setExtraNotes] = useState<RRNote[]>([]);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [dbOffset, setDbOffset] = useState(20);
 
   useEffect(() => {
     if (!handle) return;
@@ -62,26 +69,45 @@ function ReadingRoomView({ handle }: { handle?: string }) {
     };
   }, [handle]);
 
-  useEffect(() => {
-    if (!data?.did || data.avatar) return;
-    setData((prev) => prev ? { ...prev, avatar: `https://margin.at/api/avatar/${data.did}` } : prev);
-  }, [data?.did, data?.avatar]);
+  const avatar =
+    data?.avatar ||
+    (data?.did ? `https://margin.at/api/avatar/${data.did}` : "");
 
   useEffect(() => {
     if (!data?.did) return;
-    const avatarUrl = data.avatar || `https://margin.at/api/avatar/${data.did}`;
-    const link = document.createElement("link");
-    link.rel = "icon";
-    link.type = "image/svg+xml";
-    link.href = `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><defs><clipPath id="c"><circle cx="32" cy="32" r="30"/></clipPath></defs><image href="${avatarUrl}" width="64" height="64" clip-path="url(#c)"/></svg>`)}`;
-    const old = document.querySelector("link[rel='icon']");
-    if (old) old.remove();
-    document.head.appendChild(link);
+    const avatarUrl = avatar;
+    let link: HTMLLinkElement | null = null;
+    const oldLink = document.querySelector("link[rel='icon']");
+
+    fetch(avatarUrl)
+      .then((res) => res.blob())
+      .then((blob) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const dataUri = reader.result as string;
+          const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><defs><clipPath id="c"><circle cx="32" cy="32" r="30"/></clipPath></defs><image href="${dataUri}" width="64" height="64" clip-path="url(#c)"/></svg>`;
+          link = document.createElement("link");
+          link.rel = "icon";
+          link.type = "image/svg+xml";
+          link.href = `data:image/svg+xml,${encodeURIComponent(svg)}`;
+          if (oldLink) oldLink.remove();
+          document.head.appendChild(link);
+        };
+        reader.readAsDataURL(blob);
+      })
+      .catch(() => {
+        link = document.createElement("link");
+        link.rel = "icon";
+        link.href = avatarUrl;
+        if (oldLink) oldLink.remove();
+        document.head.appendChild(link);
+      });
+
     return () => {
-      link.remove();
-      if (old) document.head.appendChild(old);
+      if (link) link.remove();
+      if (oldLink) document.head.appendChild(oldLink);
     };
-  }, [data?.did, data?.avatar]);
+  }, [data?.did, avatar]);
 
   const fontFam = data?.theme?.fontFamily || "sans-serif";
   useEffect(() => {
@@ -96,6 +122,21 @@ function ReadingRoomView({ handle }: { handle?: string }) {
       ),
     [data],
   );
+
+  const loadMore = useCallback(() => {
+    if (!handle || loadingMore) return;
+    setLoadingMore(true);
+    getReadingRoomNotes(handle, dbOffset).then((result) => {
+      if (result) {
+        setExtraNotes((prev) => [
+          ...prev,
+          ...((result.notes as unknown as RRNote[]) || []),
+        ]);
+        setDbOffset((prev) => prev + 20);
+      }
+      setLoadingMore(false);
+    });
+  }, [handle, dbOffset, loadingMore]);
 
   if (loading) {
     return (
@@ -130,10 +171,14 @@ function ReadingRoomView({ handle }: { handle?: string }) {
   const featured = (data.featured as unknown as RRNote[]) || [];
   const recentRaw = (data.recent as unknown as RRNote[]) || [];
   const featuredIds = new Set(featured.map((n) => n.id));
+  const existingIds = new Set([...featuredIds, ...recentRaw.map((n) => n.id)]);
   const notes = [
     ...featured,
     ...recentRaw.filter((n) => !featuredIds.has(n.id)),
+    ...extraNotes.filter((n) => !existingIds.has(n.id)),
   ];
+
+  const hasMore = notes.length < data.totalCount;
 
   const typeCounts: Record<string, number> = {
     all: notes.length,
@@ -178,13 +223,13 @@ function ReadingRoomView({ handle }: { handle?: string }) {
     >
       <header style={{ borderBottom: `1px solid ${pal.border}` }}>
         <div className="max-w-2xl mx-auto px-6 pt-16 pb-12 text-center">
-          {data.avatar && (
+          {avatar && (
             <a
               href={externalHref(`/profile/${data.did}`)}
               className="inline-block mb-5"
             >
               <img
-                src={data.avatar}
+                src={avatar}
                 alt={data.displayName || data.handle}
                 className="w-16 h-16 rounded-full object-cover"
                 style={{ border: `2px solid ${pal.border}` }}
@@ -336,6 +381,29 @@ function ReadingRoomView({ handle }: { handle?: string }) {
                 />
               </div>
             ))}
+          </div>
+        )}
+
+        {hasMore && !activeTag && typeFilter === "all" && (
+          <div className="flex justify-center mt-10">
+            <button
+              onClick={loadMore}
+              disabled={loadingMore}
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-medium transition-colors disabled:opacity-60"
+              style={{
+                border: `1px solid ${pal.border}`,
+                color: pal.ink,
+              }}
+            >
+              {loadingMore ? (
+                <>
+                  <Loader2 size={15} className="animate-spin" />
+                  {t("readingRoom.loading")}
+                </>
+              ) : (
+                t("readingRoom.loadMore")
+              )}
+            </button>
           </div>
         )}
       </main>
