@@ -129,16 +129,24 @@ const HIGHLIGHT_TONES: Record<string, string> = {
   purple: "#e9d5ff",
   orange: "#fed7aa",
 };
-export const HIGHLIGHT_INK = "#1c1917";
 
-export function highlightBg(color?: string): string {
+export function highlightBg(color: string | undefined, bg: string): string {
+  const dark = relLuminance(bg) < 0.4;
   if (color) {
     if (color.startsWith("#") && hexToRgb(color)) {
-      return mix("#ffffff", color, 0.4);
+      return dark ? mix(bg, color, 0.3) : mix("#ffffff", color, 0.4);
     }
-    if (HIGHLIGHT_TONES[color]) return HIGHLIGHT_TONES[color];
+    if (HIGHLIGHT_TONES[color]) {
+      return dark
+        ? mix(bg, HIGHLIGHT_TONES[color], 0.2)
+        : HIGHLIGHT_TONES[color];
+    }
   }
-  return HIGHLIGHT_TONES.yellow;
+  return dark ? mix(bg, HIGHLIGHT_TONES.yellow, 0.2) : HIGHLIGHT_TONES.yellow;
+}
+
+export function highlightInk(bg: string): string {
+  return relLuminance(bg) < 0.4 ? "#f5f5f4" : "#1c1917";
 }
 
 export function readingRoomNoteUrl(roomHandle: string, noteId: string): string {

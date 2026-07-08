@@ -6,7 +6,7 @@ import { join } from "node:path";
 import {
   buildPalette,
   highlightBg,
-  HIGHLIGHT_INK,
+  highlightInk,
 } from "../views/reading-room/theme";
 
 function getPublicDir(): string {
@@ -1167,14 +1167,15 @@ function buildReadingRoomNoteImage(
     }
   }
 
-  const hlBg = sanitizeColor(highlightBg(note.color));
+  const hlBg = sanitizeColor(highlightBg(note.color, "#ffffff"));
+  const hlInk = highlightInk("#ffffff");
   const mark = (text: string, big: boolean, marginTop: number) => ({
     type: "div",
     props: {
       style: {
         alignSelf: "flex-start",
         background: hlBg,
-        color: HIGHLIGHT_INK,
+        color: hlInk,
         fontSize: big ? 38 : 22,
         fontWeight: 500,
         lineHeight: 1.4,
@@ -1391,7 +1392,7 @@ export const GET: APIRoute = async ({ url }) => {
       const avatarDataUri = await fetchAvatarDataUri(payload.did || "");
       element = buildReadingRoomNoteImage(
         payload,
-        readingRoomHandle,
+        payload.handle || readingRoomHandle,
         avatarDataUri,
       );
     } else if (readingRoomHandle) {
@@ -1403,7 +1404,7 @@ export const GET: APIRoute = async ({ url }) => {
       }
       const rr = await rrRes.json();
       rr.avatar = await fetchAvatarDataUri(rr.did || "");
-      element = buildReadingRoomImage(rr, readingRoomHandle);
+      element = buildReadingRoomImage(rr, rr.handle || readingRoomHandle);
     } else {
       const data = await fetchRecordData(uri!);
       if (!data) {

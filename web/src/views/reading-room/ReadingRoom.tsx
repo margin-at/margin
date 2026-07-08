@@ -181,7 +181,7 @@ function ReadingRoomView({ handle }: { handle?: string }) {
   const hasMore = notes.length < data.totalCount;
 
   const typeCounts: Record<string, number> = {
-    all: notes.length,
+    all: data.totalCount,
     highlight: 0,
     note: 0,
     bookmark: 0,
@@ -292,7 +292,9 @@ function ReadingRoomView({ handle }: { handle?: string }) {
                   }
                 >
                   {t(`readingRoom.filter.${FILTER_KEY[k]}`)}
-                  <span className="ml-1.5 opacity-70">{typeCounts[k]}</span>
+                  <span className="ml-1.5 opacity-70">
+                    {k === "all" ? typeCounts[k] : `${typeCounts[k]}+`}
+                  </span>
                 </button>
               );
             })}

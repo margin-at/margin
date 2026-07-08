@@ -14,7 +14,7 @@ import {
   type RRPalette,
   textFragmentUrl,
   highlightBg,
-  HIGHLIGHT_INK,
+  highlightInk,
   readingRoomNoteUrl,
 } from "./theme";
 
@@ -201,7 +201,8 @@ export default function ReadingRoomCard({
 
   const fragUrl = textFragmentUrl(targetSource, note.target?.selector);
   const passageHref = fragUrl || targetSource || undefined;
-  const hlBg = highlightBg(note.color);
+  const hlBg = highlightBg(note.color, pal.bg);
+  const hlInk = highlightInk(pal.bg);
 
   const Icon = isHighlight ? Quote : isBookmark ? Bookmark : MessageSquare;
 
@@ -289,7 +290,7 @@ export default function ReadingRoomCard({
                   className="text-lg leading-loose rounded px-1.5 py-0.5 [text-wrap:pretty] transition-opacity group-hover:opacity-90"
                   style={{
                     backgroundColor: hlBg,
-                    color: HIGHLIGHT_INK,
+                    color: hlInk,
                     boxDecorationBreak: "clone",
                     WebkitBoxDecorationBreak: "clone",
                   }}
@@ -303,7 +304,7 @@ export default function ReadingRoomCard({
                   className="text-lg leading-loose rounded px-1.5 py-0.5 [text-wrap:pretty]"
                   style={{
                     backgroundColor: hlBg,
-                    color: HIGHLIGHT_INK,
+                    color: hlInk,
                     boxDecorationBreak: "clone",
                     WebkitBoxDecorationBreak: "clone",
                   }}
@@ -336,7 +337,7 @@ export default function ReadingRoomCard({
                   className="text-sm leading-relaxed rounded px-1 py-0.5 [text-wrap:pretty] transition-opacity group-hover:opacity-90"
                   style={{
                     backgroundColor: hlBg,
-                    color: HIGHLIGHT_INK,
+                    color: hlInk,
                     boxDecorationBreak: "clone",
                     WebkitBoxDecorationBreak: "clone",
                   }}
