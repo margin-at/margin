@@ -197,13 +197,10 @@ function ReadingRoomView({ handle }: { handle?: string }) {
 
   const typeCounts: Record<string, number> = {
     all: data.totalCount,
-    highlight: 0,
-    note: 0,
-    bookmark: 0,
+    highlight: data.typeCounts?.highlight ?? 0,
+    note: data.typeCounts?.note ?? 0,
+    bookmark: data.typeCounts?.bookmark ?? 0,
   };
-  notes.forEach((n) => {
-    typeCounts[noteKind(n)]++;
-  });
   const typeOptions = TYPE_ORDER.filter(
     (k) => k === "all" || typeCounts[k] > 0,
   );
@@ -307,9 +304,7 @@ function ReadingRoomView({ handle }: { handle?: string }) {
                   }
                 >
                   {t(`readingRoom.filter.${FILTER_KEY[k]}`)}
-                  <span className="ml-1.5 opacity-70">
-                    {k === "all" ? typeCounts[k] : `${typeCounts[k]}+`}
-                  </span>
+                  <span className="ml-1.5 opacity-70">{typeCounts[k]}</span>
                 </button>
               );
             })}

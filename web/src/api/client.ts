@@ -1505,6 +1505,7 @@ export interface ReadingRoomPublic {
   featured: AnnotationItem[];
   recent: AnnotationItem[];
   totalCount: number;
+  typeCounts?: { highlight: number; note: number; bookmark: number };
 }
 
 export interface BillingStatus {

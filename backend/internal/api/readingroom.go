@@ -49,6 +49,7 @@ type ReadingRoomPublicResponse struct {
 	Featured     []interface{}    `json:"featured"`
 	Recent       []interface{}    `json:"recent"`
 	TotalCount   int              `json:"totalCount"`
+	TypeCounts   map[string]int   `json:"typeCounts"`
 }
 
 type BillingStatusResponse struct {
@@ -200,6 +201,7 @@ func (h *Handler) GetPublicReadingRoom(w http.ResponseWriter, r *http.Request) {
 	}
 
 	totalCount, _ := h.db.CountNotesByAuthor(r.Context(), did, excludeExternal)
+	typeCounts, _ := h.db.CountNotesByAuthorByType(r.Context(), did, excludeExternal)
 
 	customDomain := ""
 	if rrConfig.DomainStatus == "active" {
@@ -228,6 +230,7 @@ func (h *Handler) GetPublicReadingRoom(w http.ResponseWriter, r *http.Request) {
 		Featured:     featured,
 		Recent:       recent,
 		TotalCount:   totalCount,
+		TypeCounts:   typeCounts,
 	})
 }
 

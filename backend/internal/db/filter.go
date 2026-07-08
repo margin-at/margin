@@ -145,6 +145,43 @@ AND uri NOT LIKE '%community.lexicon.bookmarks.bookmark%'`
 	return count, err
 }
 
+func (db *DB) CountNotesByAuthorByType(ctx context.Context, did string, excludeExternal bool) (map[string]int, error) {
+	query := `SELECT motivation, COUNT(*) FROM unified_notes WHERE author_did = $1`
+	if excludeExternal {
+		query += ` AND uri NOT LIKE '%network.cosmik%'
+AND uri NOT LIKE '%semble%'
+AND uri NOT LIKE '%wiki.lichen.bookmark%'
+AND uri NOT LIKE '%community.lexicon.bookmarks.bookmark%'`
+	}
+	query += ` GROUP BY motivation`
+	rows, err := db.pool.Query(ctx, query, did)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	counts := map[string]int{
+		"highlight": 0,
+		"note":      0,
+		"bookmark":  0,
+	}
+	for rows.Next() {
+		var motivation string
+		var count int
+		if err := rows.Scan(&motivation, &count); err != nil {
+			return nil, err
+		}
+		switch motivation {
+		case "highlighting":
+			counts["highlight"] = count
+		case "bookmarking":
+			counts["bookmark"] = count
+		default:
+			counts["note"] = count
+		}
+	}
+	return counts, nil
+}
+
 func (db *DB) GetNoteByURIFromUnified(ctx context.Context, uri string) (*Note, error) {
 	query := `
 		SELECT uri, author_did, motivation, color, description, body_value, body_format, body_uri,
