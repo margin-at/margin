@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jackc/pgx/v5/stdlib"
 	"margin.at/internal/db/sqlcdb"
@@ -62,6 +63,8 @@ func New(dsn string) (*DB, error) {
 	cfg.MaxConnIdleTime = 15 * time.Minute
 	cfg.HealthCheckPeriod = 30 * time.Second
 
+	cfg.ConnConfig.DefaultQueryExecMode = pgx.QueryExecModeCacheDescribe
+
 	pool, err := pgxpool.NewWithConfig(context.Background(), cfg)
 	if err != nil {
 		return nil, fmt.Errorf("open database: %w", err)
@@ -108,37 +111,47 @@ func (db *DB) Close() error {
 }
 
 func (db *DB) AdvisoryLock(ctx context.Context, key int64, fn func() error) (bool, error) {
-	conn, err := db.pool.Acquire(ctx)
+	tx, err := db.pool.Begin(ctx)
 	if err != nil {
-		return false, fmt.Errorf("advisory lock: acquire conn: %w", err)
+		return false, fmt.Errorf("advisory lock: begin tx: %w", err)
 	}
-	defer conn.Release()
+	defer tx.Rollback(ctx) //nolint:errcheck
 
-	if _, err := conn.Exec(ctx, "SELECT pg_advisory_lock($1)", key); err != nil {
+	if _, err := tx.Exec(ctx, "SELECT pg_advisory_xact_lock($1)", key); err != nil {
 		return false, fmt.Errorf("advisory lock: acquire: %w", err)
 	}
-	defer conn.Exec(context.Background(), "SELECT pg_advisory_unlock($1)", key) //nolint:errcheck
 
-	return true, fn()
+	if err := fn(); err != nil {
+		return true, err
+	}
+	if err := tx.Commit(ctx); err != nil {
+		return true, fmt.Errorf("advisory lock: commit: %w", err)
+	}
+	return true, nil
 }
 
 func (db *DB) TryAdvisoryLock(ctx context.Context, key int64, fn func() error) (bool, error) {
-	conn, err := db.pool.Acquire(ctx)
+	tx, err := db.pool.Begin(ctx)
 	if err != nil {
-		return false, fmt.Errorf("try advisory lock: acquire conn: %w", err)
+		return false, fmt.Errorf("try advisory lock: begin tx: %w", err)
 	}
-	defer conn.Release()
+	defer tx.Rollback(ctx) //nolint:errcheck
 
 	var acquired bool
-	if err := conn.QueryRow(ctx, "SELECT pg_try_advisory_lock($1)", key).Scan(&acquired); err != nil {
+	if err := tx.QueryRow(ctx, "SELECT pg_try_advisory_xact_lock($1)", key).Scan(&acquired); err != nil {
 		return false, fmt.Errorf("try advisory lock: %w", err)
 	}
 	if !acquired {
 		return false, nil
 	}
-	defer conn.Exec(context.Background(), "SELECT pg_advisory_unlock($1)", key) //nolint:errcheck
 
-	return true, fn()
+	if err := fn(); err != nil {
+		return true, err
+	}
+	if err := tx.Commit(ctx); err != nil {
+		return true, fmt.Errorf("try advisory lock: commit: %w", err)
+	}
+	return true, nil
 }
 
 func ParseSelector(selectorJSON *string) (*Selector, error) {

@@ -41,6 +41,7 @@ export default function Pro() {
   }, []);
 
   const hasSub = billing?.hasSubscription ?? false;
+  const billingUnknown = !!user && billing === null;
 
   const handleCheckout = async (plan: Plan) => {
     if (!user) {
@@ -154,7 +155,7 @@ export default function Pro() {
           </p>
 
           <div className="mt-9 flex flex-wrap justify-center items-center gap-3 min-h-[46px]">
-            {!ready ? (
+            {!ready || billingUnknown ? (
               <Loader2 size={20} className="animate-spin text-surface-400" />
             ) : hasSub ? (
               <>

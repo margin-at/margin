@@ -171,7 +171,7 @@ export default function ReadingRoomSettings() {
     </div>
   );
 
-  if (loading) {
+  if (loading || billing === null) {
     return (
       <div className="max-w-2xl mx-auto animate-slide-up">
         {header}

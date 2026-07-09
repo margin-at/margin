@@ -152,7 +152,7 @@ export default function RightSidebar({ onNavigate }: RightSidebarProps) {
     getBillingStatus().then((b) => setBilling(b));
   }, [user]);
 
-  const showProCard = !billing?.hasSubscription;
+  const showProCard = billing !== null && !billing.hasSubscription;
 
   const extensionLink =
     browser === "firefox"

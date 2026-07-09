@@ -1713,12 +1713,24 @@ export async function createPortal(): Promise<string | null> {
 }
 
 export async function getBillingStatus(): Promise<BillingStatus | null> {
-  try {
-    const res = await apiRequest("/api/billing/status");
-    if (!res.ok) return null;
-    return await res.json();
-  } catch (e) {
-    console.error("Failed to fetch billing status:", e);
-    return null;
+  const MAX_ATTEMPTS = 3;
+  for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+    try {
+      const res = await apiRequest("/api/billing/status");
+      if (res.status >= 500 && attempt < MAX_ATTEMPTS - 1) {
+        await new Promise((r) => setTimeout(r, 300 * (attempt + 1)));
+        continue;
+      }
+      if (!res.ok) return null;
+      return await res.json();
+    } catch (e) {
+      if (attempt < MAX_ATTEMPTS - 1) {
+        await new Promise((r) => setTimeout(r, 300 * (attempt + 1)));
+        continue;
+      }
+      console.error("Failed to fetch billing status:", e);
+      return null;
+    }
   }
+  return null;
 }

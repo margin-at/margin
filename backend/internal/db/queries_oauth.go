@@ -251,14 +251,18 @@ func hashLockKey(name string) int64 {
 
 func (db *DB) WithAdvisoryLock(ctx context.Context, name string, fn func(context.Context) error) error {
 	key := hashLockKey(name)
-	conn, err := db.pool.Acquire(ctx)
+	tx, err := db.pool.Begin(ctx)
 	if err != nil {
-		return fmt.Errorf("advisory lock: acquire conn: %w", err)
+		return fmt.Errorf("advisory lock: begin tx: %w", err)
 	}
-	defer conn.Release()
-	if _, err := conn.Exec(ctx, "SELECT pg_advisory_lock($1)", key); err != nil {
+	defer tx.Rollback(ctx) //nolint:errcheck
+
+	if _, err := tx.Exec(ctx, "SELECT pg_advisory_xact_lock($1)", key); err != nil {
 		return fmt.Errorf("advisory lock: %w", err)
 	}
-	defer conn.Exec(context.Background(), "SELECT pg_advisory_unlock($1)", key) //nolint:errcheck
-	return fn(ctx)
+
+	if err := fn(ctx); err != nil {
+		return err
+	}
+	return tx.Commit(ctx)
 }

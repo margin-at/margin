@@ -14,6 +14,7 @@ import (
 	"margin.at/internal/cloudflare"
 	"margin.at/internal/config"
 	"margin.at/internal/db"
+	"margin.at/internal/logger"
 	"margin.at/internal/xrpc"
 )
 
@@ -808,7 +809,12 @@ func (h *Handler) GetBillingStatus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sub, _ := h.db.GetSubscription(r.Context(), session.DID)
+	sub, err := h.db.GetSubscription(r.Context(), session.DID)
+	if err != nil {
+		logger.Error("GetBillingStatus: failed to read subscription for %s: %v", session.DID, err)
+		WriteJSONError(w, http.StatusServiceUnavailable, "billing temporarily unavailable")
+		return
+	}
 	resp := BillingStatusResponse{}
 	if sub != nil {
 		resp.Status = sub.Status
@@ -817,6 +823,7 @@ func (h *Handler) GetBillingStatus(w http.ResponseWriter, r *http.Request) {
 		resp.HasSubscription = sub.Status == "active" || sub.Status == "trialing"
 	}
 
+	w.Header().Set("Cache-Control", "no-store")
 	WriteSuccess(w, resp)
 }
 

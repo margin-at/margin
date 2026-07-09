@@ -769,7 +769,15 @@ export default function Settings() {
             <Sparkles size={16} />
             {t("settings.sections.billing")}
           </h2>
-          {billing?.hasSubscription ? (
+          {billing === null ? (
+            <div className="flex items-center justify-between gap-4">
+              <div className="min-w-0 space-y-2">
+                <div className="h-4 w-28 rounded bg-surface-100 dark:bg-surface-700/50 animate-pulse" />
+                <div className="h-3 w-44 rounded bg-surface-100 dark:bg-surface-700/50 animate-pulse" />
+              </div>
+              <div className="h-9 w-24 rounded-lg bg-surface-100 dark:bg-surface-700/50 animate-pulse shrink-0" />
+            </div>
+          ) : billing.hasSubscription ? (
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="min-w-0">
                 <p className="text-sm font-medium text-surface-900 dark:text-white flex items-center gap-2">
