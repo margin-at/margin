@@ -1,0 +1,113 @@
+name: Release Extension
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  release:
+    runs-on: docker
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: |
+          cd extension
+          bun install
+
+      - name: Update Version
+        run: |
+          VERSION=${GITHUB_REF_NAME#v}
+          echo "Updating to version $VERSION"
+          cd extension
+          tmp=$(mktemp)
+          jq --arg v "$VERSION" '.version = $v' package.json > "$tmp" && mv "$tmp" package.json
+
+      - name: Build Chrome Extension
+        run: |
+          cd extension
+          bun run zip
+          cp .output/margin-extension-*.zip ../margin-extension-chrome.zip
+
+      - name: Build Firefox Extension
+        run: |
+          cd extension
+          bun run zip:firefox
+          cp .output/margin-extension-*-firefox.zip ../margin-extension-firefox.xpi
+          cp .output/margin-extension-*-sources.zip ../margin-extension-sources.zip
+
+      - name: Publish to Chrome Web Store
+        continue-on-error: true
+        uses: mobilefirstllc/cws-publish@latest
+        with:
+          action: publish
+          client_id: ${{ secrets.CHROME_CLIENT_ID }}
+          client_secret: ${{ secrets.CHROME_CLIENT_SECRET }}
+          refresh_token: ${{ secrets.CHROME_REFRESH_TOKEN }}
+          extension_id: ${{ secrets.CHROME_EXTENSION_ID }}
+          zip_file: margin-extension-chrome.zip
+
+      - name: Publish to Edge Add-ons
+        continue-on-error: true
+        run: |
+          echo "Uploading package to Edge Add-ons..."
+          curl \
+            -H "Authorization: ApiKey ${{ secrets.EDGE_API_KEY }}" \
+            -H "X-ClientID: ${{ secrets.EDGE_CLIENT_ID }}" \
+            -H "Content-Type: application/zip" \
+            -X POST \
+            -T margin-extension-chrome.zip \
+            -f -sS \
+            https://api.addons.microsoftedge.microsoft.com/v1/products/${{ secrets.EDGE_PRODUCT_ID }}/submissions/draft/package
+
+          echo "Publishing submission..."
+          curl \
+            -H "Authorization: ApiKey ${{ secrets.EDGE_API_KEY }}" \
+            -H "X-ClientID: ${{ secrets.EDGE_CLIENT_ID }}" \
+            -X POST \
+            -d '{ "notes": "New release" }' \
+            -f -sS \
+            https://api.addons.microsoftedge.microsoft.com/v1/products/${{ secrets.EDGE_PRODUCT_ID }}/submissions
+
+      - name: Publish to Firefox AMO
+        continue-on-error: true
+        env:
+          AMO_JWT_ISSUER: ${{ secrets.AMO_JWT_ISSUER }}
+          AMO_JWT_SECRET: ${{ secrets.AMO_JWT_SECRET }}
+        run: |
+          cd extension
+          COMMIT_MSG=$(git log -1 --pretty=%s)
+          echo "{\"release_notes\": {\"en-US\": \"$COMMIT_MSG\"}, \"notes\": \"Thank you!\"}" > amo-metadata.json
+          ./node_modules/.bin/web-ext sign --channel=listed --api-key=$AMO_JWT_ISSUER --api-secret=$AMO_JWT_SECRET --source-dir=.output/firefox-mv3 --artifacts-dir=../web-ext-artifacts --approval-timeout=300000 --amo-metadata=amo-metadata.json || echo "Web-ext sign timed out (expected), continuing..."
+          rm amo-metadata.json
+
+      - name: Prepare signed Firefox XPI
+        run: |
+          if ls web-ext-artifacts/*.xpi 1> /dev/null 2>&1; then
+            SIGNED_XPI=$(ls web-ext-artifacts/*.xpi | head -1)
+            echo "Found signed XPI: $SIGNED_XPI"
+            cp "$SIGNED_XPI" margin-extension-firefox.xpi
+          else
+            echo "No signed XPI found, using unsigned build"
+          fi
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            margin-extension-chrome.zip
+            margin-extension-firefox.xpi
+            margin-extension-sources.zip
+          generate_release_notes: true
+          draft: false
+          prerelease: false
