@@ -327,13 +327,16 @@ func (s *Service) updateUserProfile(authorDID string) {
 	}
 }
 
-func (s *Service) BackfillDocumentEmbeddings(batchSize int) error {
+func (s *Service) BackfillDocumentEmbeddings(ctx context.Context, batchSize int) error {
 	if !s.embeds.IsEnabled() {
 		return nil
 	}
 
 	total := 0
 	for {
+		if ctx.Err() != nil {
+			return nil
+		}
 		docs, err := s.db.GetDocumentsWithoutEmbeddings(context.Background(), batchSize)
 		if err != nil {
 			return err
@@ -376,7 +379,11 @@ func (s *Service) BackfillDocumentEmbeddings(batchSize int) error {
 			break
 		}
 
-		time.Sleep(2 * time.Second)
+		select {
+		case <-ctx.Done():
+			return nil
+		case <-time.After(2 * time.Second):
+		}
 	}
 
 	if total > 0 {
@@ -385,13 +392,16 @@ func (s *Service) BackfillDocumentEmbeddings(batchSize int) error {
 	return nil
 }
 
-func (s *Service) BackfillAnnotationEmbeddings(batchSize int) (int, error) {
+func (s *Service) BackfillAnnotationEmbeddings(ctx context.Context, batchSize int) (int, error) {
 	if !s.embeds.IsEnabled() {
 		return 0, nil
 	}
 
 	total := 0
 	for {
+		if ctx.Err() != nil {
+			return total, nil
+		}
 		anns, err := s.db.GetAnnotationsWithoutEmbeddings(context.Background(), batchSize)
 		if err != nil {
 			return total, err
@@ -433,7 +443,11 @@ func (s *Service) BackfillAnnotationEmbeddings(batchSize int) (int, error) {
 			break
 		}
 
-		time.Sleep(2 * time.Second)
+		select {
+		case <-ctx.Done():
+			return total, nil
+		case <-time.After(2 * time.Second):
+		}
 	}
 
 	if total > 0 {
@@ -442,13 +456,16 @@ func (s *Service) BackfillAnnotationEmbeddings(batchSize int) (int, error) {
 	return total, nil
 }
 
-func (s *Service) BackfillHighlightEmbeddings(batchSize int) (int, error) {
+func (s *Service) BackfillHighlightEmbeddings(ctx context.Context, batchSize int) (int, error) {
 	if !s.embeds.IsEnabled() {
 		return 0, nil
 	}
 
 	total := 0
 	for {
+		if ctx.Err() != nil {
+			return total, nil
+		}
 		highlights, err := s.db.GetHighlightsWithoutEmbeddings(context.Background(), batchSize)
 		if err != nil {
 			return total, err
@@ -490,7 +507,11 @@ func (s *Service) BackfillHighlightEmbeddings(batchSize int) (int, error) {
 			break
 		}
 
-		time.Sleep(2 * time.Second)
+		select {
+		case <-ctx.Done():
+			return total, nil
+		case <-time.After(2 * time.Second):
+		}
 	}
 
 	if total > 0 {
@@ -499,7 +520,7 @@ func (s *Service) BackfillHighlightEmbeddings(batchSize int) (int, error) {
 	return total, nil
 }
 
-func (s *Service) RebuildAllProfiles() (int, error) {
+func (s *Service) RebuildAllProfiles(ctx context.Context) (int, error) {
 	if !s.embeds.IsEnabled() {
 		return 0, nil
 	}
@@ -510,6 +531,9 @@ func (s *Service) RebuildAllProfiles() (int, error) {
 	}
 
 	for _, did := range dids {
+		if ctx.Err() != nil {
+			return len(dids), nil
+		}
 		s.updateUserProfile(did)
 	}
 

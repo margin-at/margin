@@ -241,27 +241,27 @@ func runBackfill(ctx context.Context, recService *recommendations.Service) {
 	}
 
 	logger.Info("Starting recommendation backfill...")
-	if err := recService.BackfillDocumentEmbeddings(200); err != nil {
+	if err := recService.BackfillDocumentEmbeddings(ctx, 200); err != nil {
 		logger.Error("Document embedding backfill error: %v", err)
 	}
 	if ctx.Err() != nil {
 		return
 	}
-	annCount, err := recService.BackfillAnnotationEmbeddings(200)
+	annCount, err := recService.BackfillAnnotationEmbeddings(ctx, 200)
 	if err != nil {
 		logger.Error("Annotation embedding backfill error: %v", err)
 	}
 	if ctx.Err() != nil {
 		return
 	}
-	hlCount, err := recService.BackfillHighlightEmbeddings(200)
+	hlCount, err := recService.BackfillHighlightEmbeddings(ctx, 200)
 	if err != nil {
 		logger.Error("Highlight embedding backfill error: %v", err)
 	}
 	if ctx.Err() != nil {
 		return
 	}
-	profileCount, err := recService.RebuildAllProfiles()
+	profileCount, err := recService.RebuildAllProfiles(ctx)
 	if err != nil {
 		logger.Error("Profile rebuild error: %v", err)
 	}

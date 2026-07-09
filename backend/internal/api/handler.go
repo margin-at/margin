@@ -1734,12 +1734,12 @@ func (h *Handler) AdminBackfill(w http.ResponseWriter, r *http.Request) {
 	}
 	res := result{}
 
-	if err := h.recommendations.BackfillDocumentEmbeddings(batchSize); err != nil {
+	if err := h.recommendations.BackfillDocumentEmbeddings(r.Context(), batchSize); err != nil {
 		logger.Error("Document backfill error: %v", err)
 		res.Error = err.Error()
 	}
 
-	annCount, err := h.recommendations.BackfillAnnotationEmbeddings(batchSize)
+	annCount, err := h.recommendations.BackfillAnnotationEmbeddings(r.Context(), batchSize)
 	if err != nil {
 		logger.Error("Annotation backfill error: %v", err)
 		if res.Error != "" {
@@ -1749,7 +1749,7 @@ func (h *Handler) AdminBackfill(w http.ResponseWriter, r *http.Request) {
 	}
 	res.Annotations = annCount
 
-	profileCount, err := h.recommendations.RebuildAllProfiles()
+	profileCount, err := h.recommendations.RebuildAllProfiles(r.Context())
 	if err != nil {
 		logger.Error("Profile rebuild error: %v", err)
 		if res.Error != "" {

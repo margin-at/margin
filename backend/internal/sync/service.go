@@ -718,8 +718,10 @@ func (s *Service) upsertRecord(did, collection, uri, cid string, value json.RawM
 			tagsStr := string(tagsBytes)
 			tagsJSONPtr = &tagsStr
 		}
-		if err := verification.VerifyDocument(canonicalURL, uri); err != nil {
-			return nil
+		if _, err := s.db.GetDocumentByURI(context.Background(), uri); err != nil {
+			if err := verification.VerifyDocument(canonicalURL, uri); err != nil {
+				return nil
+			}
 		}
 		return s.db.UpsertDocument(context.Background(), &db.Document{
 			URI:          uri,

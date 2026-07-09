@@ -52,6 +52,7 @@ type DocumentCallback func(documentURI string)
 type Ingester struct {
 	db              *db.DB
 	sync            *internal_sync.Service
+	ctx             context.Context
 	cancel          context.CancelFunc
 	handlers        map[string]RecordHandler
 	currentRelayIdx int
@@ -115,6 +116,7 @@ func (i *Ingester) SetOnDocument(cb DocumentCallback) {
 
 func (i *Ingester) Start(ctx context.Context) error {
 	ctx, cancel := context.WithCancel(ctx)
+	i.ctx = ctx
 	i.cancel = cancel
 
 	go i.run(ctx)
@@ -279,6 +281,9 @@ func (i *Ingester) dispatchToHandler(event *FirehoseEvent) {
 var lastSyncAttempts sync.Map
 
 func (i *Ingester) triggerLazySync(did string) {
+	if i.ctx == nil || i.ctx.Err() != nil {
+		return
+	}
 	lastSync, ok := lastSyncAttempts.Load(did)
 	if ok {
 		if time.Since(lastSync.(time.Time)) < 5*time.Minute {
@@ -292,7 +297,7 @@ func (i *Ingester) triggerLazySync(did string) {
 		return
 	}
 
-	syncCtx, syncCancel := context.WithTimeout(context.Background(), 15*time.Second)
+	syncCtx, syncCancel := context.WithTimeout(i.ctx, 15*time.Second)
 	defer syncCancel()
 	_, err = i.sync.PerformSync(syncCtx, did, func(ctx context.Context, _ string) (*xrpc.Client, error) {
 		return &xrpc.Client{
