@@ -339,9 +339,7 @@ func (h *Handler) GetAnnotations(w http.ResponseWriter, r *http.Request) {
 	if source != "" {
 		filter.TargetHash = db.HashURL(source)
 	}
-	if motivation != "" {
-		filter.Motivations = []string{motivation}
-	}
+	filter.Motivations = parseMotivations(motivation)
 	if tag != "" {
 		filter.Tag = tag
 	}
@@ -381,6 +379,17 @@ func parseFeedType(s string) db.FeedType {
 		return db.FeedTypeSemble
 	default:
 		return db.FeedTypeRecent
+	}
+}
+
+func parseMotivations(motivation string) []string {
+	switch motivation {
+	case "":
+		return nil
+	case "commenting":
+		return []string{"commenting", "tagging"}
+	default:
+		return []string{motivation}
 	}
 }
 
@@ -431,15 +440,10 @@ func (h *Handler) GetFeed(w http.ResponseWriter, r *http.Request) {
 	feedTypeStr := r.URL.Query().Get("type")
 	feedType := parseFeedType(feedTypeStr)
 
-	var motivations []string
-	if motivation != "" {
-		motivations = []string{motivation}
-	}
-
 	fetchLimit := limit + offset
 	req := service.FeedRequest{
 		ViewerDID:   h.getViewerDID(r),
-		Motivations: motivations,
+		Motivations: parseMotivations(motivation),
 		AuthorDID:   creator,
 		Tag:         tag,
 		FeedType:    feedType,
@@ -936,7 +940,7 @@ func (h *Handler) GetUserAnnotations(w http.ResponseWriter, r *http.Request) {
 
 	notes, err := h.noteRepo.List(r.Context(), db.NoteFilter{
 		AuthorDID:   did,
-		Motivations: []string{"commenting"},
+		Motivations: parseMotivations("commenting"),
 		Limit:       limit,
 		Offset:      offset,
 	})
@@ -1072,10 +1076,11 @@ func (h *Handler) GetUserTargetItems(w http.ResponseWriter, r *http.Request) {
 
 	urlHash := db.HashURL(source)
 
+	motivations := append(parseMotivations("commenting"), "highlighting")
 	notes, err := h.noteRepo.List(r.Context(), db.NoteFilter{
 		AuthorDID:   did,
 		TargetHash:  urlHash,
-		Motivations: []string{"commenting", "highlighting"},
+		Motivations: motivations,
 		Limit:       limit,
 		Offset:      offset,
 	})
