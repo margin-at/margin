@@ -2,6 +2,8 @@ package db
 
 import (
 	"context"
+	"fmt"
+	"strings"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgtype"
@@ -9,6 +11,9 @@ import (
 )
 
 func (db *DB) CreateCollection(ctx context.Context, c *Collection) error {
+	if !isCollectionURI(c.URI) {
+		return fmt.Errorf("invalid collection URI: %s", c.URI)
+	}
 	return db.q.CreateCollection(ctx, sqlcdb.CreateCollectionParams{
 		Uri:         c.URI,
 		AuthorDid:   c.AuthorDID,
@@ -18,6 +23,20 @@ func (db *DB) CreateCollection(ctx context.Context, c *Collection) error {
 		CreatedAt:   c.CreatedAt,
 		IndexedAt:   c.IndexedAt,
 	})
+}
+
+func isCollectionURI(uri string) bool {
+	parts := strings.Split(strings.TrimPrefix(uri, "at://"), "/")
+	if !strings.HasPrefix(uri, "at://") || len(parts) != 3 || parts[0] == "" || parts[2] == "" {
+		return false
+	}
+
+	switch parts[1] {
+	case "at.margin.collection", "network.cosmik.collection":
+		return true
+	default:
+		return false
+	}
 }
 
 func (db *DB) GetCollectionsByAuthor(ctx context.Context, authorDID string) ([]Collection, error) {
