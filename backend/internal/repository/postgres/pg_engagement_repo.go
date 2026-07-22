@@ -141,13 +141,26 @@ func (r *EngagementRepository) queryLabels(ctx context.Context, subjects []strin
 	defer rows.Close()
 
 	for rows.Next() {
-		var l domain.ContentLabel
-		if err := rows.Scan(&l.ID, &l.Src, &l.URI, &l.Val, &l.Neg, &l.CreatedBy, &l.CreatedAt); err != nil {
-			continue
+		l, err := scanContentLabel(rows)
+		if err != nil {
+			return result, err
 		}
 		result[l.URI] = append(result[l.URI], l)
 	}
 	return result, rows.Err()
+}
+
+type rowScanner interface {
+	Scan(dest ...interface{}) error
+}
+
+func scanContentLabel(row rowScanner) (domain.ContentLabel, error) {
+	var label domain.ContentLabel
+	var id, neg int32
+	err := row.Scan(&id, &label.Src, &label.URI, &label.Val, &neg, &label.CreatedBy, &label.CreatedAt)
+	label.ID = int(id)
+	label.Neg = neg != 0
+	return label, err
 }
 
 func (r *EngagementRepository) GetLatestEditTimes(ctx context.Context, uris []string) (map[string]time.Time, error) {
