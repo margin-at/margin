@@ -1335,6 +1335,33 @@ func (h *Handler) fetchURLMetadata(ctx context.Context, targetURL string) map[st
 		return ""
 	}
 
+	extractAllMeta := func(name string) []string {
+		var values []string
+		seen := make(map[string]bool)
+		for _, attr := range []string{
+			fmt.Sprintf("name=\"%s\"", name),
+			fmt.Sprintf("name='%s'", name),
+		} {
+			rest := content
+			for {
+				idx := strings.Index(rest, attr)
+				if idx == -1 {
+					break
+				}
+				rest = rest[idx+len(attr):]
+				tag := rest
+				if end := strings.IndexByte(tag, '>'); end != -1 {
+					tag = tag[:end]
+				}
+				if v := extractContent(tag); v != "" && !seen[v] {
+					seen[v] = true
+					values = append(values, v)
+				}
+			}
+		}
+		return values
+	}
+
 	title := extract("title")
 	if title == "" {
 		if idx := strings.Index(content, "<title>"); idx != -1 {
@@ -1408,12 +1435,24 @@ func (h *Handler) fetchURLMetadata(ctx context.Context, targetURL string) map[st
 		}
 	}
 
-	return map[string]string{
+	result := map[string]string{
 		"title":       title,
 		"description": description,
 		"image":       image,
 		"icon":        favicon,
 	}
+
+	var atCanonical []string
+	for _, v := range extractAllMeta("at:canonical") {
+		if strings.HasPrefix(v, "at://") {
+			atCanonical = append(atCanonical, v)
+		}
+	}
+	if len(atCanonical) > 0 {
+		result["at:canonical"] = strings.Join(atCanonical, " ")
+	}
+
+	return result
 }
 
 func (h *Handler) GetNotifications(w http.ResponseWriter, r *http.Request) {

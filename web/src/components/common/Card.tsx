@@ -52,6 +52,14 @@ import { asTextQuote } from "../../types";
 
 import { Avatar } from "../ui";
 import CollectionIcon from "./CollectionIcon";
+import SocialPostEmbed from "./SocialPostEmbed";
+import {
+  parseSocialPostUrl,
+  postRefFromAtTags,
+  fetchSocialPost,
+  socialPostCacheKey,
+} from "../../lib/socialPost";
+import type { SocialPost } from "../../lib/socialPost";
 import ProfileHoverCard from "./ProfileHoverCard";
 import { analytics } from "../../lib/analytics";
 
@@ -199,8 +207,14 @@ export default function Card({
     description?: string;
     image?: string;
     icon?: string;
+    "at:canonical"?: string;
   } | null>(() => {
-    if (initialItem.motivation !== "bookmarking") return null;
+    const sembleNote =
+      (initialItem.uri?.includes("network.cosmik") ||
+        initialItem.uri?.includes("semble")) &&
+      initialItem.motivation === "commenting" &&
+      initialItem.body?.value;
+    if (initialItem.motivation !== "bookmarking" && !sembleNote) return null;
     const url = initialItem.target?.source || initialItem.source;
     if (!url) return null;
     try {
@@ -242,9 +256,64 @@ export default function Card({
 
   const pageUrl = item.target?.source || item.source;
   const isBookmark = type === "bookmark" && !item.body?.value;
+  const isSembleNote =
+    isSemble && type === "annotation" && !!item.body?.value && !!pageUrl;
+  const showLinkPreview = isBookmark || isSembleNote;
+
+  const socialPostRef = React.useMemo(
+    () => parseSocialPostUrl(pageUrl),
+    [pageUrl],
+  );
+  const atTagPostRef = React.useMemo(() => {
+    if (socialPostRef) return null;
+    return postRefFromAtTags(
+      ogData?.["at:canonical"],
+      safeUrlHostname(pageUrl) || "",
+    );
+  }, [socialPostRef, ogData, pageUrl]);
+  const postRef = socialPostRef ?? atTagPostRef;
+  const showSocialPost =
+    !!postRef && (isBookmark || (type === "annotation" && !!item.body?.value));
+
+  const [socialPost, setSocialPost] = useState<SocialPost | null>(() => {
+    if (!pageUrl) return null;
+    try {
+      const cached = sessionStorage.getItem(socialPostCacheKey(pageUrl));
+      return cached && cached !== "null" ? JSON.parse(cached) : null;
+    } catch {
+      return null;
+    }
+  });
+  const [socialPostFailed, setSocialPostFailed] = useState(false);
 
   React.useEffect(() => {
-    if (isBookmark && item.uri && !ogData && pageUrl) {
+    if (
+      showSocialPost &&
+      postRef &&
+      pageUrl &&
+      !socialPost &&
+      !socialPostFailed
+    ) {
+      let cancelled = false;
+      fetchSocialPost(pageUrl, postRef).then((data) => {
+        if (cancelled) return;
+        if (data) setSocialPost(data);
+        else setSocialPostFailed(true);
+      });
+      return () => {
+        cancelled = true;
+      };
+    }
+  }, [showSocialPost, postRef, pageUrl, socialPost, socialPostFailed]);
+
+  React.useEffect(() => {
+    if (
+      showLinkPreview &&
+      (!showSocialPost || socialPostFailed) &&
+      item.uri &&
+      !ogData &&
+      pageUrl
+    ) {
       let cancelled = false;
       import("../../lib/metadataQueue").then(({ fetchMetadata }) => {
         fetchMetadata(pageUrl).then((data) => {
@@ -255,7 +324,14 @@ export default function Card({
         cancelled = true;
       };
     }
-  }, [isBookmark, item.uri, pageUrl, ogData]);
+  }, [
+    showLinkPreview,
+    showSocialPost,
+    socialPostFailed,
+    item.uri,
+    pageUrl,
+    ogData,
+  ]);
 
   if (contentWarning?.visibility === "hide") return null;
 
@@ -423,6 +499,93 @@ export default function Card({
       : undefined;
   const displayImage = ogData?.image;
 
+  const linkPreview = (
+    <div
+      onClick={(e) => {
+        e.preventDefault();
+        if (pageUrl) handleExternalClick(e, pageUrl);
+      }}
+      role="button"
+      tabIndex={0}
+      className={clsx(
+        "flex bg-surface-50 dark:bg-surface-800 rounded-xl border border-surface-200 dark:border-surface-700 hover:border-primary-300 dark:hover:border-primary-600 hover:bg-surface-100 dark:hover:bg-surface-700 transition-all group overflow-hidden cursor-pointer",
+        layout === "mosaic"
+          ? "flex-col items-stretch"
+          : "flex-row items-stretch",
+        isSembleNote && "mt-2.5",
+      )}
+    >
+      {displayImage && !imgError && (
+        <div
+          className={clsx(
+            "shrink-0 bg-surface-200 dark:bg-surface-700 relative",
+            layout === "mosaic"
+              ? "w-full aspect-video border-b border-surface-200 dark:border-surface-700"
+              : "w-[90px] sm:w-[140px] border-r border-surface-200 dark:border-surface-700",
+          )}
+        >
+          <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
+            <img
+              src={displayImage}
+              alt={displayTitle || "Link preview"}
+              className="h-full w-full object-cover"
+              onError={() => setImgError(true)}
+            />
+          </div>
+        </div>
+      )}
+      <div
+        className={clsx(
+          "p-3 min-w-0 flex flex-col font-sans",
+          layout === "mosaic" ? "w-full" : "flex-1 justify-center",
+        )}
+      >
+        <h3 className="font-semibold text-surface-900 dark:text-white text-sm leading-snug group-hover:text-primary-600 dark:group-hover:text-primary-400 mb-1.5 transition-colors line-clamp-2">
+          {displayTitle}
+        </h3>
+
+        {displayDescription && (
+          <p className="text-surface-600 dark:text-surface-400 text-xs leading-relaxed mb-2 line-clamp-2">
+            {displayDescription}
+          </p>
+        )}
+
+        <div className="flex items-center gap-2 text-[11px] text-surface-500 dark:text-surface-500 mt-auto">
+          <div className="w-4 h-4 rounded-full bg-surface-200 dark:bg-surface-700 flex items-center justify-center shrink-0 overflow-hidden">
+            {ogData?.icon && !iconError ? (
+              <img
+                src={ogData.icon}
+                alt=""
+                onError={() => setIconError(true)}
+                className="w-3 h-3 object-contain"
+              />
+            ) : (
+              <Globe size={9} />
+            )}
+          </div>
+          <span className="truncate min-w-0 flex-1">
+            {displayUrl || pageUrl}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+
+  const socialEmbed =
+    socialPost && postRef && pageUrl ? (
+      <SocialPostEmbed
+        post={socialPost}
+        postUrl={pageUrl}
+        host={postRef.host}
+        onOpen={handleExternalClick}
+        className={!isBookmark ? "mt-2.5" : undefined}
+      />
+    ) : null;
+
+  const resolvedPreview =
+    socialEmbed ??
+    (socialPostRef && showSocialPost && !socialPostFailed ? null : linkPreview);
+
   return (
     <article className="card p-4 hover:ring-black/10 dark:hover:ring-white/10 transition-all relative overflow-visible min-w-0 w-full">
       {!hideCollection &&
@@ -506,7 +669,12 @@ export default function Card({
           </a>
         </ProfileHoverCard>
 
-        <div className="flex-1 min-w-0">
+        <div
+          className={clsx(
+            "flex-1 min-w-0",
+            isSembleNote && "min-h-10 flex flex-col justify-center",
+          )}
+        >
           <div className="flex items-center gap-1.5 flex-wrap min-w-0">
             <ProfileHoverCard
               did={item.author?.did}
@@ -610,37 +778,42 @@ export default function Card({
             )}
           </div>
 
-          {pageUrl && !isBookmark && !(contentWarning && !contentRevealed) && (
-            <div className="flex items-center gap-1.5 mt-0.5 max-w-full">
-              <a
-                href={bookUrl || pageUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => handleExternalClick(e, bookUrl || pageUrl)}
-                className="inline-flex items-center gap-1 text-xs text-primary-600 dark:text-primary-400 hover:underline min-w-0"
-              >
-                {isbn ? (
-                  <BookOpen size={10} className="flex-shrink-0" />
-                ) : (
-                  <ExternalLink size={10} className="flex-shrink-0" />
+          {pageUrl &&
+            !isBookmark &&
+            !isSembleNote &&
+            !socialPost &&
+            !(contentWarning && !contentRevealed) && (
+              <div className="flex items-center gap-1.5 mt-0.5 max-w-full">
+                <a
+                  href={bookUrl || pageUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => handleExternalClick(e, bookUrl || pageUrl)}
+                  className="inline-flex items-center gap-1 text-xs text-primary-600 dark:text-primary-400 hover:underline min-w-0"
+                >
+                  {isbn ? (
+                    <BookOpen size={10} className="flex-shrink-0" />
+                  ) : (
+                    <ExternalLink size={10} className="flex-shrink-0" />
+                  )}
+                  <span className="truncate">
+                    {isbn ? bookTitle : displayUrl}
+                  </span>
+                </a>
+                {isbn && bookPage && (
+                  <span className="flex-shrink-0 text-xs text-surface-500 dark:text-surface-400">
+                    (p.{bookPage})
+                  </span>
                 )}
-                <span className="truncate">
-                  {isbn ? bookTitle : displayUrl}
-                </span>
-              </a>
-              {isbn && bookPage && (
-                <span className="flex-shrink-0 text-xs text-surface-500 dark:text-surface-400">
-                  (p.{bookPage})
-                </span>
-              )}
-            </div>
-          )}
+              </div>
+            )}
         </div>
       </div>
 
       <div
         className={clsx(
-          "mt-3 relative",
+          "relative",
+          isSembleNote ? "mt-0.5" : "mt-3",
           layout === "mosaic" ? "" : "ml-[52px]",
         )}
       >
@@ -672,76 +845,7 @@ export default function Card({
             {t("card.hideContent")}
           </button>
         )}
-        {!(contentWarning && !contentRevealed) && isBookmark && (
-          <div
-            onClick={(e) => {
-              e.preventDefault();
-              if (pageUrl) handleExternalClick(e, pageUrl);
-            }}
-            role="button"
-            tabIndex={0}
-            className={clsx(
-              "flex bg-surface-50 dark:bg-surface-800 rounded-xl border border-surface-200 dark:border-surface-700 hover:border-primary-300 dark:hover:border-primary-600 hover:bg-surface-100 dark:hover:bg-surface-700 transition-all group overflow-hidden cursor-pointer",
-              layout === "mosaic"
-                ? "flex-col items-stretch"
-                : "flex-row items-stretch",
-            )}
-          >
-            {displayImage && !imgError && (
-              <div
-                className={clsx(
-                  "shrink-0 bg-surface-200 dark:bg-surface-700 relative",
-                  layout === "mosaic"
-                    ? "w-full aspect-video border-b border-surface-200 dark:border-surface-700"
-                    : "w-[90px] sm:w-[140px] border-r border-surface-200 dark:border-surface-700",
-                )}
-              >
-                <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
-                  <img
-                    src={displayImage}
-                    alt={displayTitle || "Link preview"}
-                    className="h-full w-full object-cover"
-                    onError={() => setImgError(true)}
-                  />
-                </div>
-              </div>
-            )}
-            <div
-              className={clsx(
-                "p-3 min-w-0 flex flex-col font-sans",
-                layout === "mosaic" ? "w-full" : "flex-1 justify-center",
-              )}
-            >
-              <h3 className="font-semibold text-surface-900 dark:text-white text-sm leading-snug group-hover:text-primary-600 dark:group-hover:text-primary-400 mb-1.5 transition-colors line-clamp-2">
-                {displayTitle}
-              </h3>
-
-              {displayDescription && (
-                <p className="text-surface-600 dark:text-surface-400 text-xs leading-relaxed mb-2 line-clamp-2">
-                  {displayDescription}
-                </p>
-              )}
-
-              <div className="flex items-center gap-2 text-[11px] text-surface-500 dark:text-surface-500 mt-auto">
-                <div className="w-4 h-4 rounded-full bg-surface-200 dark:bg-surface-700 flex items-center justify-center shrink-0 overflow-hidden">
-                  {ogData?.icon && !iconError ? (
-                    <img
-                      src={ogData.icon}
-                      alt=""
-                      onError={() => setIconError(true)}
-                      className="w-3 h-3 object-contain"
-                    />
-                  ) : (
-                    <Globe size={9} />
-                  )}
-                </div>
-                <span className="truncate min-w-0 flex-1">
-                  {displayUrl || pageUrl}
-                </span>
-              </div>
-            </div>
-          </div>
-        )}
+        {!(contentWarning && !contentRevealed) && isBookmark && resolvedPreview}
 
         {!(contentWarning && !contentRevealed) &&
           asTextQuote(item.target?.selector)?.exact && (
@@ -791,6 +895,15 @@ export default function Card({
             <RichText text={item.body.value} />
           </p>
         )}
+
+        {!(contentWarning && !contentRevealed) &&
+          isSembleNote &&
+          resolvedPreview}
+
+        {!(contentWarning && !contentRevealed) &&
+          !isBookmark &&
+          !isSembleNote &&
+          socialEmbed}
 
         {!(contentWarning && !contentRevealed) &&
           item.tags &&
