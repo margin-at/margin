@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import AppShell from '../views/AppShell';
+import { atUriForDid, type AtTags } from '../lib/atTags';
 
 const user = Astro.locals.user ?? null;
 const path = Astro.params.appPath || '';
@@ -12,6 +13,7 @@ const BASE_URL = process.env.BASE_URL || 'https://margin.at';
 let title = 'Margin';
 let description = 'Annotate the web';
 let image = `${BASE_URL}/og.png`;
+const atTags: Required<AtTags> = { canonical: [], alternate: [], author: [], me: [] };
 
 try {
   let uri = '';
@@ -48,12 +50,15 @@ try {
   }
 
   if (uri) {
+    atTags.canonical.push(uri);
     const isCollection = uri.includes('/at.margin.collection/');
     const endpoint = isCollection ? 'collection' : 'annotation';
     const res = await fetch(`${API_URL}/api/${endpoint}?uri=${encodeURIComponent(uri)}`);
     if (res.ok) {
       const item = await res.json();
       const author = item.author || item.creator || {};
+      const authorUri = atUriForDid(author.did);
+      if (authorUri) atTags.author.push(authorUri);
       const handle = author.handle || author.did || 'someone';
       const bodyText = item.body?.value || item.bodyValue || item.text || '';
       const selectorText = item.target?.selector?.exact || item.selector?.exact || '';
@@ -94,6 +99,9 @@ try {
       const name = profile.displayName || profile.handle || did;
       title = `${name} — Margin`;
       description = profile.description?.slice(0, 200) || `${name}'s profile on Margin`;
+      if (profile.uri) atTags.canonical.push(profile.uri);
+      const meUri = atUriForDid(profile.did || did);
+      if (meUri) atTags.me.push(meUri);
     }
   }
 
@@ -109,6 +117,11 @@ try {
         (rr.description === "null" ? "" : rr.description) ||
         `Highlights and annotations by ${name}`;
       image = `${BASE_URL}/og-image?readingRoom=${rrHandle}`;
+      const rrMeUri = atUriForDid(rr.did);
+      if (rrMeUri) {
+        atTags.canonical.push(`at://${rr.did}/site.standard.publication/reading-room`);
+        atTags.me.push(rrMeUri);
+      }
     }
   }
 
@@ -142,6 +155,13 @@ try {
         }
 
         image = `${BASE_URL}/og-image?readingRoom=${rrHandle}&uri=${encodeURIComponent(noteUri)}`;
+        atTags.canonical.push(noteUri);
+        const rrAuthorUri = atUriForDid(payload.did);
+        if (rrAuthorUri) {
+          atTags.alternate.push(`at://${payload.did}/site.standard.publication/reading-room`);
+          atTags.author.push(rrAuthorUri);
+          atTags.me.push(rrAuthorUri);
+        }
       }
     }
   }
@@ -150,7 +170,7 @@ try {
 }
 ---
 
-<BaseLayout title={title} description={description} image={image}>
+<BaseLayout title={title} description={description} image={image} atTags={atTags}>
   <script is:inline define:vars={{ initialUser: user }}>
     window.__MARGIN_USER__ = initialUser;
   </script>

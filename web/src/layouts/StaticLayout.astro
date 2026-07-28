@@ -1,6 +1,8 @@
 ---
 import '../styles/global.css';
 
+const SITE_DID = 'did:plc:rjqn3agdb74cszhqcpii4sne';
+
 interface Props {
 	title?: string;
 	description?: string;
@@ -34,6 +36,7 @@ const { title = 'Margin', description = 'Annotate the web', image = 'https://mar
 		<meta name="twitter:title" content={title} />
 		<meta name="twitter:description" content={description} />
 		<meta name="twitter:image" content={image} />
+		<meta name="at:me" content={`at://${SITE_DID}`} />
 
 		<title>{title}</title>
 

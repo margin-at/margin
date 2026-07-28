@@ -2,14 +2,19 @@
 import { ClientRouter } from 'astro:transitions';
 import '../styles/global.css';
 import PostHog from '../components/posthog.astro';
+import { normalizeAtTags, type AtTags } from '../lib/atTags';
 
 interface Props {
 	title?: string;
 	description?: string;
 	image?: string;
+	atTags?: AtTags;
 }
 
-const { title = 'Margin', description = 'Annotate the web', image = 'https://margin.at/og.png' } = Astro.props;
+const SITE_DID = 'did:plc:rjqn3agdb74cszhqcpii4sne';
+
+const { title = 'Margin', description = 'Annotate the web', image = 'https://margin.at/og.png', atTags = {} } = Astro.props;
+const at = normalizeAtTags({ ...atTags, me: [...(atTags.me ?? []), `at://${SITE_DID}`] });
 ---
 
 <!DOCTYPE html>
@@ -36,6 +41,10 @@ const { title = 'Margin', description = 'Annotate the web', image = 'https://mar
 		<meta name="twitter:title" content={title} />
 		<meta name="twitter:description" content={description} />
 		<meta name="twitter:image" content={image} />
+		{at.canonical.map((uri) => <meta name="at:canonical" content={uri} />)}
+		{at.alternate.map((uri) => <meta name="at:alternate" content={uri} />)}
+		{at.author.map((uri) => <meta name="at:author" content={uri} />)}
+		{at.me.map((uri) => <meta name="at:me" content={uri} />)}
 
 		<title>{title}</title>
 
