@@ -32,6 +32,15 @@ export interface FacetSegment {
   facet?: SocialPostFacet;
 }
 
+export interface SocialPostGif {
+  playerUri: string;
+  sources?: { src: string; type: string }[];
+  isVideo: boolean;
+  width?: number;
+  height?: number;
+  alt?: string;
+}
+
 export interface SocialPost {
   uri: string;
   author: SocialPostAuthor;
@@ -40,6 +49,7 @@ export interface SocialPost {
   createdAt?: string;
   images: SocialPostImage[];
   video?: { thumbnail?: string };
+  gif?: SocialPostGif;
   external?: {
     uri: string;
     title?: string;
@@ -95,6 +105,129 @@ export function postRefFromAtTags(
     if (ref) return ref;
   }
   return null;
+}
+
+const giphyMediaHostRegex = /^media(?:[0-4])?\.giphy\.com$/i;
+const gifFilenameRegex = /^\S+\.(webp|gif|mp4)$/i;
+
+function giphyGif(gifId: string): Omit<SocialPostGif, "alt"> {
+  return {
+    playerUri: `https://i.giphy.com/media/${gifId}/200.webp`,
+    isVideo: false,
+  };
+}
+
+export function parseGifEmbed(
+  url: string | null | undefined,
+): Omit<SocialPostGif, "alt"> | null {
+  if (!url) return null;
+  let u: URL;
+  try {
+    u = new URL(url);
+  } catch {
+    return null;
+  }
+
+  if (u.hostname === "media.tenor.com") {
+    const [, id, filename] = u.pathname.split("/");
+    if (!id || !filename || !id.includes("AAAAC")) return null;
+    const width = Number(u.searchParams.get("ww"));
+    const height = Number(u.searchParams.get("hh"));
+    if (!(width > 0) || !(height > 0)) return null;
+    const webm = `https://t.gifs.bsky.app/${id.replace("AAAAC", "AAAP3")}/${filename.replace(".gif", ".webm")}`;
+    const mp4 = `https://t.gifs.bsky.app/${id.replace("AAAAC", "AAAP1")}/${filename.replace(".gif", ".mp4")}`;
+    return {
+      playerUri: mp4,
+      sources: [
+        { src: webm, type: "video/webm" },
+        { src: mp4, type: "video/mp4" },
+      ],
+      isVideo: true,
+      width,
+      height,
+    };
+  }
+
+  if (u.hostname === "static.klipy.com" && u.pathname.startsWith("/ii/")) {
+    const width = Number(u.searchParams.get("ww"));
+    const height = Number(u.searchParams.get("hh"));
+    if (!(width > 0) || !(height > 0)) return null;
+    const webmSlug = u.searchParams.get("webm");
+    const mp4Slug = u.searchParams.get("mp4");
+    if (!webmSlug && !mp4Slug) return null;
+    const buildVideoUrl = (slug: string, ext: string) => {
+      const v = new URL(u.href);
+      v.hostname = "k.gifs.bsky.app";
+      for (const param of ["hh", "ww", "mp4", "webm"]) {
+        v.searchParams.delete(param);
+      }
+      const parts = v.pathname.split("/");
+      parts[parts.length - 1] = `${slug}.${ext}`;
+      v.pathname = parts.join("/");
+      return v.href;
+    };
+    const sources: { src: string; type: string }[] = [];
+    if (webmSlug) {
+      sources.push({
+        src: buildVideoUrl(webmSlug, "webm"),
+        type: "video/webm",
+      });
+    }
+    if (mp4Slug) {
+      sources.push({ src: buildVideoUrl(mp4Slug, "mp4"), type: "video/mp4" });
+    }
+    return {
+      playerUri: mp4Slug
+        ? buildVideoUrl(mp4Slug, "mp4")
+        : buildVideoUrl(webmSlug as string, "webm"),
+      sources,
+      isVideo: true,
+      width,
+      height,
+    };
+  }
+
+  if (u.hostname === "giphy.com" || u.hostname === "www.giphy.com") {
+    const [, gifs, nameAndId] = u.pathname.split("/");
+    if (gifs === "gifs" && nameAndId) {
+      const gifId = nameAndId.split("-").pop();
+      if (gifId) return giphyGif(gifId);
+    }
+    return null;
+  }
+
+  if (giphyMediaHostRegex.test(u.hostname)) {
+    const [, media, trackingOrId, idOrFilename, filename] =
+      u.pathname.split("/");
+    if (media === "media") {
+      if (idOrFilename && gifFilenameRegex.test(idOrFilename)) {
+        return giphyGif(trackingOrId);
+      }
+      if (filename && gifFilenameRegex.test(filename)) {
+        return giphyGif(idOrFilename);
+      }
+    }
+    return null;
+  }
+
+  if (u.hostname === "i.giphy.com" || u.hostname === "www.i.giphy.com") {
+    const [, mediaOrFilename, filename] = u.pathname.split("/");
+    if (mediaOrFilename === "media" && filename) {
+      return giphyGif(filename.split(".")[0]);
+    }
+    if (mediaOrFilename) {
+      return giphyGif(mediaOrFilename.split(".")[0]);
+    }
+    return null;
+  }
+
+  return null;
+}
+
+function gifAltText(description: unknown): string | undefined {
+  if (typeof description !== "string") return undefined;
+  const alt = description.replace(/^(Alt|ALT): /, "").trim();
+  return alt || undefined;
 }
 
 function pickAuthor(author: Record<string, unknown> | undefined) {
@@ -193,12 +326,17 @@ function extractEmbed(embed: any, out: SocialPost) {
     out.video = { thumbnail: embed.thumbnail };
   } else if (embed.$type === "app.bsky.embed.external#view") {
     if (embed.external?.uri) {
-      out.external = {
-        uri: embed.external.uri,
-        title: embed.external.title,
-        description: embed.external.description,
-        thumb: embed.external.thumb,
-      };
+      const gif = parseGifEmbed(embed.external.uri);
+      if (gif) {
+        out.gif = { ...gif, alt: gifAltText(embed.external.description) };
+      } else {
+        out.external = {
+          uri: embed.external.uri,
+          title: embed.external.title,
+          description: embed.external.description,
+          thumb: embed.external.thumb,
+        };
+      }
     }
   } else if (embed.$type === "app.bsky.embed.record#view") {
     out.quote = extractQuote(embed.record);
@@ -248,7 +386,7 @@ async function doFetch(ref: SocialPostRef): Promise<SocialPost | null> {
 const inflight = new Map<string, Promise<SocialPost | null>>();
 
 export function socialPostCacheKey(url: string): string {
-  return `socialpost:v2:${url}`;
+  return `socialpost:v3:${url}`;
 }
 
 export function fetchSocialPost(

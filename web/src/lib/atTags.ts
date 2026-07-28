@@ -2,7 +2,6 @@ export interface AtTags {
   canonical?: string[];
   alternate?: string[];
   author?: string[];
-  me?: string[];
 }
 
 const AT_URI_RE =
@@ -41,6 +40,5 @@ export function normalizeAtTags(tags: AtTags): Required<AtTags> {
     canonical: sanitize(tags.canonical, isAtUri),
     alternate: sanitize(tags.alternate, isAtUri),
     author: sanitize(tags.author, isAtDidUri),
-    me: sanitize(tags.me, isAtDidUri),
   };
 }

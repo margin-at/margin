@@ -10,6 +10,7 @@ import {
 import {
   AturiIcon,
   BlueskyIcon,
+  MuIcon,
   BlackskyIcon,
   WitchskyIcon,
   CatskyIcon,
@@ -21,8 +22,6 @@ import { useTranslation } from "react-i18next";
 const SembleLogo = () => (
   <img src="/semble-logo.svg" alt="Semble" className="w-4 h-4 opacity-90" />
 );
-
-const BLUESKY_COLOR = "#1185fe";
 
 interface ShareMenuProps {
   uri: string;
@@ -257,21 +256,46 @@ export default function ShareMenu({
     {
       name: "Bluesky",
       domain: "bsky.app",
-      icon: <BlueskyIcon size={18} color={BLUESKY_COLOR} />,
+      icon: <BlueskyIcon size={18} />,
+      hoverColor: "#1185fe",
     },
     {
-      name: "Witchsky",
-      domain: "witchsky.app",
-      icon: <WitchskyIcon size={18} />,
+      name: "Mu",
+      domain: "mu.social",
+      icon: <MuIcon size={21} />,
+      iconClass:
+        "group-hover:[--mu-outline:#481a3e] group-hover:[--mu-letters:#ffeefc]",
     },
     {
       name: "Blacksky",
       domain: "blacksky.community",
       icon: <BlackskyIcon size={18} />,
     },
-    { name: "Catsky", domain: "catsky.social", icon: <CatskyIcon size={18} /> },
-    { name: "Deer", domain: "deer.social", icon: <DeerIcon size={18} /> },
-  ];
+    {
+      name: "Witchsky",
+      domain: "witchsky.app",
+      icon: <WitchskyIcon size={18} />,
+      hoverColor: "#ee5346",
+    },
+    {
+      name: "Catsky",
+      domain: "catsky.social",
+      icon: <CatskyIcon size={18} />,
+      hoverColor: "#cba7f7",
+    },
+    {
+      name: "Deer",
+      domain: "deer.social",
+      icon: <DeerIcon size={18} />,
+      hoverColor: "#739f7c",
+    },
+  ] as {
+    name: string;
+    domain: string;
+    icon: React.ReactNode;
+    hoverColor?: string;
+    iconClass?: string;
+  }[];
 
   const menuContent = (
     <div className="flex flex-col gap-0.5">
@@ -309,15 +333,24 @@ export default function ShareMenu({
         {t("shareMenu.shareViaApp")}
       </div>
 
-      <div className="grid grid-cols-5 gap-1 px-1 mb-1">
+      <div className="grid grid-cols-6 gap-1 px-1 mb-1">
         {shareForks.map((fork) => (
           <button
             key={fork.domain}
             onClick={() => handleShareToFork(fork.domain)}
-            className="flex items-center justify-center p-2 rounded-lg hover:bg-surface-50 dark:hover:bg-surface-800 hover:scale-105 transition-all text-surface-400 dark:text-surface-500 hover:text-surface-900 dark:hover:text-white"
+            style={
+              {
+                "--fork-color": fork.hoverColor ?? "currentColor",
+              } as React.CSSProperties
+            }
+            className="group flex items-center justify-center p-2 rounded-lg hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors duration-150 text-surface-400 dark:text-surface-500 hover:text-surface-900 dark:hover:text-white"
             title={`Share to ${fork.name}`}
           >
-            {fork.icon}
+            <span
+              className={`flex transition-[color,transform] duration-150 group-hover:scale-105 group-hover:text-[color:var(--fork-color)] ${fork.iconClass ?? ""}`}
+            >
+              {fork.icon}
+            </span>
           </button>
         ))}
       </div>

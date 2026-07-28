@@ -13,7 +13,7 @@ const BASE_URL = process.env.BASE_URL || 'https://margin.at';
 let title = 'Margin';
 let description = 'Annotate the web';
 let image = `${BASE_URL}/og.png`;
-const atTags: Required<AtTags> = { canonical: [], alternate: [], author: [], me: [] };
+const atTags: Required<AtTags> = { canonical: [], alternate: [], author: [] };
 
 try {
   let uri = '';
@@ -100,8 +100,6 @@ try {
       title = `${name} — Margin`;
       description = profile.description?.slice(0, 200) || `${name}'s profile on Margin`;
       if (profile.uri) atTags.canonical.push(profile.uri);
-      const meUri = atUriForDid(profile.did || did);
-      if (meUri) atTags.me.push(meUri);
     }
   }
 
@@ -117,10 +115,8 @@ try {
         (rr.description === "null" ? "" : rr.description) ||
         `Highlights and annotations by ${name}`;
       image = `${BASE_URL}/og-image?readingRoom=${rrHandle}`;
-      const rrMeUri = atUriForDid(rr.did);
-      if (rrMeUri) {
+      if (atUriForDid(rr.did)) {
         atTags.canonical.push(`at://${rr.did}/site.standard.publication/reading-room`);
-        atTags.me.push(rrMeUri);
       }
     }
   }
@@ -160,7 +156,6 @@ try {
         if (rrAuthorUri) {
           atTags.alternate.push(`at://${payload.did}/site.standard.publication/reading-room`);
           atTags.author.push(rrAuthorUri);
-          atTags.me.push(rrAuthorUri);
         }
       }
     }

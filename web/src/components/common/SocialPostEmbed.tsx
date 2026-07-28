@@ -182,7 +182,11 @@ export default function SocialPostEmbed({
         <div
           className={clsx(
             "mt-2.5 gap-0.5 rounded-lg overflow-hidden border border-surface-200/60 dark:border-surface-700/60",
-            post.images.length === 1 ? "block" : "grid grid-cols-2",
+            post.images.length === 1
+              ? "block w-fit max-w-full"
+              : post.images.length === 3
+                ? "grid grid-cols-2 grid-rows-2 aspect-video"
+                : "grid grid-cols-2",
           )}
         >
           {post.images.slice(0, 4).map((img, i) => (
@@ -192,8 +196,15 @@ export default function SocialPostEmbed({
               alt={img.alt || ""}
               loading="lazy"
               className={clsx(
-                "w-full object-cover bg-surface-200 dark:bg-surface-700",
-                post.images.length === 1 ? "max-h-80" : "aspect-video h-full",
+                "bg-surface-200 dark:bg-surface-700",
+                post.images.length === 1
+                  ? "block w-auto max-w-full h-auto max-h-80"
+                  : post.images.length === 3
+                    ? clsx(
+                        "w-full h-full object-cover",
+                        i === 0 && "row-span-2",
+                      )
+                    : "w-full aspect-video h-full object-cover",
               )}
             />
           ))}
@@ -201,23 +212,56 @@ export default function SocialPostEmbed({
       )}
 
       {post.video && (
-        <div className="mt-2.5 relative rounded-lg overflow-hidden bg-surface-900 border border-surface-200/60 dark:border-surface-700/60">
+        <div className="mt-2.5 relative w-fit max-w-full rounded-lg overflow-hidden bg-surface-900 border border-surface-200/60 dark:border-surface-700/60">
           {post.video.thumbnail && !videoThumbError ? (
             <img
               src={post.video.thumbnail}
               alt=""
               loading="lazy"
-              className="w-full max-h-72 object-cover opacity-90"
+              className="block w-auto max-w-full h-auto max-h-80 opacity-90"
               onError={() => setVideoThumbError(true)}
             />
           ) : (
-            <div className="w-full aspect-video" />
+            <div className="w-80 max-w-full aspect-video" />
           )}
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="w-10 h-10 rounded-full bg-black/60 flex items-center justify-center">
               <Play size={18} className="text-white fill-current ml-0.5" />
             </div>
           </div>
+        </div>
+      )}
+
+      {post.gif && (
+        <div className="mt-2.5 w-fit max-w-full rounded-lg overflow-hidden border border-surface-200/60 dark:border-surface-700/60 bg-surface-200 dark:bg-surface-700">
+          {post.gif.isVideo ? (
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="metadata"
+              aria-label={post.gif.alt}
+              className="block w-auto max-w-full h-auto max-h-80"
+              style={
+                post.gif.width && post.gif.height
+                  ? { aspectRatio: `${post.gif.width} / ${post.gif.height}` }
+                  : undefined
+              }
+              src={post.gif.sources?.length ? undefined : post.gif.playerUri}
+            >
+              {post.gif.sources?.map((source) => (
+                <source key={source.src} src={source.src} type={source.type} />
+              ))}
+            </video>
+          ) : (
+            <img
+              src={post.gif.playerUri}
+              alt={post.gif.alt || ""}
+              loading="lazy"
+              className="block w-auto max-w-full h-auto max-h-80"
+            />
+          )}
         </div>
       )}
 
